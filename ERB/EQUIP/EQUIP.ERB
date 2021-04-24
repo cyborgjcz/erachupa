@@ -1,0 +1,30 @@
+﻿;장비 스탯을 반영하는 함수
+;스탯을 표기하거나 사용해야 할 필요가 있을 때 그 직전 호출하여 초기화한다
+@EQ_APPLY_STAT(CHARAV)
+#DIM DYNAMIC LCOUNT;FOR 반복문 카운터
+#DIM DYNAMIC CHARAV;캐릭터 등록번호
+
+FOR LCOUNT,0,12;공포내성까지. 스탯이 확장되면 더 늘릴것
+    SIF LCOUNT == 9
+        CONTINUE;레벨(9)은 건드리지 않는다
+    ;CSV를 참조하여 대입, 초기화한다
+    BASE:CHARAV:LCOUNT = CSVBASE(NO:CHARAV,LCOUNT)
+    ;CFLAG 20~부터 참조하여 증가치를 반영한다
+    BASE:CHARAV:LCOUNT += CFLAG:(NO:CHARAV):(30+LCOUNT)
+    ;변신 초기화
+    CFLAG:변신가능 = CSVCFLAG(NO:CHARAV,15)
+NEXT
+FOR LCOUNT,0,8
+    AVAILABLE_SKILL:CHARAV:LCOUNT = 0
+NEXT
+;EQ~ ERB에 포함된 함수들을 호출하여 능력치를 조정한다
+FOR LCOUNT,0,3
+    TRYCCALLFORM EQ_능력수정_{EQUIP:CHARAV:LCOUNT},CHARAV
+    CATCH
+        DEBUGPRINTFORML EQ_능력수정_{EQUIP:CHARAV:LCOUNT} 호출에 실패 제1인수:({CHARAV})
+    ENDCATCH
+    TRYCCALLFORM EQ_스킬수정_{EQUIP:CHARAV:LCOUNT},CHARAV
+    CATCH
+        DEBUGPRINTFORML EQ_스킬수정_{EQUIP:CHARAV:LCOUNT} 호출에 실패 제1인수:({CHARAV})
+    ENDCATCH
+NEXT

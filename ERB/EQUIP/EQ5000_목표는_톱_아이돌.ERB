@@ -1,0 +1,20 @@
+﻿;의식 목표는 톱 아이돌!
+@EQ_능력수정_5000(CHARAV)
+#DIM DYNAMIC CHARAV
+BASE:CHARAV:공격력 += 30
+BASE:CHARAV:행동력 += 1
+@EQ_스킬수정_5000(CHARAV)
+#DIM DYNAMIC CHARAV
+@EQ_위치_5000
+#FUNCTION
+RETURNF 1
+@EQ_이름_5000
+#FUNCTIONS
+RETURNF "목표는 톱 아이돌!"
+@EQ_설명_5000
+#FUNCTIONS
+{
+    RETURNF "공격력+30 행동력+1 아이돌 활동의 막이 올랐다!
+    \n하지만 여기서 만족하지 않고
+    \n더욱 높은 곳을 향해 노력을 거듭하자!"
+}

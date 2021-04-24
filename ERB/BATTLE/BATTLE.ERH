@@ -1,0 +1,6 @@
+﻿#DIM CONST MAX_ATB = 250
+#DIM ATB_TIME = 100
+#DIM ATB_COLOR = 0x0067a3
+#DIM ENEMY_MOVE = 0
+
+#DIMS CONST BATTLEKEY,12 = "q","w","e","u","i","o","a","s","d","j","k","l" 

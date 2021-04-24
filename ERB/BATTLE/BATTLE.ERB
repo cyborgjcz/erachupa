@@ -1,0 +1,922 @@
+﻿;FileName_BATTLE.ERB --------------------------------
+;eraMegaten으로부터 많이 참고했습니다.
+;---------------------------------------------------
+;BATTLE_START 
+;---------------------------------------------------
+@BATTLE_START
+
+CALL LOAD_ENEMY
+CALL INIT_BATTLE
+CALL BATTLE_MAIN
+
+RETURN 1
+;---------------------------------------------------
+;LOAD_ENEMY
+;미리 TFLAG:1~6, TFLAG11~16에 세트된 데이터를 참고해
+;배틀 동안 지속되는 적 캐릭터 등록
+;---------------------------------------------------
+@LOAD_ENEMY
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIM DYNAMIC ENEMY_KEY = 0
+#DIM DYNAMIC ENEMY_LV = 1
+#DIM DYNAMIC TO_ENTRY
+
+TO_ENTRY = CHARANUM;적을 임시로 등록할 캐릭등록번호=현재 캐릭수
+
+FOR LCOUNT,1,7
+    SIF !TFLAG:LCOUNT;미리 설정한 TFLAG:1~6(적위치)에 아무것도 없다면 패스
+        CONTINUE
+    ENEMY_KEY = TFLAG:LCOUNT;CSV 번호 취득
+    ADDCHARA ENEMY_KEY
+    IF TFLAG:(10+LCOUNT)
+        ENEMY_LV = TFLAG:(10+LCOUNT)
+        BASE:TO_ENTRY:레벨 = ENEMY_LV
+    ELSE
+        BASE:TO_ENTRY:레벨 = CFLAG:ENEMY_KEY:초기레벨
+    ENDIF    
+    ;초기레벨+세트된레벨차에 따른 능력증감 추가예정
+    ;적 보유 스킬 설정.
+    FOR LCOUNT2,22,30
+        AVAILABLE_SKILL:TO_ENTRY:(-22+LCOUNT2) = CFLAG:TO_ENTRY:LCOUNT2
+    NEXT
+    TFLAG:LCOUNT = TO_ENTRY;해당 적위치에 추가한 적의 캐릭등록번호 대입
+    TO_ENTRY += 1
+    TFLAG:적캐릭터초기화 += 1
+NEXT
+
+RETURN 1
+;---------------------------------------------------
+;GET_ENEMY
+;특정적위치의 적등록번호를 반환하는 식중함수
+;---------------------------------------------------
+@GET_ENEMY(WHERE)
+#FUNCTION
+#DIM DYNAMIC WHERE
+
+RETURNF TFLAG:WHERE
+;---------------------------------------------------
+;INIT_BATTLE
+;---------------------------------------------------
+@INIT_BATTLE
+#DIM DYNAMIC LCOUNT
+;전투 경과 시간 초기화
+TFLAG:경과시간 = 0
+;전투결과 초기화
+TFLAG:전투결과 = 0
+;장비에 의한 스탯 증감 초기화
+FOR LCOUNT,1,3
+    CALL EQ_APPLY_STAT(FLAG:LCOUNT)
+NEXT
+RETURN 1
+;---------------------------------------------------
+;BATTLE_MAIN
+;배틀 루프
+;---------------------------------------------------
+@BATTLE_MAIN
+#DIM DYNAMIC BATTLE_LOOP = 1
+#DIM DYNAMIC LCOUNT = 0
+#DIM DYNAMIC LCOUNT2 = 0
+
+#DIM DYNAMIC LENEMY_NUM;적등록번호
+#DIM DYNAMIC TCALLER;전투회화발화자
+
+#DIM DYNAMIC REMAINTIME
+#DIM DYNAMIC TIMECOUNT
+
+#DIM DYNAMIC UILEN = 12
+#DIMS DYNAMIC COMMESSAGE,2
+
+#DIMS DYNAMIC COMMANDS;커맨드 실행 내용
+#DIM DYNAMIC COM_TARGETV;커맨드 실행 대상
+#DIM DYNAMIC COM_USER;커맨드 실행 주체
+#DIM DYNAMIC COM_SKILLNUM;커맨드 실행 스킬 번호
+
+IF TFLAG:0 < 1 ;첫턴처리
+    {
+        PRINTFORML ＿人人人人人人人人人人人人人人人人人＿
+        \n＞　ＥＮＥＭＹ　ＥＮＣＯＵＮＴＥＲ　＜
+        \n￣Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y￣
+    }
+    TCALLER = RAND:2+1
+    CALL BATTLE_TALK("ENCOUNTER", TCALLER)
+    CALL BATTLE_TALK("ENCOUNTER", TCALLER^3, 1)
+ENDIF
+
+
+REMAINTIME = ATB_TIME
+CALL RESET_BATTLE_CURSOR
+
+DO
+    ;전열이 비었다면, 후열을 전열로 땡긴다
+    LCOUNT2 = 1
+    FOR LCOUNT,1,4
+        LENEMY_NUM = GET_ENEMY(LCOUNT)
+        SIF !LENEMY_NUM
+            CONTINUE
+        LCOUNT2 += 1
+    NEXT
+    IF LCOUNT2 < 2
+        FOR LCOUNT,4,7
+            TFLAG:(LCOUNT-3) = GET_ENEMY(LCOUNT)
+            TFLAG:LCOUNT = 0
+        NEXT
+    ENDIF
+    ;아군 전멸 판정
+    LCOUNT2 = 0
+    FOR LCOUNT,1,3
+        SIF ISDYING(FLAG:LCOUNT)
+            LCOUNT2 += 1
+    NEXT
+    IF LCOUNT2 >= 2
+        TFLAG:전투결과 = 2
+        BATTLE_LOOP = 0
+        GOTO BATTLE_END
+    ENDIF
+    ;적 전멸 판정
+    LCOUNT2 = 0
+    FOR LCOUNT,1,7
+        SIF TFLAG:LCOUNT == 0 || ISDYING(TFLAG:LCOUNT)
+            LCOUNT2 += 1
+    NEXT
+    IF LCOUNT2 >= 6
+        TFLAG:전투결과 = 1
+        BATTLE_LOOP = 0
+        GOTO BATTLE_END
+    ENDIF
+    ;공격 스킬 커서 초기화
+    FOR LCOUNT2,9,11
+        IF !TFLAG:(TFLAG:LCOUNT2) || ISDYING(TFLAG:(TFLAG:LCOUNT2))
+            FOR LCOUNT,1,7
+                IF TFLAG:LCOUNT && !ISDYING(TFLAG:LCOUNT)
+                    TFLAG:LCOUNT2 = LCOUNT
+                    BREAK
+                ENDIF
+            NEXT
+        ENDIF
+    NEXT
+    ;적 묘사 및 스킬 목록
+    DRAWLINE
+    FOR LCOUNT2,4,-2,-3 ;후열부터 시작해서 전열로 반복(4,1)
+        FOR LCOUNT,LCOUNT2,LCOUNT2+3 ;적 이름 표시(4,5,6)(1,2,3)
+            {
+                IF (TFLAG:동료1ATB커서상태 != 3 && LCOUNT != 6 && LCOUNT != 3) ||
+                (TFLAG:동료2ATB커서상태 != 3 && (LCOUNT == 6 || LCOUNT == 3))
+            }
+                LENEMY_NUM = GET_ENEMY(LCOUNT)
+                SIF !LENEMY_NUM
+                    SETCOLORBYNAME DimGray
+                CALL SETCOLOR_BATTLE_ENEMY(LCOUNT)
+                PRINTFORM ［%TOFULL(TOSTR(LCOUNT))%］
+                IF LENEMY_NUM > 0
+                    PRINTFORM %CALLNAME:LENEMY_NUM%
+                    PRINT_SPACE 100 * (6 - STRLENSU(CALLNAME:LENEMY_NUM))
+                ELSE
+                    PRINT ＥＭＰＴＹ
+                    PRINT_SPACE 100
+                ENDIF 
+                RESETCOLOR
+            ELSE
+                SELECTCASE LCOUNT
+                    CASE 1
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,4)
+                    CASE 2
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,5)
+                    CASE 3
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,4)
+                    CASE 4
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,0)
+                    CASE 5
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,1)
+                    CASE 6
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,0)
+                ENDSELECT
+            ENDIF
+            IF (LCOUNT == 6 || LCOUNT == 3) && TFLAG:동료2ATB커서상태 == 3
+                ;여기에 확장 스킬화면 작성
+                SELECTCASE LCOUNT
+                    CASE 6
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,1)
+                    CASE 3
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,5)
+                ENDSELECT
+            ENDIF
+        NEXT
+        PRINTL
+        FOR LCOUNT,LCOUNT2,LCOUNT+3 ;적HP표시
+            {
+                IF (TFLAG:동료1ATB커서상태 != 3 && LCOUNT != 6 && LCOUNT != 3) ||
+                (TFLAG:동료2ATB커서상태 != 3 && (LCOUNT == 6 || LCOUNT == 3))
+            }
+                LENEMY_NUM = GET_ENEMY(LCOUNT)
+                IF !LENEMY_NUM
+                    SETCOLORBYNAME DimGray
+                    PRINTFORM %"　"*3%[%"-"*(UILEN-2)%]
+                    RESETCOLOR
+                    CONTINUE
+                ENDIF
+                PRINTFORM %"ＨＰ："%
+                CALL PRINT_COLORBAR(BASE:LENEMY_NUM:희망,MAXBASE:LENEMY_NUM:희망,96,UNICODE(0x258F), UNICODE(0x258F), 0xB73232, 0x626262)
+            ELSE
+                SELECTCASE LCOUNT
+                    CASE 1
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,6)
+                    CASE 2
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,7)
+                    CASE 3
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,6)
+                    CASE 4
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,2)
+                    CASE 5
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(1,3)
+                    CASE 6
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,2)
+                ENDSELECT
+            ENDIF            
+            IF (LCOUNT == 6 || LCOUNT == 3) && TFLAG:동료2ATB커서상태 == 3
+                ;여기에 확장 스킬화면 작성
+                SELECTCASE LCOUNT
+                    CASE 6
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,3)
+                    CASE 3
+                        CALL SHOW_BATTLE_SKILL_SELECT_NAME(2,7)
+                ENDSELECT
+            ENDIF
+        NEXT
+        PRINTL
+    NEXT
+    DRAWLINE
+    ;커맨드 상태 표시
+    FOR LCOUNT,0,2
+        CALL SET_COMMESSAGE(COMMESSAGE:LCOUNT,LCOUNT)
+        STRLENSU COMMESSAGE:LCOUNT
+        PRINTFORM %COMMESSAGE:LCOUNT%
+        PRINT_SPACE 100*(14-RESULT)
+    NEXT
+    PRINTL
+    CALL SHOW_BATTLE_COMMAND
+    ;캐릭터 이름 및 ATB 바 표시
+    FOR LCOUNT,1,3
+        STRLENSU CALLNAME:(FLAG:LCOUNT);FLAG:1~2 는 동료1 동료2
+        PRINTFORM %CALLNAME:(FLAG:LCOUNT)%
+        PRINT_SPACE 100*(6 - RESULT)
+        SIF CFLAG:(FLAG:LCOUNT):ATB카운터 >= MAX_ATB
+            ATB_COLOR = 0x3097d3
+        CALL PRINT_COLORBAR(CFLAG:(FLAG:LCOUNT):ATB카운터, MAX_ATB, 128, UNICODE(0x258F), UNICODE(0x258F), ATB_COLOR, 0x626262)
+        ATB_COLOR = 0x0067a3
+    NEXT
+    PRINTL
+    ;HP, SP 표시
+    FOR LCOUNT,1,3
+        PRINTFORM ＨＰ%TOSTR(BASE:(FLAG:LCOUNT):희망),4,RIGHT%／%TOSTR(MAXBASE:(FLAG:LCOUNT):희망),4,RIGHT%  
+        PRINTFORM ＳＰ%TOSTR(BASE:(FLAG:LCOUNT):영혼),4,RIGHT%／%TOSTR(MAXBASE:(FLAG:LCOUNT):영혼),4,RIGHT%  
+    NEXT
+    PRINTL
+    ;입력
+    GETMILLISECOND
+    TIMECOUNT = RESULT
+    TONEINPUTS REMAINTIME,"탌",0,""
+    ;입력처리
+    CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER)
+    GETMILLISECOND
+    REMAINTIME -= (RESULT - TIMECOUNT)
+    ;ATB처리
+    IF REMAINTIME < 0
+        IF !ISDYING(FLAG:동료1)
+            SIF CFLAG:(FLAG:동료1):ATB카운터 < MAX_ATB
+                CFLAG:(FLAG:동료1):ATB카운터 += BASE:(FLAG:동료1):행동력
+            SIF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
+                CFLAG:(FLAG:동료1):ATB카운터 = MAX_ATB
+        ENDIF
+        IF !ISDYING(FLAG:동료2)
+            SIF CFLAG:(FLAG:동료2):ATB카운터 < MAX_ATB
+                CFLAG:(FLAG:동료2):ATB카운터 += BASE:(FLAG:동료2):행동력
+            SIF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
+                CFLAG:(FLAG:동료2):ATB카운터 = MAX_ATB
+        ENDIF
+        ;적ATB 처리
+        FOR LCOUNT,1,7
+            SIF !TFLAG:LCOUNT
+                CONTINUE
+            SIF ISDYING(TFLAG:LCOUNT)
+                CONTINUE
+            SIF CFLAG:(TFLAG:LCOUNT):ATB카운터 < MAX_ATB
+                CFLAG:(TFLAG:LCOUNT):ATB카운터 += BASE:(TFLAG:LCOUNT):행동력
+            IF CFLAG:(TFLAG:LCOUNT):ATB카운터 >= MAX_ATB
+                CFLAG:(TFLAG:LCOUNT):ATB카운터 = MAX_ATB
+                ENEMY_MOVE = LCOUNT;적행동트리거
+                BREAK;한번에 한명의 적만 행동한다
+            ENDIF
+        NEXT
+        REMAINTIME == ATB_TIME
+        TFLAG:경과시간 += (RESULT - TIMECOUNT)
+    ENDIF
+    ;적 행동
+    IF ENEMY_MOVE
+        CLEARLINE 1
+        REUSELASTLINE
+        TRYCCALLFORM BATTLE_AI{CFLAG:(TFLAG:ENEMY_MOVE):AI타입}_COMMAND,ENEMY_MOVE
+        CATCH
+            DEBUGPRINTFORML BATTLE_AI{CFLAG:(TFLAG:ENEMY_MOVE):AI타입}_COMMAND 호출 실패
+            CALL BATTLE_AI0_COMMAND(ENEMY_MOVE)
+        ENDCATCH
+        SELECTCASE RESULT:0
+            CASE 0
+                COMMANDS = "ATTACK"
+            CASE 1
+                COMMANDS = "SKILL"
+            CASE 2
+                COMMANDS = "GUARD"
+            CASE 3
+                COMMANDS = "TRANS"
+        ENDSELECT
+        COM_TARGETV = RESULT:1
+        COM_USER = ENEMY_MOVE
+        COM_SKILLNUM = RESULT:2
+        CFLAG:(TFLAG:ENEMY_MOVE):방어 = 0
+        CALL RUN_BATTLE_COMMAND(COMMANDS,COM_TARGETV,COM_USER,COM_SKILLNUM,1)
+        ENEMY_MOVE = 0
+    ELSE
+        ;적 행동이 아닐 때 아군 행동 실행
+        IF COMMANDS != ""
+            CFLAG:(FLAG:COM_USER):방어 = 0
+            CALL RUN_BATTLE_COMMAND(COMMANDS,COM_TARGETV,COM_USER,COM_SKILLNUM)
+        ELSE
+            IF RESULTS == ""
+                CLEARLINE 6+1+2+2
+            ELSE 
+                CLEARLINE 6+1+2+2+1
+            ENDIF
+            REUSELASTLINE
+        ENDIF
+    ENDIF
+    $BATTLE_END
+LOOP BATTLE_LOOP
+
+IF TFLAG:전투결과 == 1
+    PRINTL TFLAG:전투결과 == 1
+ELSEIF TFLAG:전투결과 == 2
+    PRINTL TFLAG:전투결과 == 2
+ENDIF
+
+;임시 등록한 적 캐릭터 삭제
+FOR LCOUNT,0,TFLAG:적캐릭터초기화
+    DELCHARA CHARANUM-1
+NEXT
+TFLAG:적캐릭터초기화 = 0
+@RUN_BATTLE_COMMAND(COMMANDS,TARGETV,USERV,SKILLV,ISENEMY=0)
+#DIMS DYNAMIC COMMANDS
+#DIM DYNAMIC TARGETV
+#DIM DYNAMIC USERV
+#DIM DYNAMIC SKILLV
+#DIM DYNAMIC ISENEMY
+SELECTCASE COMMANDS
+    CASE "ATTACK"
+        SKILLV = 0
+    CASE "SKILL"
+        SIF !ISENEMY
+            SKILLV = AVAILABLE_SKILL:(FLAG:USERV):(FLAG:(16+USERV))
+    CASE "GUARD"
+        SKILLV = 1
+    CASE "TRANS"
+        SKILLV = 0
+ENDSELECT
+;전투불능의 적을 공격할 수는 없다
+SIF !ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(TFLAG:TARGETV)
+    RETURN 0
+SIF ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(FLAG:TARGETV)
+    RETURN 0
+;스킬 유형은 공격, 범위 유형은 단일일때
+IF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
+    CALL SKILL_SINGLE_ATTACK(TARGETV,USERV,SKILLV,ISENEMY)
+ELSEIF SKILL_DATA:SKILLV:0 == 2
+    CALL SKILL_GUARD(USERV,SKILLV,ISENEMY)
+ENDIF
+IF !ISENEMY
+    CFLAG:(FLAG:USERV):ATB카운터 = 0
+ELSEIF ISENEMY
+    CFLAG:(TFLAG:USERV):ATB카운터 = 0
+ENDIF
+;전투불능 판정
+IF !ISENEMY && BASE:(TFLAG:TARGETV):희망 <= 0 && ((CFLAG:(TFLAG:TARGETV):상태이상 & 1) != 1)
+    CFLAG:(TFLAG:TARGETV):상태이상 += 1
+ELSEIF ISENEMY && BASE:(TFLAG:TARGETV):희망 <= 0 && ((CFLAG:(FLAG:TARGETV):상태이상 & 1) != 1)
+    CFLAG:(FLAG:TARGETV):상태이상 += 1
+ENDIF
+
+@SETCOLOR_BATTLE_ENEMY(LNUM)
+#DIM DYNAMIC LNUM
+{
+    IF TFLAG:동료1ATB커서위치 == LNUM && TFLAG:동료2ATB커서위치 == LNUM &&
+    TFLAG:동료1ATB커서상태 >= 1 && TFLAG:동료1ATB커서상태 <= 5 &&
+    TFLAG:동료2ATB커서상태 >= 1 && TFLAG:동료2ATB커서상태 <= 5 &&
+    TFLAG:동료1ATB커서상태 != 3 && TFLAG:동료2ATB커서상태 != 3
+}
+    SETCOLORBYNAME GreenYellow
+{
+    ELSEIF TFLAG:동료1ATB커서위치 == LNUM &&
+    TFLAG:동료1ATB커서상태 >= 1 && TFLAG:동료1ATB커서상태 <= 5 &&
+    TFLAG:동료1ATB커서상태 != 3
+}
+    SETCOLORBYNAME Yellow
+{
+    ELSEIF TFLAG:동료2ATB커서위치 == LNUM &&
+    TFLAG:동료2ATB커서상태 >= 1 && TFLAG:동료2ATB커서상태 <= 5 &&
+    TFLAG:동료2ATB커서상태 != 3
+}
+    SETCOLORBYNAME Green
+ELSE
+ENDIF
+
+;스킬 선택 중 표시하는 스킬 이름을 출력
+;동어반복을 피하기 위한 함수
+@SHOW_BATTLE_SKILL_SELECT_NAME(LPARTNER,LKEY)
+#DIM DYNAMIC LPARTNER;1또는2
+#DIM DYNAMIC LKEY;0~7
+SELECTCASE LPARTNER
+    CASE 1
+        SIF TFLAG:동료1스킬커서위치 == LKEY
+            SETCOLORBYNAME Yellow
+    CASE 2
+        SIF TFLAG:동료2스킬커서위치 == LKEY
+            SETCOLORBYNAME Green
+ENDSELECT
+IF AVAILABLE_SKILL:(FLAG:LPARTNER):LKEY
+    PRINTFORM %SKILL_NAME:(AVAILABLE_SKILL:(FLAG:LPARTNER):LKEY)%
+    PRINT_SPACE 100 * (9 - STRLENSU(SKILL_NAME:(AVAILABLE_SKILL:(FLAG:LPARTNER):LKEY)))
+ELSE
+    PRINT ＥＭＰＴＹ
+    PRINT_SPACE 400
+ENDIF
+RESETCOLOR
+
+@SHOW_BATTLE_COMMAND
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIMS DYNAMIC LBUTTONS,12
+
+SELECTCASE TFLAG:동료1ATB커서상태
+    CASE 0
+        LBUTTONS:0 = 
+        IF CFLAG:(FLAG:1):변신가능
+            LBUTTONS:1 = 변신
+        ELSE
+            LBUTTONS:1 = 
+        ENDIF
+        LBUTTONS:2 = 
+        LBUTTONS:6 = 공격
+        LBUTTONS:7 = 스킬
+        LBUTTONS:8 = 방어
+    CASE 1,3,4
+        LBUTTONS:0 = 확인
+        LBUTTONS:1 = △　
+        LBUTTONS:2 = 취소
+        LBUTTONS:6 = ≪　
+        LBUTTONS:7 = ▽　
+        LBUTTONS:8 = ≫　
+    CASE 2,5,6,7
+        LBUTTONS:0 = 확인
+        LBUTTONS:1 = 
+        LBUTTONS:2 = 취소
+        LBUTTONS:6 = 
+        LBUTTONS:7 = 
+        LBUTTONS:8 = 
+ENDSELECT
+SELECTCASE TFLAG:동료2ATB커서상태
+    CASE 0
+        LBUTTONS:3 = 
+        IF CFLAG:(FLAG:1):변신가능
+            LBUTTONS:4 = 변신
+        ELSE
+            LBUTTONS:4 = 
+        ENDIF
+        LBUTTONS:5 = 
+        LBUTTONS:9 = 공격
+        LBUTTONS:10 = 스킬
+        LBUTTONS:11 = 방어
+    CASE 1,3,4
+        LBUTTONS:3 = 확인
+        LBUTTONS:4 = △　
+        LBUTTONS:5 = 취소
+        LBUTTONS:9 = ≪　
+        LBUTTONS:10 = ▽　
+        LBUTTONS:11 = ≫　
+    CASE 2,5,6,7
+        LBUTTONS:3 = 확인
+        LBUTTONS:4 = 
+        LBUTTONS:5 = 취소
+        LBUTTONS:9 = 
+        LBUTTONS:10 = 
+        LBUTTONS:11 = 
+ENDSELECT
+FOR LCOUNT2,0,2
+    FOR LCOUNT,0,6
+        IF LBUTTONS:(LCOUNT+LCOUNT2*6) == ""
+            PRINTPLAINFORM [　]%"　"*2%
+        ELSE
+            {
+                PRINTBUTTON "[" + TOFULL(BATTLEKEY:(LCOUNT+LCOUNT2*6)) + "]"
+                + LBUTTONS:(LCOUNT+LCOUNT2*6),BATTLEKEY:(LCOUNT+LCOUNT2*6)
+            }
+        ENDIF
+        SIF LCOUNT == 2;전각스페이스2개
+            PRINT 　　
+    NEXT
+    PRINTL
+NEXT
+
+@SET_COMMESSAGE(COMMESSAGES,LNUM)
+#DIMS REF COMMESSAGES
+#DIM DYNAMIC LNUM;0또는1
+
+SELECTCASE TFLAG:(7+LNUM)
+    CASE 0
+        COMMESSAGES:LNUM = 커맨드선택
+    CASE 1
+        COMMESSAGES:LNUM = 공격대상결정
+    CASE 2
+        COMMESSAGES:LNUM = 공격
+    CASE 3
+        COMMESSAGES:LNUM = 스킬선택
+    CASE 4
+        COMMESSAGES:LNUM = 스킬대상결정
+    CASE 5
+        COMMESSAGES:LNUM = 스킬사용
+    CASE 6
+        COMMESSAGES:LNUM = 방어
+    CASE 7
+        COMMESSAGES:LNUM = 변신
+ENDSELECT
+
+;입력값 처리
+;ATB를 소모하는 경우 RETURN 1
+@BATTLE_INPUT(KEYS,R_COMMANDS,R_TARGETV,R_USERV)
+#DIMS DYNAMIC KEYS
+#DIMS REF R_COMMANDS
+#DIM REF R_TARGETV
+#DIM REF R_USERV
+IF KEYS == "탌" || KEYS == ""
+    R_COMMANDS '= ""
+    R_TARGETV = 0
+    R_USERV = 0
+    RETURN 0
+ENDIF
+SELECTCASE TFLAG:동료1ATB커서상태
+    CASE 0;초기
+        SELECTCASE KEYS
+            CASE "w";변신커맨드
+                SIF CFLAG:(FLAG:1):변신가능
+                    TFLAG:동료1ATB커서상태 = 7
+            CASE "a";공격
+                TFLAG:동료1ATB커서상태 = 1
+            CASE "s";스킬
+                TFLAG:동료1ATB커서상태 = 3
+            CASE "d";방어
+                TFLAG:동료1ATB커서상태 = 6
+        ENDSELECT
+    CASE 1;공격타게팅
+        SELECTCASE RESULTS
+            CASE "w"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("w",9)
+            CASE "a"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("a",9)
+            CASE "s"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("s",9)
+            CASE "d"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("d",9)
+            CASE "q"
+                TFLAG:동료1ATB커서상태 = 2
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 0
+        ENDSELECT
+    CASE 2;공격확인
+        SELECTCASE RESULTS
+            CASE "q"
+                IF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
+                    TFLAG:동료1ATB커서상태 = 0
+                    R_COMMANDS '= "ATTACK"
+                    R_TARGETV = TFLAG:동료1ATB커서위치
+                    R_USERV = 1
+                    RETURN 1
+                ENDIF
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 1
+        ENDSELECT
+    CASE 3;스킬선택
+        SELECTCASE RESULTS
+            CASE "w"
+                TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("w",17)
+            CASE "a"
+                TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("a",17)
+            CASE "s"
+                TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("s",17)
+            CASE "d"
+                TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("d",17)
+            CASE "q"
+                TFLAG:동료1ATB커서상태 = 4
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 0
+        ENDSELECT
+    CASE 4;스킬타게팅
+        SELECTCASE RESULTS
+            CASE "w"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("w",9)
+            CASE "a"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("a",9)
+            CASE "s"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("s",9)
+            CASE "d"
+                TFLAG:동료1ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("d",9)
+            CASE "q"
+                TFLAG:동료1ATB커서상태 = 5
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 3
+        ENDSELECT
+    CASE 5;스킬확인
+        SELECTCASE RESULTS
+            CASE "q"
+                IF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
+                    TFLAG:동료1ATB커서상태 = 0
+                    R_COMMANDS '= "SKILL"
+                    R_TARGETV = TFLAG:동료1ATB커서위치
+                    R_USERV = 1
+                    RETURN 1
+                ENDIF
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 4
+        ENDSELECT
+    CASE 6;방어확인
+        SELECTCASE RESULTS
+            CASE "q"
+                IF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
+                    TFLAG:동료1ATB커서상태 = 0
+                    R_COMMANDS '= "GUARD"
+                    R_TARGETV = 1
+                    R_USERV = 1
+                    RETURN 1
+                ENDIF
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 0
+        ENDSELECT
+    CASE 7;변신확인
+        SELECTCASE RESULTS
+            CASE "q"
+                IF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
+                    TFLAG:동료1ATB커서상태 = 0
+                    R_COMMANDS '= "TRANS"
+                    R_USERV = 1
+                    RETURN 1
+                ENDIF
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 0
+        ENDSELECT
+ENDSELECT
+SELECTCASE TFLAG:동료2ATB커서상태
+    CASE 0;초기
+        SELECTCASE KEYS
+            CASE "i";변신커맨드
+                SIF CFLAG:(FLAG:1):변신가능
+                    TFLAG:동료2ATB커서상태 = 7
+            CASE "j";공격
+                TFLAG:동료2ATB커서상태 = 1
+            CASE "k";스킬
+                TFLAG:동료2ATB커서상태 = 3
+            CASE "l";방어
+                TFLAG:동료2ATB커서상태 = 6
+        ENDSELECT
+    CASE 1;공격타게팅
+        SELECTCASE RESULTS
+            CASE "i"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("i",10)
+            CASE "j"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("j",10)
+            CASE "k"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("k",10)
+            CASE "l"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("l",10)
+            CASE "u"
+                TFLAG:동료2ATB커서상태 = 2
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 0
+        ENDSELECT
+    CASE 2;공격확인
+        SELECTCASE RESULTS
+            CASE "u"
+                IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
+                    TFLAG:동료2ATB커서상태 = 0
+                    R_COMMANDS '= "ATTACK"
+                    R_TARGETV = TFLAG:동료2ATB커서위치
+                    R_USERV = 2
+                    RETURN 1
+                ENDIF
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 1
+        ENDSELECT
+    CASE 3;스킬선택
+        SELECTCASE RESULTS
+            CASE "i"
+                TFLAG:동료2스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("i",18)
+            CASE "j"
+                TFLAG:동료2스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("j",18)
+            CASE "k"
+                TFLAG:동료2스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("k",18)
+            CASE "l"
+                TFLAG:동료2스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("l",18)
+            CASE "u"
+                TFLAG:동료2ATB커서상태 = 4
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 0
+        ENDSELECT
+    CASE 4;스킬타게팅
+        SELECTCASE RESULTS
+            CASE "i"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("i",10)
+            CASE "j"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("j",10)
+            CASE "k"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("k",10)
+            CASE "l"
+                TFLAG:동료2ATB커서위치 = MOVE_BATTLE_TARGET_CURSOR("l",10)
+            CASE "u"
+                TFLAG:동료2ATB커서상태 = 5
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 3
+        ENDSELECT
+    CASE 5;스킬확인
+        SELECTCASE RESULTS
+            CASE "u"
+                IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
+                    TFLAG:동료2ATB커서상태 = 0
+                    R_COMMANDS '= "SKILL"
+                    R_TARGETV = TFLAG:동료2ATB커서위치
+                    R_USERV = 2
+                    RETURN 1
+                ENDIF
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 4
+        ENDSELECT
+    CASE 6;방어확인
+        SELECTCASE RESULTS
+            CASE "u"
+                IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
+                    TFLAG:동료2ATB커서상태 = 0
+                    R_COMMANDS '= "GUARD"
+                    R_TARGETV = 2
+                    R_USERV = 2
+                    RETURN 1
+                ENDIF
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 0
+        ENDSELECT
+    CASE 7;변신확인
+        SELECTCASE RESULTS
+            CASE "u"
+                IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
+                    TFLAG:동료2ATB커서상태 = 0
+                    R_COMMANDS '= "TRANS"
+                    R_USERV = 2
+                    RETURN 1
+                ENDIF
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 0
+        ENDSELECT
+ENDSELECT
+R_COMMANDS '= ""
+R_TARGETV = 0
+R_USERV = 0
+RETURN 0
+
+@RESET_BATTLE_CURSOR
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+FOR LCOUNT2,0,2
+    SIF TFLAG:(9+LCOUNT2) <= 0 || TFLAG:(9+LCOUNT2) > 6
+        TFLAG:(9+LCOUNT2) = 1
+NEXT
+FOR LCOUNT2,0,2
+    FOR LCOUNT,1,7
+        IF TFLAG:(TFLAG:(9+LCOUNT2)) == 0
+            TFLAG:(9+LCOUNT2) += 1
+        ELSE
+            BREAK
+        ENDIF
+        SIF TFLAG:(9+LCOUNT2) > 6
+            TFLAG:(9+LCOUNT2) = 0
+    NEXT
+NEXT
+FOR LCOUNT,0,2
+    TFLAG:(17+LCOUNT) = 0
+NEXT
+
+;공격대상 선택 도중, wasd 또는 ijkl에 따라 커서 이동 결과를 반환하는 식중함수
+;두번째 인수는 9,10을 받으며 TFLAG:9 또는 TFLAG:10을 참조하기 위함
+@MOVE_BATTLE_TARGET_CURSOR(LKEY,LNUM)
+#FUNCTION
+#DIMS DYNAMIC LKEY
+#DIM DYNAMIC LNUM
+;각 적위치에서 wdsa 입력 시 이동하는 기본 위치 지정
+#DIM DYNAMIC TARGET_FORM,8,4
+IF LNUM != 9 && LNUM != 10 && LNUM != 17 && LNUM != 18
+    DEBUGPRINTFORML MOVE_BATTLE_TARGET_CURSOR에 전달받은 두번째 파라미터(%LNUM%)가 9 또는 10 또는 17 또는 18이 아닙니다
+    RETURNF 1
+ENDIF
+IF LNUM == 9 || LNUM == 10
+    TARGET_FORM:1:0 = 4,2,4,3
+    TARGET_FORM:2:0 = 5,3,5,1
+    TARGET_FORM:3:0 = 6,1,6,2
+    TARGET_FORM:4:0 = 1,5,1,6
+    TARGET_FORM:5:0 = 2,6,2,4
+    TARGET_FORM:6:0 = 3,4,3,5
+ELSEIF LNUM == 17 || LNUM == 18
+    TARGET_FORM:0:0 = 0,1,2,0
+    TARGET_FORM:1:0 = 1,1,3,0
+    TARGET_FORM:2:0 = 0,3,4,2
+    TARGET_FORM:3:0 = 1,3,5,2
+    TARGET_FORM:4:0 = 2,5,6,4
+    TARGET_FORM:5:0 = 3,5,7,4
+    TARGET_FORM:6:0 = 4,7,6,6
+    TARGET_FORM:7:0 = 5,7,7,6
+ENDIF
+
+IF LNUM == 9 || LNUM == 10
+    LNUM = TFLAG:LNUM
+    SELECTCASE LKEY
+        CASE "w","i"
+            IF TFLAG:(TARGET_FORM:LNUM:0) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:0))
+                RETURNF TARGET_FORM:LNUM:0
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):1
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):3
+            ELSE
+                RETURNF LNUM
+            ENDIF
+        CASE "d","l"
+            IF TFLAG:(TARGET_FORM:LNUM:1) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:1))
+                RETURNF TARGET_FORM:LNUM:1
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:1):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:1):1))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:1):1
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):1
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):3
+            ELSE
+                RETURNF LNUM
+            ENDIF
+        CASE "s","k"
+            IF TFLAG:(TARGET_FORM:LNUM:2) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:2))
+                RETURNF TARGET_FORM:LNUM:2
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):1))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:2):1
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):3))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:2):3
+            ELSE
+                RETURNF LNUM
+            ENDIF
+        CASE "a","j"
+            IF TFLAG:(TARGET_FORM:LNUM:3) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:3))
+                RETURNF TARGET_FORM:LNUM:3
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:3):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:3):3))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:3):3
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):3
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
+                RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):1
+            ELSE
+                RETURNF LNUM
+            ENDIF
+    ENDSELECT
+ELSEIF LNUM == 17 || LNUM == 18
+    SELECTCASE LKEY
+        CASE "w","i"
+            IF AVAILABLE_SKILL:(FLAG:(-16+LNUM)):(TARGET_FORM:(TFLAG:LNUM):0)
+                RETURNF TARGET_FORM:(TFLAG:LNUM):0
+            ELSE
+                RETURNF TFLAG:LNUM
+            ENDIF
+        CASE "d","l"
+            IF AVAILABLE_SKILL:(FLAG:(-16+LNUM)):(TARGET_FORM:(TFLAG:LNUM):1)
+                RETURNF TARGET_FORM:(TFLAG:LNUM):1
+            ELSE
+                RETURNF TFLAG:LNUM
+            ENDIF
+        CASE "s","k"
+            DEBUGPRINTFORML {AVAILABLE_SKILL:(FLAG:(-16+LNUM)):(TARGET_FORM:(TFLAG:LNUM):2)}, {TARGET_FORM:(TFLAG:LNUM):2}, {AVAILABLE_SKILL:(FLAG:(-16+LNUM)):(TFLAG:LNUM)}
+            IF AVAILABLE_SKILL:(FLAG:(-16+LNUM)):(TARGET_FORM:(TFLAG:LNUM):2)
+                RETURNF TARGET_FORM:(TFLAG:LNUM):2
+            ELSE
+                RETURNF TFLAG:LNUM
+            ENDIF
+        CASE "a","j"
+            IF AVAILABLE_SKILL:(FLAG:(-16+LNUM)):(TARGET_FORM:(TFLAG:LNUM):3)
+                RETURNF TARGET_FORM:(TFLAG:LNUM):3
+            ELSE
+                RETURNF TFLAG:LNUM
+            ENDIF
+    ENDSELECT
+ENDIF
+
+@ISDYING(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+RETURNF CFLAG:KEY:상태이상 & 1

@@ -1,0 +1,44 @@
+﻿;TWKR로부터 빌려왔습니다
+;-------------------------------------------------------------------------------
+;    BAR의 색 변경 판
+;-------------------------------------------------------------------------------
+;    예  PRINTFORM %PRINT_COLORBAR(40,100,8, %UNICODE(0x2584)%, %UNICODE(0x2584)%, , 0x404040)% 
+;        [===     ]
+;    인수는 BAR와 거의 같음 + 파라미터로 묘사 문자의 변경이 가능(지정하지 않는 경우는 BAR와 같은 사양)
+;    ARG:3은 바의 색(0 xFFFFFF 형식으로 지정), ARG:4는 바의 배경 색(0 xFFFFFF 형식으로 지정)
+;===============================================================================
+@PRINT_COLORBAR(LVALUE, LMAX, BARLENGTH, BARS1 = "*", BARS2 = ".", LCOLOR, LBGCOLOR)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LVALUE
+#DIM DYNAMIC LMAX
+#DIM DYNAMIC BARLENGTH
+#DIMS DYNAMIC BARS1
+#DIMS DYNAMIC BARS2
+#DIM DYNAMIC LCOLOR
+#DIM DYNAMIC LBGCOLOR
+#DIM DYNAMIC LNUM,3 = 0,0,0
+IF !LMAX
+	SETCOLOR LBGCOLOR
+	FOR LCOUNT, 1, BARLENGTH + 1
+		PRINTFORM %BARS2%
+	NEXT
+	RESETCOLOR
+	RETURN 0
+ENDIF
+LNUM = LVALUE * BARLENGTH / LMAX
+FOR LCOUNT, 1, BARLENGTH + 1
+	IF LNUM >= LCOUNT
+        IF !LNUM:1
+    		SETCOLOR LCOLOR
+            LNUM:1 = 1
+        ENDIF
+		PRINTFORM %BARS1%
+	ELSE
+        IF !LNUM:2
+    		SETCOLOR LBGCOLOR
+            LNUM:2 = 1
+        ENDIF
+        PRINTFORM %BARS2%
+	ENDIF
+NEXT
+RESETCOLOR

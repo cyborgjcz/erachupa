@@ -1,0 +1,75 @@
+﻿;-----------------------------------------------------------
+;SHOW_SHOP
+;BEGIN SHOP, LOADDATA 등 통칭 메인 화면 표시 함수
+;-----------------------------------------------------------
+@SHOW_SHOP
+;200 ~ 299 일상 관련
+PRINTL 【일상 관련】
+PRINTFORMLC [200] 극장을 살핀다
+PRINTFORMLC [201] 거리를 살핀다
+PRINTL
+;300 ~ 399 모험 관련
+;스토리 던전 탐색 시작 버튼
+PRINTL 【모험 관련】
+IF FLAG:탐색대상던전 == 0
+    SETCOLORBYNAME DimGray
+    PRINTLC [???] ???
+    RESETCOLOR
+ELSEIF FLAG:탐색대상던전 != 0
+    PRINTFORMLC [300] %조사처리(DUNGEONNAME:(FLAG:탐색대상던전),"으로")%
+ENDIF
+PRINTL
+PRINTL 【정비 관련】
+;400 ~ 499 정비 관련
+PRINTLC [400] 미사키를 찾아간다
+PRINTLC [401] 소라를 찾아간다
+PRINTFORMLC [800] 타이틀로
+;-----------------------------------------------------------
+;USERSHOP
+;SHOW_SHOP 출력 후 0~99 밖의 입력을 받으면 처리하는 함수
+;-----------------------------------------------------------
+@USERSHOP
+SELECTCASE RESULT
+    CASE 0 TO 99
+        RETURN 0
+    CASE 200
+        IF FLAG:스토리0진행도 <= 1
+            IF TFLAG:회화키워드1 >= 50
+                CALL EVENT_COMMON_CHAPTER0_LOST
+                TFLAG:회화키워드1 += 1;엉뚱한 장소를 선택한 횟수
+            ELSE
+                CALL EVENT_COMMON_CHAPTER0_200
+                TFLAG:회화키워드1 += 1
+            ENDIF
+        ENDIF
+    CASE 201
+        IF FLAG:스토리0진행도 <= 1
+            IF TFLAG:회화키워드1 >= 50
+                CALL EVENT_COMMON_CHAPTER0_LOST
+                TFLAG:회화키워드1 += 1
+            ELSE
+                CALL EVENT_COMMON_CHAPTER0_201
+                TFLAG:회화키워드1 += 1
+            ENDIF
+        ENDIF
+    CASE 300
+        IF FLAG:탐색대상던전 > 0
+            CALL DUNGEON_START(FLAG:탐색대상던전)
+        ENDIF
+    CASE 400
+        IF FLAG:스토리0진행도 <= 1
+            TFLAG:회화키워드1 = 0
+            CALL EVENT_COMMON_CHAPTER0_MAIN1
+        ENDIF
+    CASE 401
+        IF FLAG:스토리0진행도 <= 1
+            IF TFLAG:회화키워드1 >= 50
+                CALL EVENT_COMMON_CHAPTER0_LOST
+                TFLAG:회화키워드1 += 1
+            ELSE
+                CALL EVENT_COMMON_CHAPTER0_401
+            ENDIF
+        ENDIF
+    CASE 800
+        BEGIN TITLE
+ENDSELECT

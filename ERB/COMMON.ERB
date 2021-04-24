@@ -1,0 +1,19 @@
+﻿;-----------------------------------------------------------
+;등록번호로부터 CSV 번호 반환하는 식중함수
+;-----------------------------------------------------------
+@GET_ID(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+
+RETURNF NO:KEY
+
+;등록번호로부터 동료를 반환하는 식중함수
+@PARTNER(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+IF CFLAG:KEY:동료
+    RETURNF FLAG:((CFLAG:KEY:동료)^3)
+ELSE
+    DEBUGPRINTFORML 동료로 설정되지 않은 캐릭터({KEY}, %CALLNAME:KEY%)의 PARTNER를 확인하려 시도했습니다
+    RETURNF 0
+ENDIF

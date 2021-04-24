@@ -1,0 +1,1493 @@
+﻿;Creat by 렌렌
+;개변조했습니다
+;
+;   【사용방법】
+;
+;      %CALLNAME:TARGET%は 를 번역할 때의 기존 방식 = %CALLNAME:TARGET%(은)는
+;      %CALLNAME:TARGET%は 를 번역할 때의 신규 방식 = %CALLNAME:TARGET%
+;          신규 방식을 사용하면 자동으로 은/는 처리를 해줌
+;
+;      함수 종류는 현재 (플레이어는/플레이어가/플레이어어와/플레이어를          타겟은/타겟이/타겟을/타겟과)
+;                       각각         CALLNAME:MASTER                                        CALLNAME:TARGET            에 대응
+;             (      일반적으로 %CALLNAME%은 %CALLNAME:TARGET%의 생략형임         )
+;
+;      이후 함수는 계속 추가 예정
+;      
+;      함수의 괄호안에 아무 값이나 넣으면 CALLNAME이 아니라 NAME을 참고
+;
+;
+;                            ----------사용 예시 정리-------------
+;
+;
+;                    %CALLNAME:MASTER%は = %플레이어는%
+;                    %CALLNAME:MASTER%が = %플레이어가%
+;                    %CALLNAME:MASTER%を = %플레이어를%
+;                    %CALLNAME:MASTER%と = %플레이어와%
+;
+;
+;                    %CALLNAME:MASTER%は = %마스터는%
+;                    %CALLNAME:MASTER%が = %마스터가%
+;                    %CALLNAME:MASTER%を = %마스터를%
+;                    %CALLNAME:MASTER%と = %마스터와%
+;
+;
+;                    %CALLNAME:TARGET%は = %타겟은%
+;                    %CALLNAME:TARGET%が = %타겟이%
+;                    %CALLNAME:TARGET%を = %타겟을%
+;                    %CALLNAME:TARGET%と = %타겟과%
+;
+;
+;                    %CALLNAME:PLAYER%は = %조교자는%
+;                    %CALLNAME:PLAYER%が = %조교자가%
+;                    %CALLNAME:PLAYER%を = %조교자를%
+;                    %CALLNAME:PLAYER%と = %조교자와%
+;
+;
+;                    %NAME:MASTER%は = %플레이어는(1)%
+;                    %NAME:MASTER%が = %플레이어가(1)%
+;                    %NAME:MASTER%を = %플레이어를(1)%
+;                    %NAME:MASTER%と = %플레이어와(1)%
+;
+;
+;                    %NAME:TARGET%は = %타겟은(1)%
+;                    %NAME:TARGET%が = %타겟이(1)%
+;                    %NAME:TARGET%を = %타겟을(1)%
+;                    %NAME:TARGET%と = %타겟과(1)%
+;                ---------------------------------------------------------------
+;
+;
+;
+;
+;        2012 / 07 / 13 업뎃              -함수 기반 변경 및 종류 추가
+;                         대응 인수 (대상)  = MASTER, TARGET, ASSI, ARG (4종)
+;                        조사 종류 = 은/는, 이/가, 을/를, 와/과, 로/으로, 랑/이랑, 라/이라, 며/이며, 고/이고 (9종)
+;
+;
+;        2012 / 07 / 14 업뎃              -함수 정리
+;            조사 종류 추가 (다/이다. 현재 10종)
+;                       기반 변경. CALLNAME, MASTER 등을 따로 넣지 않고 곧바로 대입 처리
+;            式中関数에 대응 가능
+;            기존 (개별) 함수는 그대로 사용 가능
+;            선언되어 있지 않은 타입의 인수를 받을때는 (플레이어/타겟/조수/ARG 외) 아래와 같이 사용
+;
+;
+;            PRINTFORMW %CALLNAME:(ARG:1)%が
+;            PRINTFORMW %조사처리(CALLNAME:(ARG:1),"가")%
+;
+;
+;                ※ 式中関数
+;            PRINTFORMW ――%CNAME()%を、調教する。
+;            PRINTFORMW ――%조사처리(CNAME(),"를")%、조교한다.
+;
+;
+;            '조사처리'대신 '조사만처리'를 사용하면 조사 부분만 가져올 수 있다
+;            도중에 끊겨있는 경우에 유용 (주로 」, 』 등을 사용하는 부분)
+;            
+;            PRINTFORMW 調教者を「%NAME:TARGET%」に設定します
+;            PRINTFORMW 조교자를 「%NAME:TARGET%」%조사만처리(NAME:TARGET,"로")% 설정합니다
+;
+;
+;    ...'조사만처리'를 간락화 할 수 있을 듯 하지만 플래그 겹침문제나 변수 리셋 관련으로 고민할 필요가 있을 듯
+;
+;
+;
+;
+;        2012 / 08 / 04 업뎃              -종류 추가. 범용화 처리. 치환의 간편화를 위해 정규식 srs 파일 업로드
+;            현재
+;
+;            대응 인수 (대상)  = MASTER, TARGET, ASSI (3종)
+;                        조사 종류 = 은/는, 이/가, 을/를, 와/과, 로/으로, 랑/이랑, 라/이라, 며/이며, 고/이고, 다/이다, 이었/였, 여/이여, 야/이야 (13종)
+;
+;
+;        2012 / 08 / 08 업뎃              -종류 추가. 정규식 추가 및 수정
+;                              -조사처리 이후 RESULT 사용시 문제 발생 없도록 대처
+;                        조사 종류 = 은/는, 이/가, 을/를, 와/과, 로/으로, 랑/이랑, 라/이라, 며/이며, 고/이고, 다/이다, 이었/였, 여/이여, 야/이야, 나/이나, 면/이면 (15종)
+;
+;
+;        2012 / 09 / 06 업뎃              -배리언트 변수 사이즈에 영향을 덜 받도록 수정
+;                              -조사처리에 마지막 치환 부분 추가 (나가->내가,저가->제가 등에 대응)
+;                        조사 종류 = 은/는, 이/가, 을/를, 와/과, 로/으로, 랑/이랑, 라/이라, 며/이며, 고/이고, 다/이다, 이었/였, 여/이여, 야/이야, 나/이나, 면/이면 (15종)
+;    
+;    
+;        2012 / 09 / 10 업뎃              -RESULT, RESULTS 양쪽 대응. 처리 방식 변경
+;    
+;        2014 / 02 / 15 업뎃              -조사 종류 추가.
+;                        조사 종류 = 은/는, 이/가, 을/를, 와/과, 로/으로, 랑/이랑, 라/이라, 며/이며, 고/이고, 다/이다, 이었/였, 여/이여, 야/이야, 나/이나, 면/이면, 겠/이겠, 셨/이셨, 잖/이잖 니/이니 (19종)
+;
+;        2014 / 05 / 07 업뎃              -오류 수정 및 CASELESS 추가
+;               %조사처리(CALLNAME:MASTER,"의")% 를 입력하면 [이름의]가 출력되도록 
+;                                                                            (기존 = [이름])
+;                '이지만' 이 제대로 처리되지 않는 문제 수정
+;        2021 / 03 / 03 개변조             -LOCAL, LOCALS, ARG, ARGS 제거함
+;
+;---------------------------------------------------------------------------------------------------------------------
+
+
+;====================================================
+;                        후치환
+;  조사를 붙인 후 추가 처리를 한다
+;====================================================
+
+@후치환(VALUE)
+#FUNCTIONS
+#DIMS DYNAMIC VALUE
+#DIMS DYNAMIC BEFORE
+#DIMS DYNAMIC AFTER
+
+BEFORE = %VALUE%
+AFTER = %BEFORE%
+
+SIF BEFORE == "나가"
+    AFTER = "내가"
+
+SIF BEFORE == "저가"
+    AFTER = "제가"
+
+RETURNF AFTER
+
+;========================================
+;                        KR_NAME
+;  이름의 마지막 글자를 체크해 Type을 반환해준다
+;   2 = 받침 없음       1 = 받침 있음         (혹시 모를 오류 방지를 위해 0은 사용하지 않음)
+;========================================
+@KR_NAME(VALUE)
+#FUNCTION
+#DIMS DYNAMIC VALUE
+#DIM DYNAMIC LOCALSTRING  ;LOCAL:5
+#DIMS DYNAMIC LOCALSTRINGS ;LOCALS:5
+#DIMS DYNAMIC NAMES ;LOCALS:1
+#DIM DYNAMIC NAMELEN ;LOCAL:1
+#DIMS DYNAMIC ENDCHAR  ;LOCALS:2
+
+LOCALSTRING = RESULT
+LOCALSTRINGS = %RESULTS% 
+
+;이름을 가져온다    
+NAMES = %VALUE%
+
+;이름 길이 체크
+STRLENSU NAMES
+
+;체크한 값을 보존
+NAMELEN = RESULT - 1
+
+
+;이름의 마지막 글자를 보존한다
+IF NAMELEN > 0
+    SUBSTRINGU NAMES, NAMELEN, 1
+ELSE
+    SUBSTRINGU NAMES, 0, 1
+ENDIF
+ENDCHAR = %RESULTS%
+
+RESULT = LOCALSTRING
+LOCALSTRING = 0
+RESULTS = %LOCALSTRINGS%
+LOCALSTRINGS = 0
+
+;받침이 있는 글자와 없는 글자를 구분해 반환
+IF ENDCHAR == "가"
+    RETURNF 2
+ELSEIF ENDCHAR == "나"
+    RETURNF 2
+ELSEIF ENDCHAR == "다"
+    RETURNF 2
+ELSEIF ENDCHAR == "라"
+    RETURNF 2
+ELSEIF ENDCHAR == "마"
+    RETURNF 2
+ELSEIF ENDCHAR == "바"
+    RETURNF 2
+ELSEIF ENDCHAR == "사"
+    RETURNF 2
+ELSEIF ENDCHAR == "아"
+    RETURNF 2
+ELSEIF ENDCHAR == "자"
+    RETURNF 2
+ELSEIF ENDCHAR == "차"
+    RETURNF 2
+ELSEIF ENDCHAR == "카"
+    RETURNF 2
+ELSEIF ENDCHAR == "타"
+    RETURNF 2
+ELSEIF ENDCHAR == "파"
+    RETURNF 2
+ELSEIF ENDCHAR == "하"
+    RETURNF 2
+ELSEIF ENDCHAR == "까"
+    RETURNF 2
+ELSEIF ENDCHAR == "따"
+    RETURNF 2
+ELSEIF ENDCHAR == "빠"
+    RETURNF 2
+ELSEIF ENDCHAR == "싸"
+    RETURNF 2
+ELSEIF ENDCHAR == "짜"
+    RETURNF 2
+ELSEIF ENDCHAR == "갸"
+    RETURNF 2
+ELSEIF ENDCHAR == "냐"
+    RETURNF 2
+ELSEIF ENDCHAR == "댜"
+    RETURNF 2
+ELSEIF ENDCHAR == "랴"
+    RETURNF 2
+ELSEIF ENDCHAR == "먀"
+    RETURNF 2
+ELSEIF ENDCHAR == "뱌"
+    RETURNF 2
+ELSEIF ENDCHAR == "샤"
+    RETURNF 2
+ELSEIF ENDCHAR == "야"
+    RETURNF 2
+ELSEIF ENDCHAR == "쟈"
+    RETURNF 2
+ELSEIF ENDCHAR == "챠"
+    RETURNF 2
+ELSEIF ENDCHAR == "캬"
+    RETURNF 2
+ELSEIF ENDCHAR == "탸"
+    RETURNF 2
+ELSEIF ENDCHAR == "퍄"
+    RETURNF 2
+ELSEIF ENDCHAR == "햐"
+    RETURNF 2
+ELSEIF ENDCHAR == "꺄"
+    RETURNF 2
+ELSEIF ENDCHAR == "땨"
+    RETURNF 2
+ELSEIF ENDCHAR == "뺘"
+    RETURNF 2
+ELSEIF ENDCHAR == "쌰"
+    RETURNF 2
+ELSEIF ENDCHAR == "쨔"
+    RETURNF 2
+ELSEIF ENDCHAR == "거"
+    RETURNF 2
+ELSEIF ENDCHAR == "너"
+    RETURNF 2
+ELSEIF ENDCHAR == "더"
+    RETURNF 2
+ELSEIF ENDCHAR == "러"
+    RETURNF 2
+ELSEIF ENDCHAR == "머"
+    RETURNF 2
+ELSEIF ENDCHAR == "버"
+    RETURNF 2
+ELSEIF ENDCHAR == "서"
+    RETURNF 2
+ELSEIF ENDCHAR == "어"
+    RETURNF 2
+ELSEIF ENDCHAR == "저"
+    RETURNF 2
+ELSEIF ENDCHAR == "처"
+    RETURNF 2
+ELSEIF ENDCHAR == "커"
+    RETURNF 2
+ELSEIF ENDCHAR == "터"
+    RETURNF 2
+ELSEIF ENDCHAR == "퍼"
+    RETURNF 2
+ELSEIF ENDCHAR == "허"
+    RETURNF 2
+ELSEIF ENDCHAR == "꺼"
+    RETURNF 2
+ELSEIF ENDCHAR == "떠"
+    RETURNF 2
+ELSEIF ENDCHAR == "뻐"
+    RETURNF 2
+ELSEIF ENDCHAR == "써"
+    RETURNF 2
+ELSEIF ENDCHAR == "쩌"
+    RETURNF 2
+ELSEIF ENDCHAR == "겨"
+    RETURNF 2
+ELSEIF ENDCHAR == "녀"
+    RETURNF 2
+ELSEIF ENDCHAR == "뎌"
+    RETURNF 2
+ELSEIF ENDCHAR == "려"
+    RETURNF 2
+ELSEIF ENDCHAR == "며"
+    RETURNF 2
+ELSEIF ENDCHAR == "벼"
+    RETURNF 2
+ELSEIF ENDCHAR == "셔"
+    RETURNF 2
+ELSEIF ENDCHAR == "여"
+    RETURNF 2
+ELSEIF ENDCHAR == "져"
+    RETURNF 2
+ELSEIF ENDCHAR == "쳐"
+    RETURNF 2
+ELSEIF ENDCHAR == "켜"
+    RETURNF 2
+ELSEIF ENDCHAR == "텨"
+    RETURNF 2
+ELSEIF ENDCHAR == "펴"
+    RETURNF 2
+ELSEIF ENDCHAR == "혀"
+    RETURNF 2
+ELSEIF ENDCHAR == "껴"
+    RETURNF 2
+ELSEIF ENDCHAR == "뗘"
+    RETURNF 2
+ELSEIF ENDCHAR == "뼈"
+    RETURNF 2
+ELSEIF ENDCHAR == "쎠"
+    RETURNF 2
+ELSEIF ENDCHAR == "쪄"
+    RETURNF 2
+ELSEIF ENDCHAR == "고"
+    RETURNF 2
+ELSEIF ENDCHAR == "노"
+    RETURNF 2
+ELSEIF ENDCHAR == "도"
+    RETURNF 2
+ELSEIF ENDCHAR == "로"
+    RETURNF 2
+ELSEIF ENDCHAR == "모"
+    RETURNF 2
+ELSEIF ENDCHAR == "보"
+    RETURNF 2
+ELSEIF ENDCHAR == "소"
+    RETURNF 2
+ELSEIF ENDCHAR == "오"
+    RETURNF 2
+ELSEIF ENDCHAR == "조"
+    RETURNF 2
+ELSEIF ENDCHAR == "초"
+    RETURNF 2
+ELSEIF ENDCHAR == "코"
+    RETURNF 2
+ELSEIF ENDCHAR == "토"
+    RETURNF 2
+ELSEIF ENDCHAR == "포"
+    RETURNF 2
+ELSEIF ENDCHAR == "호"
+    RETURNF 2
+ELSEIF ENDCHAR == "꼬"
+    RETURNF 2
+ELSEIF ENDCHAR == "또"
+    RETURNF 2
+ELSEIF ENDCHAR == "뽀"
+    RETURNF 2
+ELSEIF ENDCHAR == "쏘"
+    RETURNF 2
+ELSEIF ENDCHAR == "쯔"
+    RETURNF 2
+ELSEIF ENDCHAR == "교"
+    RETURNF 2
+ELSEIF ENDCHAR == "뇨"
+    RETURNF 2
+ELSEIF ENDCHAR == "됴"
+    RETURNF 2
+ELSEIF ENDCHAR == "료"
+    RETURNF 2
+ELSEIF ENDCHAR == "묘"
+    RETURNF 2
+ELSEIF ENDCHAR == "뵤"
+    RETURNF 2
+ELSEIF ENDCHAR == "쇼"
+    RETURNF 2
+ELSEIF ENDCHAR == "요"
+    RETURNF 2
+ELSEIF ENDCHAR == "죠"
+    RETURNF 2
+ELSEIF ENDCHAR == "쵸"
+    RETURNF 2
+ELSEIF ENDCHAR == "쿄"
+    RETURNF 2
+ELSEIF ENDCHAR == "툐"
+    RETURNF 2
+ELSEIF ENDCHAR == "표"
+    RETURNF 2
+ELSEIF ENDCHAR == "효"
+    RETURNF 2
+ELSEIF ENDCHAR == "꾜"
+    RETURNF 2
+ELSEIF ENDCHAR == "뚀"
+    RETURNF 2
+ELSEIF ENDCHAR == "뾰"
+    RETURNF 2
+ELSEIF ENDCHAR == "쑈"
+    RETURNF 2
+ELSEIF ENDCHAR == "쬬"
+    RETURNF 2
+ELSEIF ENDCHAR == "구"
+    RETURNF 2
+ELSEIF ENDCHAR == "누"
+    RETURNF 2
+ELSEIF ENDCHAR == "두"
+    RETURNF 2
+ELSEIF ENDCHAR == "루"
+    RETURNF 2
+ELSEIF ENDCHAR == "무"
+    RETURNF 2
+ELSEIF ENDCHAR == "부"
+    RETURNF 2
+ELSEIF ENDCHAR == "수"
+    RETURNF 2
+ELSEIF ENDCHAR == "우"
+    RETURNF 2
+ELSEIF ENDCHAR == "주"
+    RETURNF 2
+ELSEIF ENDCHAR == "추"
+    RETURNF 2
+ELSEIF ENDCHAR == "쿠"
+    RETURNF 2
+ELSEIF ENDCHAR == "투"
+    RETURNF 2
+ELSEIF ENDCHAR == "푸"
+    RETURNF 2
+ELSEIF ENDCHAR == "후"
+    RETURNF 2
+ELSEIF ENDCHAR == "꾸"
+    RETURNF 2
+ELSEIF ENDCHAR == "뚜"
+    RETURNF 2
+ELSEIF ENDCHAR == "뿌"
+    RETURNF 2
+ELSEIF ENDCHAR == "쑤"
+    RETURNF 2
+ELSEIF ENDCHAR == "쭈"
+    RETURNF 2
+ELSEIF ENDCHAR == "규"
+    RETURNF 2
+ELSEIF ENDCHAR == "뉴"
+    RETURNF 2
+ELSEIF ENDCHAR == "듀"
+    RETURNF 2
+ELSEIF ENDCHAR == "류"
+    RETURNF 2
+ELSEIF ENDCHAR == "뮤"
+    RETURNF 2
+ELSEIF ENDCHAR == "뷰"
+    RETURNF 2
+ELSEIF ENDCHAR == "슈"
+    RETURNF 2
+ELSEIF ENDCHAR == "유"
+    RETURNF 2
+ELSEIF ENDCHAR == "쥬"
+    RETURNF 2
+ELSEIF ENDCHAR == "츄"
+    RETURNF 2
+ELSEIF ENDCHAR == "큐"
+    RETURNF 2
+ELSEIF ENDCHAR == "튜"
+    RETURNF 2
+ELSEIF ENDCHAR == "퓨"
+    RETURNF 2
+ELSEIF ENDCHAR == "휴"
+    RETURNF 2
+ELSEIF ENDCHAR == "뀨"
+    RETURNF 2
+ELSEIF ENDCHAR == "뜌"
+    RETURNF 2
+ELSEIF ENDCHAR == "쀼"
+    RETURNF 2
+ELSEIF ENDCHAR == "쓔"
+    RETURNF 2
+ELSEIF ENDCHAR == "쮸"
+    RETURNF 2
+ELSEIF ENDCHAR == "그"
+    RETURNF 2
+ELSEIF ENDCHAR == "느"
+    RETURNF 2
+ELSEIF ENDCHAR == "드"
+    RETURNF 2
+ELSEIF ENDCHAR == "르"
+    RETURNF 2
+ELSEIF ENDCHAR == "므"
+    RETURNF 2
+ELSEIF ENDCHAR == "브"
+    RETURNF 2
+ELSEIF ENDCHAR == "스"
+    RETURNF 2
+ELSEIF ENDCHAR == "으"
+    RETURNF 2
+ELSEIF ENDCHAR == "즈"
+    RETURNF 2
+ELSEIF ENDCHAR == "츠"
+    RETURNF 2
+ELSEIF ENDCHAR == "크"
+    RETURNF 2
+ELSEIF ENDCHAR == "트"
+    RETURNF 2
+ELSEIF ENDCHAR == "프"
+    RETURNF 2
+ELSEIF ENDCHAR == "흐"
+    RETURNF 2
+ELSEIF ENDCHAR == "끄"
+    RETURNF 2
+ELSEIF ENDCHAR == "뜨"
+    RETURNF 2
+ELSEIF ENDCHAR == "쁘"
+    RETURNF 2
+ELSEIF ENDCHAR == "쓰"
+    RETURNF 2
+ELSEIF ENDCHAR == "쯔"
+    RETURNF 2
+ELSEIF ENDCHAR == "기"
+    RETURNF 2
+ELSEIF ENDCHAR == "니"
+    RETURNF 2
+ELSEIF ENDCHAR == "디"
+    RETURNF 2
+ELSEIF ENDCHAR == "리"
+    RETURNF 2
+ELSEIF ENDCHAR == "미"
+    RETURNF 2
+ELSEIF ENDCHAR == "비"
+    RETURNF 2
+ELSEIF ENDCHAR == "시"
+    RETURNF 2
+ELSEIF ENDCHAR == "이"
+    RETURNF 2
+ELSEIF ENDCHAR == "지"
+    RETURNF 2
+ELSEIF ENDCHAR == "치"
+    RETURNF 2
+ELSEIF ENDCHAR == "키"
+    RETURNF 2
+ELSEIF ENDCHAR == "티"
+    RETURNF 2
+ELSEIF ENDCHAR == "피"
+    RETURNF 2
+ELSEIF ENDCHAR == "히"
+    RETURNF 2
+ELSEIF ENDCHAR == "끼"
+    RETURNF 2
+ELSEIF ENDCHAR == "띠"
+    RETURNF 2
+ELSEIF ENDCHAR == "삐"
+    RETURNF 2
+ELSEIF ENDCHAR == "씨"
+    RETURNF 2
+ELSEIF ENDCHAR == "찌"
+    RETURNF 2
+ELSEIF ENDCHAR == "개"
+    RETURNF 2
+ELSEIF ENDCHAR == "내"
+    RETURNF 2
+ELSEIF ENDCHAR == "대"
+    RETURNF 2
+ELSEIF ENDCHAR == "래"
+    RETURNF 2
+ELSEIF ENDCHAR == "매"
+    RETURNF 2
+ELSEIF ENDCHAR == "배"
+    RETURNF 2
+ELSEIF ENDCHAR == "새"
+    RETURNF 2
+ELSEIF ENDCHAR == "애"
+    RETURNF 2
+ELSEIF ENDCHAR == "재"
+    RETURNF 2
+ELSEIF ENDCHAR == "채"
+    RETURNF 2
+ELSEIF ENDCHAR == "캐"
+    RETURNF 2
+ELSEIF ENDCHAR == "태"
+    RETURNF 2
+ELSEIF ENDCHAR == "패"
+    RETURNF 2
+ELSEIF ENDCHAR == "해"
+    RETURNF 2
+ELSEIF ENDCHAR == "깨"
+    RETURNF 2
+ELSEIF ENDCHAR == "때"
+    RETURNF 2
+ELSEIF ENDCHAR == "빼"
+    RETURNF 2
+ELSEIF ENDCHAR == "쌔"
+    RETURNF 2
+ELSEIF ENDCHAR == "째"
+    RETURNF 2
+ELSEIF ENDCHAR == "걔"
+    RETURNF 2
+ELSEIF ENDCHAR == "냬"
+    RETURNF 2
+ELSEIF ENDCHAR == "댸"
+    RETURNF 2
+ELSEIF ENDCHAR == "럐"
+    RETURNF 2
+ELSEIF ENDCHAR == "먜"
+    RETURNF 2
+ELSEIF ENDCHAR == "뱨"
+    RETURNF 2
+ELSEIF ENDCHAR == "섀"
+    RETURNF 2
+ELSEIF ENDCHAR == "얘"
+    RETURNF 2
+ELSEIF ENDCHAR == "쟤"
+    RETURNF 2
+ELSEIF ENDCHAR == "챼"
+    RETURNF 2
+ELSEIF ENDCHAR == "컈"
+    RETURNF 2
+ELSEIF ENDCHAR == "턔"
+    RETURNF 2
+ELSEIF ENDCHAR == "퍠"
+    RETURNF 2
+ELSEIF ENDCHAR == "햬"
+    RETURNF 2
+ELSEIF ENDCHAR == "꺠"
+    RETURNF 2
+ELSEIF ENDCHAR == "떄"
+    RETURNF 2
+ELSEIF ENDCHAR == "뺴"
+    RETURNF 2
+ELSEIF ENDCHAR == "썌"
+    RETURNF 2
+ELSEIF ENDCHAR == "쨰"
+    RETURNF 2
+ELSEIF ENDCHAR == "게"
+    RETURNF 2
+ELSEIF ENDCHAR == "네"
+    RETURNF 2
+ELSEIF ENDCHAR == "데"
+    RETURNF 2
+ELSEIF ENDCHAR == "레"
+    RETURNF 2
+ELSEIF ENDCHAR == "메"
+    RETURNF 2
+ELSEIF ENDCHAR == "베"
+    RETURNF 2
+ELSEIF ENDCHAR == "세"
+    RETURNF 2
+ELSEIF ENDCHAR == "에"
+    RETURNF 2
+ELSEIF ENDCHAR == "제"
+    RETURNF 2
+ELSEIF ENDCHAR == "체"
+    RETURNF 2
+ELSEIF ENDCHAR == "케"
+    RETURNF 2
+ELSEIF ENDCHAR == "테"
+    RETURNF 2
+ELSEIF ENDCHAR == "페"
+    RETURNF 2
+ELSEIF ENDCHAR == "헤"
+    RETURNF 2
+ELSEIF ENDCHAR == "께"
+    RETURNF 2
+ELSEIF ENDCHAR == "떼"
+    RETURNF 2
+ELSEIF ENDCHAR == "뻬"
+    RETURNF 2
+ELSEIF ENDCHAR == "쎄"
+    RETURNF 2
+ELSEIF ENDCHAR == "쩨"
+    RETURNF 2
+ELSEIF ENDCHAR == "계"
+    RETURNF 2
+ELSEIF ENDCHAR == "녜"
+    RETURNF 2
+ELSEIF ENDCHAR == "뎨"
+    RETURNF 2
+ELSEIF ENDCHAR == "례"
+    RETURNF 2
+ELSEIF ENDCHAR == "몌"
+    RETURNF 2
+ELSEIF ENDCHAR == "볘"
+    RETURNF 2
+ELSEIF ENDCHAR == "셰"
+    RETURNF 2
+ELSEIF ENDCHAR == "예"
+    RETURNF 2
+ELSEIF ENDCHAR == "졔"
+    RETURNF 2
+ELSEIF ENDCHAR == "쳬"
+    RETURNF 2
+ELSEIF ENDCHAR == "켸"
+    RETURNF 2
+ELSEIF ENDCHAR == "톄"
+    RETURNF 2
+ELSEIF ENDCHAR == "폐"
+    RETURNF 2
+ELSEIF ENDCHAR == "혜"
+    RETURNF 2
+ELSEIF ENDCHAR == "꼐"
+    RETURNF 2
+ELSEIF ENDCHAR == "뗴"
+    RETURNF 2
+ELSEIF ENDCHAR == "뼤"
+    RETURNF 2
+ELSEIF ENDCHAR == "쎼"
+    RETURNF 2
+ELSEIF ENDCHAR == "쪠"
+    RETURNF 2
+ELSEIF ENDCHAR == "과"
+    RETURNF 2
+ELSEIF ENDCHAR == "놔"
+    RETURNF 2
+ELSEIF ENDCHAR == "돠"
+    RETURNF 2
+ELSEIF ENDCHAR == "롸"
+    RETURNF 2
+ELSEIF ENDCHAR == "뫄"
+    RETURNF 2
+ELSEIF ENDCHAR == "봐"
+    RETURNF 2
+ELSEIF ENDCHAR == "솨"
+    RETURNF 2
+ELSEIF ENDCHAR == "와"
+    RETURNF 2
+ELSEIF ENDCHAR == "좌"
+    RETURNF 2
+ELSEIF ENDCHAR == "촤"
+    RETURNF 2
+ELSEIF ENDCHAR == "콰"
+    RETURNF 2
+ELSEIF ENDCHAR == "톼"
+    RETURNF 2
+ELSEIF ENDCHAR == "퐈"
+    RETURNF 2
+ELSEIF ENDCHAR == "화"
+    RETURNF 2
+ELSEIF ENDCHAR == "꽈"
+    RETURNF 2
+ELSEIF ENDCHAR == "똬"
+    RETURNF 2
+ELSEIF ENDCHAR == "뽜"
+    RETURNF 2
+ELSEIF ENDCHAR == "쏴"
+    RETURNF 2
+ELSEIF ENDCHAR == "쫘"
+    RETURNF 2
+ELSEIF ENDCHAR == "괘"
+    RETURNF 2
+ELSEIF ENDCHAR == "놰"
+    RETURNF 2
+ELSEIF ENDCHAR == "돼"
+    RETURNF 2
+ELSEIF ENDCHAR == "뢔"
+    RETURNF 2
+ELSEIF ENDCHAR == "뫠"
+    RETURNF 2
+ELSEIF ENDCHAR == "봬"
+    RETURNF 2
+ELSEIF ENDCHAR == "쇄"
+    RETURNF 2
+ELSEIF ENDCHAR == "왜"
+    RETURNF 2
+ELSEIF ENDCHAR == "좨"
+    RETURNF 2
+ELSEIF ENDCHAR == "쵀"
+    RETURNF 2
+ELSEIF ENDCHAR == "쾌"
+    RETURNF 2
+ELSEIF ENDCHAR == "퇘"
+    RETURNF 2
+ELSEIF ENDCHAR == "퐤"
+    RETURNF 2
+ELSEIF ENDCHAR == "홰"
+    RETURNF 2
+ELSEIF ENDCHAR == "꽤"
+    RETURNF 2
+ELSEIF ENDCHAR == "뙈"
+    RETURNF 2
+ELSEIF ENDCHAR == "뽸"
+    RETURNF 2
+ELSEIF ENDCHAR == "쐐"
+    RETURNF 2
+ELSEIF ENDCHAR == "쫴"
+    RETURNF 2
+ELSEIF ENDCHAR == "괴"
+    RETURNF 2
+ELSEIF ENDCHAR == "뇌"
+    RETURNF 2
+ELSEIF ENDCHAR == "되"
+    RETURNF 2
+ELSEIF ENDCHAR == "뢰"
+    RETURNF 2
+ELSEIF ENDCHAR == "뫼"
+    RETURNF 2
+ELSEIF ENDCHAR == "뵈"
+    RETURNF 2
+ELSEIF ENDCHAR == "쇠"
+    RETURNF 2
+ELSEIF ENDCHAR == "외"
+    RETURNF 2
+ELSEIF ENDCHAR == "죄"
+    RETURNF 2
+ELSEIF ENDCHAR == "최"
+    RETURNF 2
+ELSEIF ENDCHAR == "쾨"
+    RETURNF 2
+ELSEIF ENDCHAR == "퇴"
+    RETURNF 2
+ELSEIF ENDCHAR == "푀"
+    RETURNF 2
+ELSEIF ENDCHAR == "회"
+    RETURNF 2
+ELSEIF ENDCHAR == "꾀"
+    RETURNF 2
+ELSEIF ENDCHAR == "뙤"
+    RETURNF 2
+ELSEIF ENDCHAR == "뾔"
+    RETURNF 2
+ELSEIF ENDCHAR == "쐬"
+    RETURNF 2
+ELSEIF ENDCHAR == "쬐"
+    RETURNF 2
+ELSEIF ENDCHAR == "궈"
+    RETURNF 2
+ELSEIF ENDCHAR == "눠"
+    RETURNF 2
+ELSEIF ENDCHAR == "둬"
+    RETURNF 2
+ELSEIF ENDCHAR == "뤄"
+    RETURNF 2
+ELSEIF ENDCHAR == "뭐"
+    RETURNF 2
+ELSEIF ENDCHAR == "붜"
+    RETURNF 2
+ELSEIF ENDCHAR == "숴"
+    RETURNF 2
+ELSEIF ENDCHAR == "워"
+    RETURNF 2
+ELSEIF ENDCHAR == "줘"
+    RETURNF 2
+ELSEIF ENDCHAR == "춰"
+    RETURNF 2
+ELSEIF ENDCHAR == "쿼"
+    RETURNF 2
+ELSEIF ENDCHAR == "퉈"
+    RETURNF 2
+ELSEIF ENDCHAR == "풔"
+    RETURNF 2
+ELSEIF ENDCHAR == "훠"
+    RETURNF 2
+ELSEIF ENDCHAR == "꿔"
+    RETURNF 2
+ELSEIF ENDCHAR == "뚸"
+    RETURNF 2
+ELSEIF ENDCHAR == "뿨"
+    RETURNF 2
+ELSEIF ENDCHAR == "쒀"
+    RETURNF 2
+ELSEIF ENDCHAR == "쭤"
+    RETURNF 2
+ELSEIF ENDCHAR == "궤"
+    RETURNF 2
+ELSEIF ENDCHAR == "눼"
+    RETURNF 2
+ELSEIF ENDCHAR == "뒈"
+    RETURNF 2
+ELSEIF ENDCHAR == "뤠"
+    RETURNF 2
+ELSEIF ENDCHAR == "뭬"
+    RETURNF 2
+ELSEIF ENDCHAR == "붸"
+    RETURNF 2
+ELSEIF ENDCHAR == "쉐"
+    RETURNF 2
+ELSEIF ENDCHAR == "웨"
+    RETURNF 2
+ELSEIF ENDCHAR == "줴"
+    RETURNF 2
+ELSEIF ENDCHAR == "췌"
+    RETURNF 2
+ELSEIF ENDCHAR == "퀘"
+    RETURNF 2
+ELSEIF ENDCHAR == "퉤"
+    RETURNF 2
+ELSEIF ENDCHAR == "풰"
+    RETURNF 2
+ELSEIF ENDCHAR == "훼"
+    RETURNF 2
+ELSEIF ENDCHAR == "꿰"
+    RETURNF 2
+ELSEIF ENDCHAR == "뛔"
+    RETURNF 2
+ELSEIF ENDCHAR == "쀄"
+    RETURNF 2
+ELSEIF ENDCHAR == "쒜"
+    RETURNF 2
+ELSEIF ENDCHAR == "쮀"
+    RETURNF 2
+ELSEIF ENDCHAR == "귀"
+    RETURNF 2
+ELSEIF ENDCHAR == "늬"
+    RETURNF 2
+ELSEIF ENDCHAR == "뒤"
+    RETURNF 2
+ELSEIF ENDCHAR == "뤼"
+    RETURNF 2
+ELSEIF ENDCHAR == "뮈"
+    RETURNF 2
+ELSEIF ENDCHAR == "뷔"
+    RETURNF 2
+ELSEIF ENDCHAR == "쉬"
+    RETURNF 2
+ELSEIF ENDCHAR == "위"
+    RETURNF 2
+ELSEIF ENDCHAR == "쥐"
+    RETURNF 2
+ELSEIF ENDCHAR == "취"
+    RETURNF 2
+ELSEIF ENDCHAR == "퀴"
+    RETURNF 2
+ELSEIF ENDCHAR == "튀"
+    RETURNF 2
+ELSEIF ENDCHAR == "퓌"
+    RETURNF 2
+ELSEIF ENDCHAR == "휘"
+    RETURNF 2
+ELSEIF ENDCHAR == "뀌"
+    RETURNF 2
+ELSEIF ENDCHAR == "뛰"
+    RETURNF 2
+ELSEIF ENDCHAR == "쀠"
+    RETURNF 2
+ELSEIF ENDCHAR == "쒸"
+    RETURNF 2
+ELSEIF ENDCHAR == "쮜"
+    RETURNF 2
+ELSEIF ENDCHAR == "긔"
+    RETURNF 2
+ELSEIF ENDCHAR == "늬"
+    RETURNF 2
+ELSEIF ENDCHAR == "듸"
+    RETURNF 2
+ELSEIF ENDCHAR == "릐"
+    RETURNF 2
+ELSEIF ENDCHAR == "믜"
+    RETURNF 2
+ELSEIF ENDCHAR == "븨"
+    RETURNF 2
+ELSEIF ENDCHAR == "싀"
+    RETURNF 2
+ELSEIF ENDCHAR == "의"
+    RETURNF 2
+ELSEIF ENDCHAR == "즤"
+    RETURNF 2
+ELSEIF ENDCHAR == "츼"
+    RETURNF 2
+ELSEIF ENDCHAR == "킈"
+    RETURNF 2
+ELSEIF ENDCHAR == "틔"
+    RETURNF 2
+ELSEIF ENDCHAR == "픠"
+    RETURNF 2
+ELSEIF ENDCHAR == "희"
+    RETURNF 2
+ELSEIF ENDCHAR == "끠"
+    RETURNF 2
+ELSEIF ENDCHAR == "띄"
+    RETURNF 2
+ELSEIF ENDCHAR == "쁴"
+    RETURNF 2
+ELSEIF ENDCHAR == "씌"
+    RETURNF 2
+ELSEIF ENDCHAR == "쯰"
+    RETURNF 2
+ELSEIF ENDCHAR == "2"
+    RETURNF 2
+ELSEIF ENDCHAR == "4"
+    RETURNF 2
+ELSEIF ENDCHAR == "5"
+    RETURNF 2
+ELSEIF ENDCHAR == "9"
+    RETURNF 2
+ELSE
+    RETURNF 1
+ENDIF
+
+
+
+
+
+;========================================
+;                        조사선택
+;
+;  모든 개별 함수의 BASE 함수
+;  입력받은 이름에 해당 조사를 붙여 되돌려준다
+;
+;    ex) CALLNAME:MASTER가 '당신'인 경우, 
+;        %조사선택(CALLNAME:MASTER,"는")%
+;         를 부르면 '당신은' 이 반환된다
+;
+;  종류 : 式中関数
+;  PRINTFORM 등의 출력 함수에서 부르면 내용이 전개되어 반환된다
+;========================================
+
+
+;========================================
+;                        조사선택 (ver.2)
+;
+;  입력받은 이름에 따라 조사를 처리하는 함수
+;
+;    ex) %조사선택(CALLNAME:TARGET,"이")%
+;
+;  式中関数 등에도 대응할 수 있다
+;
+;    ex) %조사선택(CNAME(),"를")%
+;
+;========================================
+
+@조사선택(VALUE, VALUE2)
+#FUNCTIONS
+#DIMS DYNAMIC VALUE
+#DIMS DYNAMIC VALUE2
+#DIMS DYNAMIC AFTER
+#DIMS DYNAMIC POST
+
+;이름을 받아온다
+AFTER = %VALUE%
+POST = %VALUE2%
+
+;받침 판정 및 조사 선택
+IF KR_NAME(AFTER) == 2
+    ;받침 없음. ㄴ/ㄹ
+    IF POST == "는" || POST == "은"
+        AFTER += "는"
+    ELSEIF POST == "가" || POST == "이"
+        AFTER += "가"
+    ELSEIF POST == "를" || POST == "을"
+        AFTER += "를"
+    ELSEIF POST == "와" || POST == "과"
+        AFTER += "와"
+    ELSEIF POST == "로" || POST == "으로"
+        AFTER += "로"
+    ELSEIF POST == "랑" || POST == "이랑"
+        AFTER += "랑"
+    ELSEIF POST == "라" || POST == "이라"
+        AFTER += "라"
+    ELSEIF POST == "며" || POST == "이며"
+        AFTER += "며"
+    ELSEIF POST == "고" || POST == "이고"
+        AFTER += "고"
+    ELSEIF POST == "다" || POST == "이다"
+        AFTER += "다"
+    ELSEIF POST == "였" || POST == "이었"
+        AFTER += "였"
+    ELSEIF POST == "여" || POST == "이여"
+        AFTER += "여"
+    ELSEIF POST == "야" || POST == "이야"
+        AFTER += "야"
+    ELSEIF POST == "나" || POST == "이나"
+        AFTER += "나"
+    ELSEIF POST == "면" || POST == "이면"
+        AFTER += "면"
+    ELSEIF POST == "지만" || POST == "이지만"
+        AFTER += "지만"
+    ELSEIF POST == "겠" || POST == "이겠"
+        AFTER += "겠"
+    ELSEIF POST == "셨" || POST == "이셨"
+        AFTER += "셨"
+    ELSEIF POST == "잖" || POST == "이잖"
+        AFTER += "잖"
+    ELSEIF POST == "니" || POST == "이니"
+        AFTER += "니"
+    ELSE
+        AFTER = %AFTER%%POST%
+    ENDIF
+ELSE
+    ;받침 없음. ㅇ
+    IF POST == "는" || POST == "은"
+        AFTER += "은"
+    ELSEIF POST == "가" || POST == "이"
+        AFTER += "이"
+    ELSEIF POST == "를" || POST == "을"
+        AFTER += "을"
+    ELSEIF POST == "와" || POST == "과"
+        AFTER += "과"
+    ELSEIF POST == "로" || POST == "으로"
+        AFTER += "으로"
+    ELSEIF POST == "랑" || POST == "이랑"
+        AFTER += "이랑"
+    ELSEIF POST == "라" || POST == "이라"
+        AFTER += "이라"
+    ELSEIF POST == "며" || POST == "이며"
+        AFTER += "이며"
+    ELSEIF POST == "고" || POST == "이고"
+        AFTER += "이고"
+    ELSEIF POST == "다" || POST == "이다"
+        AFTER += "이다"
+    ELSEIF POST == "였" || POST == "이었"
+        AFTER += "이었"
+    ELSEIF POST == "여" || POST == "이여"
+        AFTER += "이여"
+    ELSEIF POST == "야" || POST == "이야"
+        AFTER += "이야"
+    ELSEIF POST == "나" || POST == "이나"
+        AFTER += "이나"
+    ELSEIF POST == "면" || POST == "이면"
+        AFTER += "이면"
+    ELSEIF POST == "지만" || POST == "이지만"
+        AFTER += "이지만"
+    ELSEIF POST == "겠" || POST == "이겠"
+        AFTER += "이겠"
+    ELSEIF POST == "셨" || POST == "이셨"
+        AFTER += "이셨"
+    ELSEIF POST == "잖" || POST == "이잖"
+        AFTER += "이잖"
+    ELSEIF POST == "니" || POST == "이니"
+        AFTER += "이니"
+    ELSE
+        AFTER = %AFTER%%POST%
+    ENDIF
+ENDIF
+
+AFTER = %후치환(AFTER)%
+
+RETURNF AFTER
+
+
+;-------------------------------------------------------
+;조사만선택
+;입력받은 문자에 해당하는 조사'만'을 되돌려주는 함수
+;-------------------------------------------------------
+
+@조사만선택(VALUE, VALUE2)
+#FUNCTIONS
+#DIM DYNAMIC VALUE
+#DIM DYNAMIC VALUE2
+#DIMS DYNAMIC AFTER
+#DIMS DYNAMIC POST
+
+;NAME을 받아온다
+AFTER = %VALUE%
+POST = %VALUE2%
+
+;받침 판정 및 조사 선택
+IF KR_NAME(AFTER) == 2
+    ;받침 없음. ㄴ/ㄹ
+    IF POST == "는" || POST == "은"
+        AFTER = 는
+    ELSEIF POST == "가" || POST == "이"
+        AFTER = 가
+    ELSEIF POST == "를" || POST == "을"
+        AFTER = 를
+    ELSEIF POST == "와" || POST == "과"
+        AFTER = 와
+    ELSEIF POST == "로" || POST == "으로"
+        AFTER = 로
+    ELSEIF POST == "랑" || POST == "이랑"
+        AFTER = 랑
+    ELSEIF POST == "라" || POST == "이라"
+        AFTER = 라
+    ELSEIF POST == "며" || POST == "이며"
+        AFTER = 며
+    ELSEIF POST == "고" || POST == "이고"
+        AFTER = 고
+    ELSEIF POST == "다" || POST == "이다"
+        AFTER = 다
+    ELSEIF POST == "였" || POST == "이었"
+        AFTER = 였
+    ELSEIF POST == "여" || POST == "이여"
+        AFTER = 여
+    ELSEIF POST == "야" || POST == "이야"
+        AFTER = 야
+    ELSEIF POST == "나" || POST == "이나"
+        AFTER = 나
+    ELSEIF POST == "면" || POST == "이면"
+        AFTER = 면
+    ELSEIF POST == "지만" || POST == "이지만"
+        AFTER = 지만
+    ELSEIF POST == "겠" || POST == "이겠"
+        AFTER = 겠
+    ELSEIF POST == "셨" || POST == "이셨"
+        AFTER = 셨
+    ELSEIF POST == "잖" || POST == "이잖"
+        AFTER = 잖
+    ELSEIF POST == "니" || POST == "이니"
+        AFTER = 니
+    ELSE
+        AFTER = %POST%
+    ENDIF
+ELSE
+    ;받침 없음. ㅇ
+    IF POST == "는" || POST == "은"
+        AFTER = 은
+    ELSEIF POST == "가" || POST == "이"
+        AFTER = 이
+    ELSEIF POST == "를" || POST == "을"
+        AFTER = 을
+    ELSEIF POST == "와" || POST == "과"
+        AFTER = 과
+    ELSEIF POST == "로" || POST == "으로"
+        AFTER = 으로
+    ELSEIF POST == "랑" || POST == "이랑"
+        AFTER = 이랑
+    ELSEIF POST == "라" || POST == "이라"
+        AFTER = 이라
+    ELSEIF POST == "며" || POST == "이며"
+        AFTER = 이며
+    ELSEIF POST == "고" || POST == "이고"
+        AFTER = 이고
+    ELSEIF POST == "다" || POST == "이다"
+        AFTER = 이다
+    ELSEIF POST == "였" || POST == "이었"
+        AFTER = 이었
+    ELSEIF POST == "여" || POST == "이여"
+        AFTER = 이여
+    ELSEIF POST == "야" || POST == "이야"
+        AFTER = 이야
+    ELSEIF POST == "나" || POST == "이나"
+        AFTER = 이나
+    ELSEIF POST == "면" || POST == "이면"
+        AFTER = 이면
+    ELSEIF POST == "지만" || POST == "이지만"
+        AFTER = 이지만
+    ELSEIF POST == "겠" || POST == "이겠"
+        AFTER = 이겠
+    ELSEIF POST == "셨" || POST == "이셨"
+        AFTER = 이셨
+    ELSEIF POST == "잖" || POST == "이잖"
+        AFTER = 이잖
+    ELSEIF POST == "니" || POST == "이니"
+        AFTER = 이니
+    ELSE
+        AFTER = %POST%
+    ENDIF
+ENDIF
+
+RETURNF AFTER
+
+;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+;　　　↓↓↓　이하, 조사선택 함수를 이용한 개별 함수 부분　↓↓↓　　　
+;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+@조사만처리(VALUE, POST)
+#FUNCTIONS
+#DIMS DYNAMIC VALUE
+#DIMS DYNAMIC POST
+
+RETURNF 조사만선택(VALUE, POST)
+
+@조사처리(VALUE, POST)
+#FUNCTIONS
+#DIMS DYNAMIC VALUE
+#DIMS DYNAMIC POST
+RETURNF 조사선택(VALUE, POST)
+
+
+[SKIPSTART]
+;====================================================
+;             플레이어 (MASTER) 조사 결정 함수 부분
+;====================================================
+
+@플레이어는(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "는")
+RETURNF 조사선택(NAME:MASTER, "는")
+
+
+@플레이어가(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "가")
+RETURNF 조사선택(NAME:MASTER, "가")
+
+
+@플레이어를(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "를")
+RETURNF 조사선택(NAME:MASTER, "를")
+
+
+@플레이어와(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "와")
+RETURNF 조사선택(NAME:MASTER, "와")
+
+
+@플레이어로(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "로")
+RETURNF 조사선택(NAME:MASTER, "로")
+
+
+@플레이어랑(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "랑")
+RETURNF 조사선택(NAME:MASTER, "랑")
+
+
+@플레이어며(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "며")
+RETURNF 조사선택(NAME:MASTER, "며")
+
+
+@플레이어고(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "고")
+RETURNF 조사선택(NAME:MASTER, "고")
+
+
+@플레이어라(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "라")
+RETURNF 조사선택(NAME:MASTER, "라")
+
+
+@플레이어다(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "다")
+RETURNF 조사선택(NAME:MASTER, "다")
+
+
+@플레이어였(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "였")
+RETURNF 조사선택(NAME:MASTER, "였")
+
+
+@플레이어여(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "여")
+RETURNF 조사선택(NAME:MASTER, "여")
+
+
+@플레이어야(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "야")
+RETURNF 조사선택(NAME:MASTER, "야")
+
+
+@플레이어나(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "이나")
+RETURNF 조사선택(NAME:MASTER, "이나")
+
+
+@플레이어면(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:MASTER, "이면")
+RETURNF 조사선택(NAME:MASTER, "이면")
+
+
+
+;====================================================
+;             조수 (ASSI) 조사 결정 함수 부분
+;====================================================
+
+@조수는(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "는")
+RETURNF 조사선택(NAME:ASSI, "는")
+
+
+@조수가(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "가")
+RETURNF 조사선택(NAME:ASSI, "가")
+
+
+@조수를(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "를")
+RETURNF 조사선택(NAME:ASSI, "를")
+
+
+@조수와(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "와")
+RETURNF 조사선택(NAME:ASSI, "와")
+
+
+@조수로(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "로")
+RETURNF 조사선택(NAME:ASSI, "로")
+
+
+@조수랑(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "랑")
+RETURNF 조사선택(NAME:ASSI, "랑")
+
+
+@조수며(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "며")
+RETURNF 조사선택(NAME:ASSI, "며")
+
+
+@조수고(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "고")
+RETURNF 조사선택(NAME:ASSI, "고")
+
+
+@조수다(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "다")
+RETURNF 조사선택(NAME:ASSI, "다")
+
+
+@조수였(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "였")
+RETURNF 조사선택(NAME:ASSI, "였")
+
+
+@조수여(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "여")
+RETURNF 조사선택(NAME:ASSI, "여")
+
+
+@조수야(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "야")
+RETURNF 조사선택(NAME:ASSI, "야")
+
+
+@조수나(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "이나")
+RETURNF 조사선택(NAME:ASSI, "이나")
+
+
+@조수면(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "이면")
+RETURNF 조사선택(NAME:ASSI, "이면")
+
+
+@조수라(ARGS = "CALLNAME")
+#FUNCTIONS
+SIF ARGS == "CALLNAME"
+    RETURNF 조사선택(CALLNAME:ASSI, "라")
+RETURNF 조사선택(NAME:ASSI, "라")
+
+;------------------끝줄
+
+
+[SKIPEND]
+

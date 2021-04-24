@@ -1,0 +1,106 @@
+﻿;FileName_NEWGAME.ERB -------------------------------- 
+;-----------------------------------------------------------
+;처음부터 시작
+;-----------------------------------------------------------
+@EVENTFIRST
+#DIMS DYNAMIC DEBUGS,3
+
+CALL ADD_ALL_CHARACTERS
+CALL SET_ALL_BYNAME
+CALL SET_ALL_SKILL
+
+PRINTL 대화 텍스트와 함께 이미지를 출력할까요? *나중에 변경 가능합니다.
+PRINTBUTTON "[0] 네",0
+PRINTBUTTON "[1] 아니오",1
+INPUT
+IF RESULT == 0
+    FLAG:이미지출력여부 = 1
+    PRINTL 이미지를 출력합니다.
+    ;테스트
+    DEBUGS:0 = %BYNAMES(28,49)%
+    DEBUGS:1 = 오늘도 열심히 테스트 문자열 말하자구요!
+    DEBUGS:2 = 잠깐... %BYNAMES(49,28)% 이상한 호칭으로 부르지 마!
+    CALL TALK_WITH_IMG("MILIFACE_28_2",CALLNAME:28,DEBUGS:0,DEBUGS:1)
+    CALL TALK_WITH_IMG("MILIFACE_49_3",CALLNAME:49,DEBUGS:2)
+    DEBUGS:0 = %BYNAMES(2,28)%...
+    CALL TALK_WITH_IMG("MILIFACE_02_5",CALLNAME:2,DEBUGS:0)
+    ;테스트
+    WAITANYKEY
+ELSE
+    FLAG:이미지출력여부 = 0
+    PRINTL 이미지를 출력하지 않습니다.
+ENDIF
+;테스트
+
+;테스트
+PRINTL 디버그용 던전탐색을 실행합니까?
+PRINTBUTTON "[0] 네",0
+PRINTBUTTON "[1] 아니오",1
+INPUT
+IF RESULT == 0
+    FLAG:탐색대상던전 = 1
+    CALL DUNGEON_START(FLAG:탐색대상던전)
+    FLAG:탐색대상던전 = 0
+ENDIF
+;테스트
+
+PRINTL 디버그용 FIRSTBATTLE을 실행합니까?
+PRINTBUTTON "[0] 네",0
+PRINTBUTTON "[1] 아니오",1
+INPUT
+IF RESULT == 0
+    ;이하 디버그용 배틀
+    CALL SET_FIRSTBATTLE
+    CALL BATTLE_START
+    ;이상
+ENDIF
+
+;디버그용 퍼스트배틀의 동료 정보 초기화
+CFLAG:37:1 = 0
+CFLAG:55:1 = 0
+
+CALL EVENT_COMMON_NEWGAME
+
+BEGIN SHOP
+
+@ADD_ALL_CHARACTERS ;모든 캐릭터를 일거 추가하는 함수
+#DIM DYNAMIC LCOUNT
+
+FOR LCOUNT,CHARANUM,캐릭터수상한
+    SIF !EXISTCSV(LCOUNT)
+        CONTINUE
+    ADDCHARA LCOUNT
+NEXT
+
+RETURN 1
+
+@SET_NAKAMA(WHO, WHERE) ;CFLAG 1 동료 속성을 추가하는 함수
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC WHO
+#DIM DYNAMIC WHERE
+
+FOR LCOUNT,0,CHARANUM
+    SIF CFLAG:LCOUNT:1 == WHERE
+        CFLAG:LCOUNT:1 = 0
+NEXT
+CFLAG:WHO:1 = WHERE
+
+FLAG:WHERE = WHO
+
+RETURN 1
+
+@SET_FIRSTBATTLE ;디버그? 개발시작용 첫전투 세팅
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC LFILENAME
+#DIMS DYNAMIC LSPRITENAME,5
+
+CALL SET_NAKAMA(37,1)
+CALL SET_NAKAMA(55,2)
+
+TFLAG:적위치1 = 100
+TFLAG:적레벨1 = 5
+TFLAG:적위치6 = 100
+TFLAG:적레벨6 = 5
+TFLAG:보스배틀 = 1
+
+RETURN 1
