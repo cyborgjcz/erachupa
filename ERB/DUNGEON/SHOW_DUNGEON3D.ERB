@@ -509,12 +509,21 @@ FOR LCOUNT,0,39
         GETDEFCOLOR
         D3D_TEXTBUTTONC:LCOUNT = RESULT
     ELSE
-        ;그게 아니라면 획득한 문자열과 색상 값을 각 배열변수에 저장한다
-        D3D_TEXTBUTTON:LCOUNT = 1
-        D3D_TEXTBUTTONS:LCOUNT = %RESULTS%
-        GETCOLOR
-        D3D_TEXTBUTTONC:LCOUNT = RESULT
-        CONTINUE
+        ;전장의 안개라면 ? 로 표시
+        IF D3D_BSW:(FLAG:탐색대상던전):(D3D_TEXTBUTTONCOORD:LCOUNT:0):(D3D_TEXTBUTTONCOORD:LCOUNT:1) == 0
+            D3D_TEXTBUTTON:LCOUNT = 1
+            D3D_TEXTBUTTONS:LCOUNT '= "？"
+            GETDEFCOLOR
+            D3D_TEXTBUTTONC:LCOUNT = RESULT
+            CONTINUE
+        ELSE
+            ;그게 아니라면 획득한 문자열과 색상 값을 각 배열변수에 저장한다
+            D3D_TEXTBUTTON:LCOUNT = 1
+            D3D_TEXTBUTTONS:LCOUNT = %RESULTS%
+            GETCOLOR
+            D3D_TEXTBUTTONC:LCOUNT = RESULT
+            CONTINUE
+        ENDIF
     ENDIF
 NEXT
 RESETCOLOR
@@ -1030,10 +1039,16 @@ FOR LCOUNT2, 0, 19
             RESETCOLOR
             CONTINUE
         ELSE
-            CALL D3D_GET_TILE(LCOUNT,LCOUNT2)
-            D3D_MINIMAPS:LCOUNT:LCOUNT2 = %RESULTS%
-            GETCOLOR
-            D3D_MINIMAPS_C:LCOUNT:LCOUNT2 = RESULT
+            IF D3D_BSW:(FLAG:탐색대상던전):LCOUNT:LCOUNT2 == 0
+                D3D_MINIMAPS:LCOUNT:LCOUNT2 '= "　"
+                GETDEFCOLOR
+                D3D_MINIMAPS_C:LCOUNT:LCOUNT2 = RESULT
+            ELSE
+                CALL D3D_GET_TILE(LCOUNT,LCOUNT2)
+                D3D_MINIMAPS:LCOUNT:LCOUNT2 = %RESULTS%
+                GETCOLOR
+                D3D_MINIMAPS_C:LCOUNT:LCOUNT2 = RESULT
+            ENDIF
         ENDIF
     NEXT
 NEXT
