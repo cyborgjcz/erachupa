@@ -1,0 +1,37 @@
+@DUNGEON1_INIT
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIMS DYNAMIC MAPDATAS,19
+
+D3D_PLAYER_XCOORD = 2
+D3D_PLAYER_YCOORD = 17
+
+MAPDATAS:0  '= "                   "
+MAPDATAS:1  '= "                   "
+MAPDATAS:2  '= "                   "
+MAPDATAS:3  '= "                   "
+MAPDATAS:4  '= "                   "
+MAPDATAS:5  '= "                   "
+MAPDATAS:6  '= "                   "
+MAPDATAS:7  '= "                   "
+MAPDATAS:8  '= "                   "
+MAPDATAS:9  '= "                   "
+MAPDATAS:10 '= "  00000            "
+MAPDATAS:11 '= "0001130            "
+MAPDATAS:12 '= "01010000           "
+MAPDATAS:13 '= "01010030           "
+MAPDATAS:14 '= "01110010           "
+MAPDATAS:15 '= "002000200          "
+MAPDATAS:16 '= "011111110          "
+MAPDATAS:17 '= "011111110          "
+MAPDATAS:18 '= "008000000          "
+
+FOR LCOUNT2,0,19
+    FOR LCOUNT,0,19
+        IF SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1) != " "
+            D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = TOINT(SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1))
+        ELSE
+            D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = -1
+        ENDIF
+    NEXT
+NEXT

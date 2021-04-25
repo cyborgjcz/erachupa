@@ -502,7 +502,7 @@ FOR LCOUNT,0,39
     ENDIF
     CALL D3D_SPIN_TILES(RESULTS)
     ;목표 좌표가 일반적인 벽 또는 바닥이라 표시할 내용이 없다면 비운다 
-    IF (RESULTS == "■" || RESULTS == "□" || RESULTS == "") || LSKIP != 0
+    IF (RESULTS == "■" || RESULTS == "□" || RESULTS == "" || RESULTS == "　") || LSKIP != 0
         D3D_TEXTBUTTON:LCOUNT = 0
         D3D_TEXTBUTTONS:LCOUNT '= "　"
         D3D_TEXTBUTTONCOORD:LCOUNT:0 = 0,0
