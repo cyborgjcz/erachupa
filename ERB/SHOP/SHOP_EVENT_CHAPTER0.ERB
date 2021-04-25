@@ -1,0 +1,43 @@
+﻿@SHOP_EVENT_CHAPTER0(COMV)
+#DIM DYNAMIC COMV
+SELECTCASE COMV
+    CASE 200
+        IF FLAG:스토리0진행도 <= 1
+            IF TFLAG:회화키워드1 >= 50
+                CALL EVENT_COMMON_CHAPTER0_LOST
+                TFLAG:회화키워드1 += 1;엉뚱한 장소를 선택한 횟수
+            ELSE
+                CALL EVENT_COMMON_CHAPTER0_200
+                TFLAG:회화키워드1 += 1
+            ENDIF
+        ENDIF
+    CASE 201
+        IF FLAG:스토리0진행도 <= 1
+            IF TFLAG:회화키워드1 >= 50
+                CALL EVENT_COMMON_CHAPTER0_LOST
+                TFLAG:회화키워드1 += 1
+            ELSE
+                CALL EVENT_COMMON_CHAPTER0_201
+                TFLAG:회화키워드1 += 1
+            ENDIF
+        ENDIF
+    CASE 202
+        IF FLAG:스토리0진행도 <= 1
+            CALL EVENT_COMMON_CHAPTER0_202
+        ELSEIF FLAG:스토리0진행도 == 2
+            ;CALL EVENT_COMMON_CHAPTER0_MAIN2
+        ENDIF
+    CASE 400
+        IF FLAG:스토리0진행도 <= 1
+            CALL EVENT_COMMON_CHAPTER0_MAIN1
+        ENDIF
+    CASE 401
+        IF FLAG:스토리0진행도 <= 1
+            IF TFLAG:회화키워드1 >= 50
+                CALL EVENT_COMMON_CHAPTER0_LOST
+                TFLAG:회화키워드1 += 1
+            ELSE
+                CALL EVENT_COMMON_CHAPTER0_401
+            ENDIF
+        ENDIF
+ENDSELECT
