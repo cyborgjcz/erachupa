@@ -32,9 +32,14 @@ PRINTLC [800] 컨피그
 ;-----------------------------------------------------------
 ;USERSHOP
 ;SHOW_SHOP 출력 후 0~99 밖의 입력을 받으면 처리하는 함수
+; SHOP_EVENT 종류 함수 실행 후 RESULT 반환값이 참(1)이라면
+; 뒤이어 후속 이벤트를 실행한다. 상점주인과 대화 후 상점 느낌
 ;-----------------------------------------------------------
 @USERSHOP
-SELECTCASE RESULT
+#DIM DYNAMIC KEY
+KEY = RESULT
+RESULT = 1
+SELECTCASE KEY
     CASE 0 TO 99
         RETURN 0
     CASE 200
@@ -47,16 +52,24 @@ SELECTCASE RESULT
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(202)
     CASE 300
-        IF FLAG:탐색대상던전 > 0
-            CALL DUNGEON_START(FLAG:탐색대상던전)
+        SIF !FLAG:스토리1진행도
+            CALL SHOP_EVENT_CHAPTER0(300)
+        IF RESULT == 1
+            IF FLAG:탐색대상던전 > 0
+                CALL DUNGEON_START(FLAG:탐색대상던전)
+            ENDIF
         ENDIF
     CASE 400
         IF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(400)
-        ;ELSE
+        ENDIF
+        IF RESULT == 1
             ;통상 미사키 이벤트
         ENDIF
     CASE 401
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(401)
+        IF RESULT == 1
+            ;통상 소라 이벤트
+        ENDIF
 ENDSELECT
