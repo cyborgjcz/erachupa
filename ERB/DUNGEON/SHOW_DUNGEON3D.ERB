@@ -496,7 +496,7 @@ FOR LCOUNT,0,39
             CONTINUE
     ENDSELECT
     D3D_TEXTBUTTONCOORD:LCOUNT:0 = RESULT:0,RESULT:1
-    ;eraMegaten 맵으로부터 타일 아이콘 문자열 값을 취득
+    ;맵으로부터 타일 아이콘 문자열 값을 취득
     IF (RESULT:0 >= 0 && RESULT:0 < D3D_CURRENT_MAPXSIZE && RESULT:1 >= 0 && RESULT:1 < D3D_CURRENT_MAPYSIZE) && LSKIP == 0
         CALL D3D_GET_TILE(RESULT:0,RESULT:1)
     ENDIF
@@ -986,6 +986,10 @@ ELSEIF RESULTS == "강" || RESULTS == "승" || RESULTS == "降" || RESULTS == "�
 ELSEIF RESULTS == "■"
     RESETCOLOR
     PRINT ???
+ELSEIF (RESULTS == "문" || RESULTS == "扉") && D3D_CURRENT_MAPDATA:D3D_PLAYER_XCOORD:D3D_PLAYER_YCOORD == 12
+    PRINTPLAINFORM [%RESULTS%]
+    RESETCOLOR
+    PRINT 문턱 위에 서 있다
 ELSEIF RESULTS != "" && RESULTS != "□"
     PRINTPLAINFORM [%RESULTS%]
     RESETCOLOR
