@@ -1,5 +1,4 @@
-﻿;현재 인수를 사용하지 않음
-@DUNGEON_START(DUNGEONNUM)
+﻿@DUNGEON_START(DUNGEONNUM)
 #DIM DYNAMIC LCOUNT
 #DIM DYNAMIC LCOUNT2
 #DIM DYNAMIC DUNGEONNUM
@@ -18,25 +17,35 @@ DO
 ;    턴수 += 1
 LOOP 1
 
+;던전 내 상호작용
 @DUNGEON_INTERACT
 CALL D3D_GET_FRONT_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
+;바로앞 상호작용
 IF IS_ABLE_TO_INTERACT(RESULT:0,RESULT:1)
     SELECTCASE D3D_CURRENT_MAPDATA:(RESULT:0):(RESULT:1)
         CASE 2;문
             CALL DUNGEON_OPEN_DOOR(RESULT:0,RESULT:1)
         CASE 3;보물상자
         CASE 4;통상 이벤트
+            TRYCCALLFORM DUNGEON{FLAG:탐색대상던전}_EVENT,RESULT:0,RESULT:1
+            CATCH
+                DEBUGPRINTFORML DUNGEON{FLAG:탐색대상던전}_EVENT({RESULT:0},{RESULT:1}) 호출 실패
+            ENDCATCH
         CASE 8;출구
     ENDSELECT
 ELSE
+    ;발밑
     IF IS_ABLE_TO_INTERACT(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
         SELECTCASE D3D_CURRENT_MAPDATA:D3D_PLAYER_XCOORD:D3D_PLAYER_YCOORD
             CASE 4;통상 이벤트
-            CASE 6;보물상자
-            CASE 7;통상 이벤트
+                TRYCCALLFORM DUNGEON{FLAG:탐색대상던전}_EVENT,RESULT:0,RESULT:1
+                CATCH
+                    DEBUGPRINTFORML DUNGEON{FLAG:탐색대상던전}_EVENT({RESULT:0},{RESULT:1}) 호출 실패
+                ENDCATCH
+            CASE 6;올라가는 계단
+            CASE 7;내려가는 계단
             CASE 8;출구
         ENDSELECT
-        DEBUGPRINTFORML 발밑 상호작용 가능! {D3D_PLAYER_XCOORD},{D3D_PLAYER_YCOORD}
     ENDIF
 ENDIF
 ;플레이어 위치,방향에서 해당 위치의 상호작용이 가능한지 검사한다.
