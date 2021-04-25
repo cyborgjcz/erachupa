@@ -1,4 +1,7 @@
-﻿@SHOP_EVENT_CHAPTER0(COMV)
+﻿;챕터0 도중 SHOP에서 발생하는 이벤트 목록
+;RETURN하는 값은 각 이벤트 함수에서 받아오며,
+;1을 반환하는 경우 뒤이어 통상 SHOP 커맨드 실행
+@SHOP_EVENT_CHAPTER0(COMV)
 #DIM DYNAMIC COMV
 SELECTCASE COMV
     CASE 200
@@ -6,9 +9,11 @@ SELECTCASE COMV
             IF TFLAG:회화키워드1 >= 50
                 CALL EVENT_COMMON_CHAPTER0_LOST
                 TFLAG:회화키워드1 += 1;엉뚱한 장소를 선택한 횟수
+                RETURN RESULT
             ELSE
                 CALL EVENT_COMMON_CHAPTER0_200
                 TFLAG:회화키워드1 += 1
+                RETURN RESULT
             ENDIF
         ENDIF
     CASE 201
@@ -16,28 +21,37 @@ SELECTCASE COMV
             IF TFLAG:회화키워드1 >= 50
                 CALL EVENT_COMMON_CHAPTER0_LOST
                 TFLAG:회화키워드1 += 1
+                RETURN RESULT
             ELSE
                 CALL EVENT_COMMON_CHAPTER0_201
                 TFLAG:회화키워드1 += 1
+                RETURN RESULT
             ENDIF
         ENDIF
     CASE 202
         IF FLAG:스토리0진행도 <= 1
             CALL EVENT_COMMON_CHAPTER0_202
+            RETURN RESULT
         ELSEIF FLAG:스토리0진행도 == 2
             ;CALL EVENT_COMMON_CHAPTER0_MAIN2
+            RETURN 1
         ENDIF
     CASE 400
         IF FLAG:스토리0진행도 <= 1
             CALL EVENT_COMMON_CHAPTER0_MAIN1
+            RETURN RESULT
         ENDIF
     CASE 401
         IF FLAG:스토리0진행도 <= 1
             IF TFLAG:회화키워드1 >= 50
                 CALL EVENT_COMMON_CHAPTER0_LOST
                 TFLAG:회화키워드1 += 1
+                RETURN RESULT
             ELSE
                 CALL EVENT_COMMON_CHAPTER0_401
+                RETURN RESULT
             ENDIF
         ENDIF
+    CASEELSE
+        RETURN 1
 ENDSELECT
