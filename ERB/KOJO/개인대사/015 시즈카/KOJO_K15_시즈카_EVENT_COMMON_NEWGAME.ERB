@@ -46,14 +46,8 @@ WAITANYKEY
 @KOJO_EVENT_COMMON_NEWGAME3_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
-#DIM DYNAMIC LNUM
 LNAME = %CALLNAME:[[시즈카]]%
-SELECTCASE FLAG:2
-    CASE 0,1,2,3,4,6,7,8,9,10,13,17,18,19,21,24,27,28,29,31,34,37,38,39,41,42,43,44,45,46,48,50,51,52,53,54
-        LNUM = 1;존댓말
-    CASEELSE
-ENDSELECT
-IF LNUM == 1
+IF JONDAE([[시즈카]],FLAG:2) == 1
     LTEXT = 안녕하세요, %BYNAMES([[시즈카]],FLAG:2)%.
 ELSE
     LTEXT = 안녕, %BYNAMES([[시즈카]],FLAG:2)%.
@@ -62,13 +56,13 @@ CALL TALK_WITH_IMG(FACE([[시즈카]],1),LNAME,LTEXT)
 WAITANYKEY
 ;(댄스 레슨에 대해 의문문)
 IF TFLAG:회화키워드2
-    IF LNUM == 1
+    IF JONDAE([[시즈카]],FLAG:2) == 1
         LTEXT = 예, 하루도 게을리 할 수는 없으니까요.
     ELSE
         LTEXT = 응, 하루도 게을리 할 수는 없으니까.
     ENDIF
 ELSE
-    IF LNUM == 1
+    IF JONDAE([[시즈카]],FLAG:2) == 1
         LTEXT = 힘들어도 빼먹을 수는 없죠.
     ELSE
         LTEXT = 힘들어도 빼먹으면 안 되니까.
@@ -83,15 +77,9 @@ WAITANYKEY
 @KOJO_EVENT_COMMON_NEWGAME5_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
-#DIM DYNAMIC LNUM
 LNAME = %CALLNAME:[[시즈카]]%
-SELECTCASE FLAG:2
-    CASE 0,1,2,3,4,6,7,8,9,10,13,17,18,19,21,24,27,28,29,31,34,37,38,39,41,42,43,44,45,46,48,50,51,52,53,54
-        LNUM = 1;존댓말
-    CASEELSE
-ENDSELECT
 ;새로운 일에 대해 들었느냐
-IF LNUM == 1
+IF JONDAE([[시즈카]],FLAG:2) == 1
     LTEXT = 아뇨, 모르겠는데요.
 ELSE
     LTEXT = 아니. 무슨 이야기야?
@@ -104,16 +92,10 @@ WAITANYKEY
 @KOJO_EVENT_COMMON_NEWGAME7_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
-#DIM DYNAMIC LNUM
 LNAME = %CALLNAME:[[시즈카]]%
-SELECTCASE FLAG:2
-    CASE 0,1,2,3,4,6,7,8,9,10,13,17,18,19,21,24,27,28,29,31,34,37,38,39,41,42,43,44,45,46,48,50,51,52,53,54
-        LNUM = 1;존댓말
-    CASEELSE
-ENDSELECT
 ;괴이 퇴치, 이변 해결
 IF FLAG:2 != 14
-    IF LNUM == 1
+    IF JONDAE([[시즈카]],FLAG:2) == 1
         LTEXT = 판타지 같은걸까요?
     ELSE
         LTEXT = 판타지 장르 이야기일까?
