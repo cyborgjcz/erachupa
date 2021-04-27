@@ -8,6 +8,6 @@ era 기반 아이돌 던전 탐색 RPG 게임
 
 このプロジェクトのKOJOまたはCOMMON_EVENTディレクトリの中身のような平文スクリプトを含む口上データは CC BY NC ( https://creativecommons.org/licenses/by-nc/2.0/legalcode ) で配布されます。その他コードの利用制限はありません。
 
-resources 디렉토리의 내용물에 대해서 작자는 어떤 권리도 갖지 않습니다.
+resources\mili 디렉토리의 내용물에 대해서 작자는 어떤 권리도 갖지 않습니다.
 
-resources　ディレクトリの内容について作者はどのような権利も持ちません。
+resources\mili　ディレクトリの内容について作者はどのような権利も持ちません。
