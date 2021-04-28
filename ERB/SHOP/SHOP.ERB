@@ -72,4 +72,15 @@ SELECTCASE KEY
         IF RESULT == 1
             ;통상 소라 이벤트
         ENDIF
+    CASE 600
+        SAVEGAME
+    CASE 700
+        LOADGAME
+    CASE 800
+        PRINTL 정말로 타이틀로 돌아갑니까?
+        PRINTBUTTON "[0] 예",0
+        PRINTBUTTON "[1] 아니오",1
+        INPUT
+        SIF !RESULT
+            BEGIN TITLE
 ENDSELECT

@@ -1,0 +1,55 @@
+﻿@KOJO_EVENT_COMMON_CHAPTER0_MAIN2_EX1_K16
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = %CALLNAME:[[츠바사]]%
+IF FLAG:1 == [[시즈카]]
+    ;범용, 시즈카 1번주인공 루트
+    LTEXT = 안녕, 그... %NAME:[[시즈카]]%쨩!
+ELSE
+    ;기타 범용 루트
+    IF JONDAE([[츠바사]],FLAG:1) == 1
+        LTEXT = 안녕하세요,
+    ELSE
+        LTEXT = 안녕,
+    ENDIF
+    LTEXT += " " + %SURNAME:(FLAG:1):0% + " 씨"
+ENDIF
+LTEXT2 = 그리고 %SURNAME:(FLAG:2):0%
+IF FLAG:2 == [[줄리아]]
+    LTEXT2 += " 씨도."
+ELSE
+    IF BYNAME:[[츠바사]]:(FLAG:2) == "쨩"
+        LTEXT2 += CALLNAME:(FLAG:2) + "쨩도."
+    ELSE
+        LTEXT2 += " 씨도."
+    ENDIF
+ENDIF
+CALL TALK_WITH_IMG(FACE([[츠바사]],1),LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+
+@KOJO_EVENT_COMMON_CHAPTER0_MAIN2_EX2_K16
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[츠바사]]%
+IF FLAG:1 == [[시즈카]]
+    ;범용, 시즈카 1번주인공 루트
+    LTEXT = 나, 뭔가 이상한 말 했어?
+ELSE
+    ;기타 범용 루트
+    IF JONDAE([[츠바사]],FLAG:1) == 1
+        LTEXT = 아뇨, 그게...
+    ELSE
+        LTEXT = 아니, 그게...
+    ENDIF
+ENDIF
+CALL TALK_WITH_IMG(FACE([[츠바사]],4),LNAME,LTEXT)
+WAITANYKEY
+
+@KOJO_EVENT_COMMON_CHAPTER0_MAIN2_EX3_K16
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[츠바사]]%
+LTEXT = 그치만 이렇게 얘기하는 것도 아직 겨우 두번째인데?
+CALL TALK_WITH_IMG(FACE([[츠바사]],3),LNAME,LTEXT)
+WAITANYKEY

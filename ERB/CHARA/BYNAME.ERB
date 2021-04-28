@@ -17,7 +17,11 @@ IF OBJECTIVE >= RESULT:0
 ENDIF
 SELECTCASE BYNAME:CALLER:OBJECTIVE
     CASE ""
-        RETURNF CALLNAME:OBJECTIVE
+        IF OBJECTIVE == 56
+            RETURNF "카메라맨님"
+        ELSE
+            RETURNF CALLNAME:OBJECTIVE
+        ENDIF
     CASE "씨"
         RETURNF CALLNAME:OBJECTIVE + " 씨"
     CASE "쨩"
@@ -29,16 +33,16 @@ RETURNF CALLNAME:OBJECTIVE
 
 @SET_ALL_BYNAME
 {
-    #DIMS DYNAMIC SURNAMEARRAY,56 = "","아마미","키사라기","호시이","하기와라","타카츠키","키쿠치","미나세","시죠","아키즈키",
+    #DIMS DYNAMIC SURNAMEARRAY,57 = "","아마미","키사라기","호시이","하기와라","타카츠키","키쿠치","미나세","시죠","아키즈키",
     "미우라","후타미","후타미","가나하","카스가","모가미","이부키","타나카","시마바라","사타케",
     "토코로","토쿠가와","하코자키","노노하라","모치즈키","한다","나나오","타카야마","마츠다","코우사카",
     "나가타니","텐쿠바시","스튜어트","키타자와","마이하마","키노시타","야부키","요코야마","니카이도","바바",
     "오오가미","토요카와","미야오","후쿠다","마카베","시노미야","모모세","나가요시","키타카미","스오",
-    "줄리아","시라이시","사쿠라모리","오토나시","아오바","노노하라"
+    "줄리아","시라이시","사쿠라모리","오토나시","아오바","노노하라","하야사카"
 }
 #DIM DYNAMIC LCOUNT
 
-FOR LCOUNT,1,54
+FOR LCOUNT,1,57
     SURNAME:LCOUNT:0 = %SURNAMEARRAY:LCOUNT%
 NEXT
 {

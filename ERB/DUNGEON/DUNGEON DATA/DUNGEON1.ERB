@@ -1,0 +1,71 @@
+﻿@DUNGEON1_INIT
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIMS DYNAMIC MAPDATAS,19
+
+D3D_PLAYER_XCOORD = 9
+D3D_PLAYER_YCOORD = 17
+
+MAPDATAS:0  '= "                   "
+MAPDATAS:1  '= "                   "
+MAPDATAS:2  '= "                   "
+MAPDATAS:3  '= "                   "
+MAPDATAS:4  '= "                   "
+MAPDATAS:5  '= "                   "
+MAPDATAS:6  '= "         0000000   "
+MAPDATAS:7  '= "         01111100  "
+MAPDATAS:8  '= "         01000110  "
+MAPDATAS:9  '= "         0[0 00100 "
+MAPDATAS:10 '= "        0010000110 "
+MAPDATAS:11 '= "        0111110100 "
+MAPDATAS:12 '= "        0100010000 "
+MAPDATAS:13 '= "        010 011110 "
+MAPDATAS:14 '= "        010 000010 "
+MAPDATAS:15 '= "       00200000010 "
+MAPDATAS:16 '= "       03110011110 "
+MAPDATAS:17 '= "       01110030040 "
+MAPDATAS:18 '= "       00800000000 "
+
+FOR LCOUNT2,0,19
+    FOR LCOUNT,0,19
+        IF SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1) == " "
+            D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = -1
+        ELSEIF SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1) == "["
+            D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = 32
+        ELSE
+            D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = TOINT(SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1))
+        ENDIF
+    NEXT
+NEXT
+
+;던전 1층에서 일어나는 이벤트
+;이벤트 실행 후 통상 처리를 한다면 1
+;안한다면 0을 RESULT:2에 반환한다
+@DUNGEON1_EVENT(XCOORD,YCOORD)
+#DIM DYNAMIC XCOORD
+#DIM DYNAMIC YCOORD
+IF XCOORD == 9 && YCOORD == 18
+    PRINTL 출구
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 16 && YCOORD == 17
+    PRINTL 스위치를 눌렀다.
+    DUNGEON1_SWITCH:0 = 1
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 13 && YCOORD == 17
+    ;스위치 방면 보물상자
+    PRINTL 보물상자는 텅 비었다!
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 8 && YCOORD == 16
+    ;출구 방면 보물상자
+    PRINTL 보물상자는 텅 비었다!
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 10 && YCOORD == 9
+    IF DUNGEON1_SWITCH:0 == 1
+        PRINTL 덜컹
+        RETURN XCOORD,YCOORD,1
+    ELSE
+        PRINTL 반응이 없다
+        RETURN XCOORD,YCOORD,0
+    ENDIF
+ENDIF
+;HERE
