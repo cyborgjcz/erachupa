@@ -148,8 +148,16 @@ ENDIF
 LTEXT += " 갑자기 그런 만화 같은 말을 들어도..."
 CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
 WAITANYKEY
-TFLAG:회화키워드5 = [[미라이]]
-LTEXT = 앗. 안녕, %BYNAMES([[시즈카]],[[미라이]])%.
+IF FLAG:2 != [[미라이]]
+    TFLAG:회화키워드5 = [[미라이]]
+ELSEIF FLAG:2 == [[미라이]]
+    TFLAG:회화키워드5 = [[츠바사]]
+ENDIF
+IF TFLAG:회화키워드5 == [[미라이]]
+    LTEXT = 앗. 안녕, %BYNAMES([[시즈카]],[[미라이]])%.
+ELSEIF TFLAG:회화키워드5 == [[츠바사]]
+    LTEXT = 앗. 안녕, %BYNAMES([[시즈카]],[[츠바사]])%.
+ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],2),LNAME,LTEXT)
 WAITANYKEY
 
@@ -163,8 +171,13 @@ LNAME = %CALLNAME:[[시즈카]]%
 LTEXT = (?)
 CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
 WAITANYKEY
-LTEXT = %BYNAMES([[시즈카]],[[미라이]])%도 참.
-LTEXT2 = 뜬금없이 장난을 친다니까.
+IF TFLAG:회화키워드5 == [[미라이]]
+    LTEXT = %BYNAMES([[시즈카]],[[미라이]])%도 참.
+    LTEXT2 = 뜬금없이 장난을 친다니까.
+ELSEIF TFLAG:회화키워드5 == [[츠바사]]
+    LTEXT = 좀 %BYNAMES([[시즈카]],[[츠바사]])%,
+    LTEXT2 = 무슨 일 있었어?
+ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],2),LNAME,LTEXT,LTEXT2)
 WAITANYKEY
 
@@ -211,20 +224,35 @@ LNAME = %CALLNAME:[[시즈카]]%
 LTEXT = 그건...
 CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
 WAITANYKEY
-PRINTL [0] 아미와 마미가 미라이를 매수했다
-PRINTL [1] 미라이가 사고를 당해 기억을 잃었다
-PRINTFORML [2] 미라이는 자신과 %조사처리(CALLNAME:(FLAG:2),"을")% 모른다
-INPUT
-SELECTCASE RESULT
-    CASE 0
-        TFLAG:회화키워드7 = 1
-    CASE 1
-        TFLAG:회화키워드7 = 2
-    CASE 2
-        TFLAG:회화키워드7 = 0
-        TFLAG:회화키워드6 = 0
-ENDSELECT
-
+IF TFLAG:회화키워드5 == [[미라이]]
+    PRINTL [0] 아미와 마미가 미라이를 매수했다
+    PRINTL [1] 미라이가 사고를 당해 기억을 잃었다
+    PRINTFORML [2] 미라이는 자신과 %조사처리(CALLNAME:(FLAG:2),"을")% 모른다
+    INPUT
+    SELECTCASE RESULT
+        CASE 0
+            TFLAG:회화키워드7 = 1
+        CASE 1
+            TFLAG:회화키워드7 = 2
+        CASE 2
+            TFLAG:회화키워드7 = 0
+            TFLAG:회화키워드6 = 0
+    ENDSELECT
+ELSEIF TFLAG:회화키워드5 == [[츠바사]]
+    PRINTL [0] 아미와 마미가 츠바사에게 아이스크림을 사주기로 했다
+    PRINTL [1] 츠바사가 사고를 당해 기억을 잃었다
+    PRINTFORML [2] 츠바사는 자신과 %조사처리(CALLNAME:(FLAG:2),"을")% 모른다
+    INPUT
+    SELECTCASE RESULT
+        CASE 0
+            TFLAG:회화키워드7 = 1
+        CASE 1
+            TFLAG:회화키워드7 = 2
+        CASE 2
+            TFLAG:회화키워드7 = 0
+            TFLAG:회화키워드6 = 0
+    ENDSELECT
+ENDIF
 @KOJO_EVENT_COMMON_CHAPTER0_MAIN2_16_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
@@ -251,7 +279,7 @@ WAITANYKEY
 IF JONDAE([[시즈카]],FLAG:2)
     LTEXT = 바람을 좀 쐬고 싶어요.
 ELSE
-    LTEXT = 난 산책 좀 갔다올게.
+    LTEXT = 산책 좀 갔다올게.
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
 WAITANYKEY
