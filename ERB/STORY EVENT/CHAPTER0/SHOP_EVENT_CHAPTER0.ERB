@@ -35,6 +35,7 @@ SELECTCASE COMV
             ENDIF
         ELSEIF FLAG:스토리0진행도 == 2
             CALL EVENT_COMMON_CHAPTER0_201_2
+            RETURN RESULT
         ELSEIF FLAG:스토리0진행도 == 3
             CALL EVENT_COMMON_CHAPTER0_MAIN3
             RETURN RESULT
@@ -44,13 +45,11 @@ SELECTCASE COMV
             CALL EVENT_COMMON_CHAPTER0_202
             RETURN RESULT
         ELSEIF FLAG:스토리0진행도 == 2
-            IF TFLAG:회화키워드5
-                CALL EVENT_COMMON_CHAPTER0_202_2_2
-                RETURN RESULT
-            ELSE
-                CALL EVENT_COMMON_CHAPTER0_202_2
-                RETURN RESULT
-            ENDIF
+            CALL EVENT_COMMON_CHAPTER0_202_2
+            RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 3
+            CALL EVENT_COMMON_CHAPTER_202_3
+            RETURN RESULT
         ENDIF
     CASE 400
         IF FLAG:스토리0진행도 <= 1
@@ -58,6 +57,9 @@ SELECTCASE COMV
             RETURN RESULT
         ELSEIF FLAG:스토리0진행도 == 2
             CALL EVENT_COMMON_CHAPTER0_400_2
+            RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 3
+            CALL EVENT_COMMON_CHAPTER_400_3
             RETURN RESULT
         ENDIF
     CASE 401
@@ -72,6 +74,9 @@ SELECTCASE COMV
             ENDIF
         ELSEIF FLAG:스토리0진행도 == 2
             CALL EVENT_COMMON_CHAPTER0_401_2
+            RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 3
+            CALL EVENT_COMMON_CHAPTER_401_3
             RETURN RESULT
         ENDIF
     CASEELSE

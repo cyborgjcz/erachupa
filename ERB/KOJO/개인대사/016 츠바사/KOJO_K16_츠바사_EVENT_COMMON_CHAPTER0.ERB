@@ -17,12 +17,12 @@ ELSE
 ENDIF
 LTEXT2 = 그리고 %SURNAME:(FLAG:2):0%
 IF FLAG:2 == [[줄리아]]
-    LTEXT2 += "씨도."
+    LTEXT2 += " 씨도."
 ELSE
     IF BYNAME:[[츠바사]]:(FLAG:2) == "쨩"
         LTEXT2 += CALLNAME:(FLAG:2) + "쨩도."
     ELSE
-        LTEXT2 += "씨도."
+        LTEXT2 += " 씨도."
     ENDIF
 ENDIF
 CALL TALK_WITH_IMG(FACE([[츠바사]],1),LNAME,LTEXT,LTEXT2)

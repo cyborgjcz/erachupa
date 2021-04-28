@@ -224,6 +224,7 @@ LNAME = %CALLNAME:[[시즈카]]%
 LTEXT = 그건...
 CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
 WAITANYKEY
+$KOJO_EVENT_COMMON_CHAPTER0_MAIN2_13_K15_QUESTION
 IF TFLAG:회화키워드5 == [[미라이]]
     PRINTL [0] 아미와 마미가 미라이를 매수했다
     PRINTL [1] 미라이가 사고를 당해 기억을 잃었다
@@ -237,6 +238,10 @@ IF TFLAG:회화키워드5 == [[미라이]]
         CASE 2
             TFLAG:회화키워드7 = 0
             TFLAG:회화키워드6 = 0
+        CASEELSE
+            CLEARLINE 4
+            REUSELASTLINE
+            GOTO KOJO_EVENT_COMMON_CHAPTER0_MAIN2_13_K15_QUESTION
     ENDSELECT
 ELSEIF TFLAG:회화키워드5 == [[츠바사]]
     PRINTL [0] 아미와 마미가 츠바사에게 아이스크림을 사주기로 했다
@@ -251,6 +256,10 @@ ELSEIF TFLAG:회화키워드5 == [[츠바사]]
         CASE 2
             TFLAG:회화키워드7 = 0
             TFLAG:회화키워드6 = 0
+        CASEELSE
+            CLEARLINE 4
+            REUSELASTLINE
+            GOTO KOJO_EVENT_COMMON_CHAPTER0_MAIN2_13_K15_QUESTION
     ENDSELECT
 ENDIF
 @KOJO_EVENT_COMMON_CHAPTER0_MAIN2_16_K15
