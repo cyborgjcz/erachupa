@@ -1,4 +1,4 @@
-﻿#DIMS CONST DUNGEONNAME,2 = "","첫던전이름"
+﻿#DIMS CONST DUNGEONNAME,2 = "","익스플로잇 시티 1번가",
 ;던전의 안개 밝힘 여부. 1인수=층 2,3인수 = 좌표. 0=어두움 1=밝음
 #DIM DUNGEONFOG,1,19,19
 

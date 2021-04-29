@@ -25,6 +25,18 @@ PRINTL 【정비 관련】
 PRINTLC [400] 미사키를 찾아간다
 PRINTLC [401] 소라를 찾아간다
 PRINTL
+IF FLAG:탐색대상던전 == 0
+    SETCOLORBYNAME DimGray
+    PRINTLC [???] ???
+    PRINTLC [???] ???
+    PRINTLC [???] ???
+    RESETCOLOR
+ELSEIF FLAG:탐색대상던전 != 0
+    PRINTLC [500] 능력 확인
+    PRINTLC [501] 장비품
+    PRINTLC [502] 스킬
+ENDIF
+PRINTL
 PRINTL 【시스템 관련】
 PRINTLC [600] 세이브
 PRINTLC [700] 로드
