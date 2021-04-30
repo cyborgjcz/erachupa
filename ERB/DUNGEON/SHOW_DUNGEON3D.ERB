@@ -512,7 +512,7 @@ FOR LCOUNT,0,39
         ;전장의 안개라면 ? 로 표시
         {
             IF D3D_BSW:(FLAG:탐색대상던전):(D3D_TEXTBUTTONCOORD:LCOUNT:0):(D3D_TEXTBUTTONCOORD:LCOUNT:1) == 0 &&
-            D3D_DEBUG_BSW == 0
+            DEBUG_BSW == 0
         }
             D3D_TEXTBUTTON:LCOUNT = 1
             D3D_TEXTBUTTONS:LCOUNT '= "？"
@@ -1005,7 +1005,7 @@ FOR LCOUNT2, 0, 19
         ELSE
             {
                 IF D3D_BSW:(FLAG:탐색대상던전):LCOUNT:LCOUNT2 == 0 &&
-                D3D_DEBUG_BSW == 0
+                DEBUG_BSW == 0
             }
                 D3D_MINIMAPS:LCOUNT:LCOUNT2 '= "　"
                 GETDEFCOLOR
