@@ -510,7 +510,10 @@ FOR LCOUNT,0,39
         D3D_TEXTBUTTONC:LCOUNT = RESULT
     ELSE
         ;전장의 안개라면 ? 로 표시
-        IF D3D_BSW:(FLAG:탐색대상던전):(D3D_TEXTBUTTONCOORD:LCOUNT:0):(D3D_TEXTBUTTONCOORD:LCOUNT:1) == 0
+        {
+            IF D3D_BSW:(FLAG:탐색대상던전):(D3D_TEXTBUTTONCOORD:LCOUNT:0):(D3D_TEXTBUTTONCOORD:LCOUNT:1) == 0 &&
+            D3D_DEBUG_BSW == 0
+        }
             D3D_TEXTBUTTON:LCOUNT = 1
             D3D_TEXTBUTTONS:LCOUNT '= "？"
             GETDEFCOLOR
@@ -539,107 +542,85 @@ FOR LCOUNT,0,24
         CASE 11
             PRINT_SPACE 100
             IF D3D_TEXTBUTTON:4
-                SETCOLOR D3D_TEXTBUTTONC:4
-                PRINTFORM ［%D3D_TEXTBUTTONS:4,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(4)
             ELSEIF D3D_TEXTBUTTON:35
-                SETCOLOR D3D_TEXTBUTTONC:35
-                PRINTFORM ［%D3D_TEXTBUTTONS:35,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(35)
             ELSEIF D3D_TEXTBUTTON:37
-                SETCOLOR D3D_TEXTBUTTONC:37
-                PRINTFORM ［%D3D_TEXTBUTTONS:37,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(37)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:3
                 PRINT_SPACE 100
-                SETCOLOR D3D_TEXTBUTTONC:3
-                PRINTFORM ［%D3D_TEXTBUTTONS:3,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(3)
             ELSEIF D3D_TEXTBUTTON:1
-                SETCOLOR D3D_TEXTBUTTONC:1
-                PRINTFORM ［%D3D_TEXTBUTTONS:1,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(1)
                 PRINT_SPACE 100
             ELSE
                 PRINT_SPACE 400
             ENDIF
             IF D3D_TEXTBUTTON:7
-                SETCOLOR D3D_TEXTBUTTONC:7
-                PRINTFORM ［%D3D_TEXTBUTTONS:7,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(7)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:25
-                SETCOLOR D3D_TEXTBUTTONC:25
-                PRINTFORM ［%D3D_TEXTBUTTONS:25,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(25)
             ELSEIF D3D_TEXTBUTTON:31
-                SETCOLOR D3D_TEXTBUTTONC:31
-                PRINTFORM ［%D3D_TEXTBUTTONS:31,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(31)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:33
-                SETCOLOR D3D_TEXTBUTTONC:33
-                PRINTFORM ［%D3D_TEXTBUTTONS:33,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(33)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 100
             IF D3D_TEXTBUTTON:0
-                SETCOLOR D3D_TEXTBUTTONC:0
-                PRINTFORM ［%D3D_TEXTBUTTONS:0,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(0)
             ELSEIF D3D_TEXTBUTTON:15
-                SETCOLOR D3D_TEXTBUTTONC:15
-                PRINTFORM ［%D3D_TEXTBUTTONS:15,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(15)
             ELSEIF D3D_TEXTBUTTON:16
-                SETCOLOR D3D_TEXTBUTTONC:16
-                PRINTFORM ［%D3D_TEXTBUTTONS:16,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(16)
             ELSEIF D3D_TEXTBUTTON:17
-                SETCOLOR D3D_TEXTBUTTONC:17
-                PRINTFORM ［%D3D_TEXTBUTTONS:17,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(17)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 200
             IF D3D_TEXTBUTTON:34
-                SETCOLOR D3D_TEXTBUTTONC:34
-                PRINTFORM ［%D3D_TEXTBUTTONS:34,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(34)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:26
-                SETCOLOR D3D_TEXTBUTTONC:26
-                PRINTFORM ［%D3D_TEXTBUTTONS:26,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(26)
             ELSEIF D3D_TEXTBUTTON:32
-                SETCOLOR D3D_TEXTBUTTONC:32
-                PRINTFORM ［%D3D_TEXTBUTTONS:32,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(32)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:8
-                SETCOLOR D3D_TEXTBUTTONC:8
-                PRINTFORM ［%D3D_TEXTBUTTONS:8,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(8)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:5
-                SETCOLOR D3D_TEXTBUTTONC:5
-                PRINTFORM ［%D3D_TEXTBUTTONS:5,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(5)
                 PRINT_SPACE 100
             ELSEIF D3D_TEXTBUTTON:2
                 PRINT_SPACE 100
-                SETCOLOR D3D_TEXTBUTTONC:2
-                PRINTFORM ［%D3D_TEXTBUTTONS:2,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(2)
             ELSE
                 PRINT_SPACE 400
             ENDIF
             IF D3D_TEXTBUTTON:6
-                SETCOLOR D3D_TEXTBUTTONC:6
-                PRINTFORM ［%D3D_TEXTBUTTONS:6,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(6)
             ELSEIF D3D_TEXTBUTTON:36
-                SETCOLOR D3D_TEXTBUTTONC:36
-                PRINTFORM ［%D3D_TEXTBUTTONS:36,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(36)
             ELSEIF D3D_TEXTBUTTON:38
-                SETCOLOR D3D_TEXTBUTTONC:38
-                PRINTFORM ［%D3D_TEXTBUTTONS:38,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(38)
             ELSE
                 PRINT_SPACE 300
             ENDIF
@@ -647,22 +628,19 @@ FOR LCOUNT,0,24
         CASE 14
             PRINT_SPACE 1000
             IF D3D_TEXTBUTTON:29
-                SETCOLOR D3D_TEXTBUTTONC:29
-                PRINTFORM ［%D3D_TEXTBUTTONS:29,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(29)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 500
             IF D3D_TEXTBUTTON:18
-                SETCOLOR D3D_TEXTBUTTONC:18
-                PRINTFORM ［%D3D_TEXTBUTTONS:18,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(18)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 500
             IF D3D_TEXTBUTTON:30
-                SETCOLOR D3D_TEXTBUTTONC:30
-                PRINTFORM ［%D3D_TEXTBUTTONS:30,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(30)
             ELSE
                 PRINT_SPACE 300
             ENDIF
@@ -670,48 +648,41 @@ FOR LCOUNT,0,24
         CASE 16
             PRINT_SPACE 200
             IF D3D_TEXTBUTTON:27
-                SETCOLOR D3D_TEXTBUTTONC:27
-                PRINTFORM ［%D3D_TEXTBUTTONS:27,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(27)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 200
             IF D3D_TEXTBUTTON:10
-                SETCOLOR D3D_TEXTBUTTONC:10
-                PRINTFORM ［%D3D_TEXTBUTTONS:10,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(10)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:21
-                SETCOLOR D3D_TEXTBUTTONC:21
-                PRINTFORM ［%D3D_TEXTBUTTONS:21,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(21)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 500
             IF D3D_TEXTBUTTON:9
-                SETCOLOR D3D_TEXTBUTTONC:9
-                PRINTFORM ［%D3D_TEXTBUTTONS:9,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(9)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 500
             IF D3D_TEXTBUTTON:22
-                SETCOLOR D3D_TEXTBUTTONC:22
-                PRINTFORM ［%D3D_TEXTBUTTONS:22,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(22)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:11
-                SETCOLOR D3D_TEXTBUTTONC:11
-                PRINTFORM ［%D3D_TEXTBUTTONS:11,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(11)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 300
             IF D3D_TEXTBUTTON:28
-                SETCOLOR D3D_TEXTBUTTONC:28
-                PRINTFORM ［%D3D_TEXTBUTTONS:28,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(28)
             ELSE
                 PRINT_SPACE 300
             ENDIF
@@ -719,35 +690,30 @@ FOR LCOUNT,0,24
         CASE 19
             PRINT_SPACE 100
             IF D3D_TEXTBUTTON:19
-                SETCOLOR D3D_TEXTBUTTONC:19
-                PRINTFORM ［%D3D_TEXTBUTTONS:19,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(19)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             IF D3D_TEXTBUTTON:13
-                SETCOLOR D3D_TEXTBUTTONC:13
-                PRINTFORM ［%D3D_TEXTBUTTONS:13,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(13)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 1100
             IF D3D_TEXTBUTTON:12
-                SETCOLOR D3D_TEXTBUTTONC:12
-                PRINTFORM ［%D3D_TEXTBUTTONS:12,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(12)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 1100
             IF D3D_TEXTBUTTON:14
-                SETCOLOR D3D_TEXTBUTTONC:14
-                PRINTFORM ［%D3D_TEXTBUTTONS:14,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(14)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 100
             IF D3D_TEXTBUTTON:20
-                SETCOLOR D3D_TEXTBUTTONC:20
-                PRINTFORM ［%D3D_TEXTBUTTONS:20,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(20)
             ELSE
                 PRINT_SPACE 300
             ENDIF
@@ -755,15 +721,13 @@ FOR LCOUNT,0,24
         CASE 23
             PRINT_SPACE 100
             IF D3D_TEXTBUTTON:23
-                SETCOLOR D3D_TEXTBUTTONC:23
-                PRINTFORM ［%D3D_TEXTBUTTONS:23,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(23)
             ELSE
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 3200
             IF D3D_TEXTBUTTON:24
-                SETCOLOR D3D_TEXTBUTTONC:24
-                PRINTFORM ［%D3D_TEXTBUTTONS:24,1,LEFT%］
+                CALL PRINT_TEXTBUTTON(24)
             ELSE
                 PRINT_SPACE 300
             ENDIF
@@ -1039,7 +1003,10 @@ FOR LCOUNT2, 0, 19
             RESETCOLOR
             CONTINUE
         ELSE
-            IF D3D_BSW:(FLAG:탐색대상던전):LCOUNT:LCOUNT2 == 0
+            {
+                IF D3D_BSW:(FLAG:탐색대상던전):LCOUNT:LCOUNT2 == 0 &&
+                D3D_DEBUG_BSW == 0
+            }
                 D3D_MINIMAPS:LCOUNT:LCOUNT2 '= "　"
                 GETDEFCOLOR
                 D3D_MINIMAPS_C:LCOUNT:LCOUNT2 = RESULT
@@ -1117,3 +1084,27 @@ SELECTCASE TARGET_0
     ;화살표 타일을 추가로 등록하려면 여기에 정의(4/4)
 ENDSELECT
 $D3D_END_SPIN_TILES
+
+;텍스트 버튼 출력 함수
+;원거리 상호작용 대응이 목표
+@PRINT_TEXTBUTTON(KEYV)
+#DIM DYNAMIC KEYV
+#DIMS DYNAMIC BUTTONS
+SETCOLOR D3D_TEXTBUTTONC:KEYV
+BUTTONS = [%D3D_TEXTBUTTONS:KEYV,1,LEFT%]
+
+SELECTCASE D3D_CURRENT_MAPDATA:(D3D_TEXTBUTTONCOORD:KEYV:0):(D3D_TEXTBUTTONCOORD:KEYV:1)
+    CASE 24,34
+        PRINT_SPACE 50
+        PRINTBUTTON @"[%D3D_TEXTBUTTONSYMBOL:KEYV%]",D3D_TEXTBUTTONSYMBOL:KEYV
+        SELECTCASE KEYV
+            CASE 0,16 TO 20
+                PRINT_SPACE 35
+        ENDSELECT   
+        PRINTPLAIN  
+        PRINT_SPACE 20
+    CASEELSE
+        PRINT_SPACE 50
+        PRINTPLAINFORM %BUTTONS%
+        PRINT_SPACE 50
+ENDSELECT

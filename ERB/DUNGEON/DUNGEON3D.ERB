@@ -62,6 +62,14 @@ IF !JUDGEBYCOVER
                 ELSE
                     RESULTVALUE:LCOUNT = 2
                 ENDIF
+            CASE 4
+                IF D3D_CURRENT_MAPDATA:(XCOORD+CARDINAL:(T_CARDINAL:LCOUNT):0):(YCOORD+CARDINAL:(T_CARDINAL:LCOUNT):1) == 24
+                    RESULTVALUE:LCOUNT = 1
+                ELSE
+                    RESULTVALUE:LCOUNT = 0
+                ENDIF
+            CASE 5
+                RESULTVALUE:LCOUNT = 1
             CASE 8;출구;테스트
                 RESULTVALUE:LCOUNT = 0
             CASEELSE
@@ -103,8 +111,16 @@ ELSEIF JUDGEBYCOVER
                 ENDIF
             CASE "暗"
                 RESULTVALUE:LCOUNT = 2
-            CASE "□","보","덫","승","강","↑", "→", "↓", "←","Ｔ","ｔ","！","Ｅ","ｍ","宝","罠","降","昇"
+            CASE "□","보","덫","승","강","↑", "→", "↓", "←","Ｔ","ｔ","Ｅ","ｍ","宝","罠","降","昇"
                 RESULTVALUE:LCOUNT = 0
+            CASE "Ｘ"
+                RESULTVALUE:LCOUNT = 0
+            CASE "！"
+                IF D3D_CURRENT_MAPDATA:(XCOORD+CARDINAL:(T_CARDINAL:LCOUNT):0):(YCOORD+CARDINAL:(T_CARDINAL:LCOUNT):1) == 24
+                    RESULTVALUE:LCOUNT = 1
+                ELSE
+                    RESULTVALUE:LCOUNT = 0
+                ENDIF
             CASEELSE
                 RESULTVALUE:LCOUNT = 0
         ENDSELECT
@@ -347,6 +363,9 @@ SELECTCASE D3D_CURRENT_MAPDATA:XCOORD:YCOORD % 10
     CASE 4
         RESULTS '= "！"
         SETCOLOR D3D_EVENT_COLOR
+    CASE 5
+        RESULTS '= "Ｘ"
+        SETCOLOR D3D_FLOOR_COLOR
     CASE 6
         RESULTS '= "승"
         SETCOLOR D3D_STAIR_COLOR
@@ -411,5 +430,8 @@ D3D_PLAYER_YCOORD += CARDINAL:(T_CARDINAL:MOVEDIRECTION):1
 
 ;이동 시마다 자동으로 맵을 밝힌다
 CALL D3D_BLACKSHEEPWALL(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
+
+;특정 좌표 진입 시 자동 이벤트
+TRYCALLFORM DUNGEON{FLAG:탐색대상던전}_AUTO_EVENT,D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD
 
 RETURN 1

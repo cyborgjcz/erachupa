@@ -1,1 +1,5 @@
-﻿#DIM SAVEDATA DUNGEON1_SWITCH,1
+﻿#DIM SAVEDATA DUNGEON1_SWITCH,4
+;0~2 = 문잠금해제 3 = 중앙잠긴문 앞 자동이벤트
+#DIM SAVEDATA DUNGEON1_FLAG,10
+;0 = 타카네/리츠코/아즈사 중 택 1 CSV번호(8,9,10)
+;1 = 첫 입장 후 1 기록. DUNGEON1_INIT_EVENT 판정용

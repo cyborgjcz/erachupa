@@ -6,25 +6,25 @@
 D3D_PLAYER_XCOORD = 9
 D3D_PLAYER_YCOORD = 17
 
-MAPDATAS:0  '= "                   "
-MAPDATAS:1  '= "                   "
-MAPDATAS:2  '= "                   "
-MAPDATAS:3  '= "                   "
-MAPDATAS:4  '= "                   "
-MAPDATAS:5  '= "                   "
-MAPDATAS:6  '= "         0000000   "
-MAPDATAS:7  '= "         01111100  "
-MAPDATAS:8  '= "         01000110  "
-MAPDATAS:9  '= "         0[0 00100 "
-MAPDATAS:10 '= "        0010000110 "
-MAPDATAS:11 '= "        0111110100 "
-MAPDATAS:12 '= "        0100010000 "
-MAPDATAS:13 '= "        010 011110 "
-MAPDATAS:14 '= "        010 000010 "
-MAPDATAS:15 '= "       00200000010 "
-MAPDATAS:16 '= "       03110011110 "
-MAPDATAS:17 '= "       01110030040 "
-MAPDATAS:18 '= "       00800000000 "
+MAPDATAS:0  '= "       006000000000"
+MAPDATAS:1  '= "       011121101110"
+MAPDATAS:2  '= "       011101451^30"
+MAPDATAS:3  '= "       011100000000"
+MAPDATAS:4  '= "       014101111110"
+MAPDATAS:5  '= "       011101020010"
+MAPDATAS:6  '= "       00[004011030"
+MAPDATAS:7  '= "       041100011000"
+MAPDATAS:8  '= "       011103111040"
+MAPDATAS:9  '= "       011100001010"
+MAPDATAS:10 '= "       0111[1101010"
+MAPDATAS:11 '= "       011100111110"
+MAPDATAS:12 '= "       011100000000"
+MAPDATAS:13 '= "       011100111130"
+MAPDATAS:14 '= "       0111[1100000"
+MAPDATAS:15 '= "       011100101110"
+MAPDATAS:16 '= "       011100101410"
+MAPDATAS:17 '= "       011100111110"
+MAPDATAS:18 '= "       008000000000"
 
 FOR LCOUNT2,0,19
     FOR LCOUNT,0,19
@@ -32,6 +32,8 @@ FOR LCOUNT2,0,19
             D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = -1
         ELSEIF SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1) == "["
             D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = 32
+        ELSEIF SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1) == "^"
+            D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = 24
         ELSE
             D3D_TOTAL_MAPDATA:1:LCOUNT:LCOUNT2 = TOINT(SUBSTRING(MAPDATAS:LCOUNT2,LCOUNT,1))
         ENDIF
@@ -45,27 +47,70 @@ NEXT
 #DIM DYNAMIC XCOORD
 #DIM DYNAMIC YCOORD
 IF XCOORD == 9 && YCOORD == 18
-    PRINTL 출구
+    PRINTL 출구 이벤트 미실장
     RETURN XCOORD,YCOORD,1
-ELSEIF XCOORD == 16 && YCOORD == 17
-    PRINTL 스위치를 눌렀다.
-    DUNGEON1_SWITCH:0 = 1
-    RETURN XCOORD,YCOORD,1
-ELSEIF XCOORD == 13 && YCOORD == 17
-    ;스위치 방면 보물상자
-    PRINTL 보물상자는 텅 비었다!
-    RETURN XCOORD,YCOORD,1
-ELSEIF XCOORD == 8 && YCOORD == 16
-    ;출구 방면 보물상자
-    PRINTL 보물상자는 텅 비었다!
-    RETURN XCOORD,YCOORD,1
-ELSEIF XCOORD == 10 && YCOORD == 9
-    IF DUNGEON1_SWITCH:0 == 1
-        PRINTL 덜컹
+ELSEIF XCOORD == 9 && YCOORD == 6
+    ;중앙 잠긴 문
+    IF DUNGEON1_SWITCH:0
+        PRINTL 문이 열릴 때 이벤트 미실장
         RETURN XCOORD,YCOORD,1
     ELSE
-        PRINTL 반응이 없다
+        PRINTL 문이 잠겨있을 때 이벤트 미실장
         RETURN XCOORD,YCOORD,0
     ENDIF
+ELSEIF XCOORD == 11 && YCOORD == 10
+    ;북동쪽 잠긴 작은 방문
+    IF DUNGEON1_SWITCH:1
+        PRINTL 문이 열릴 때 이벤트 미실장
+        RETURN XCOORD,YCOORD,1
+    ELSE
+        PRINTL 문이 잠겨있을 때 이벤트 미실장
+        RETURN XCOORD,YCOORD,0
+    ENDIF
+ELSEIF XCOORD == 11 && YCOORD == 14
+    ;남동쪽 잠긴 작은 방문
+    IF DUNGEON1_SWITCH:2
+        PRINTL 문이 열릴 때 이벤트 미실장
+        RETURN XCOORD,YCOORD,1
+    ELSE
+        PRINTL 문이 잠겨있을 때 이벤트 미실장
+        RETURN XCOORD,YCOORD,0
+    ENDIF
+ELSEIF XCOORD == 8 && YCOORD == 7
+    ;잠긴 문 앞 왼쪽에 위치한 상호작용
+    PRINTL 상호작용1 미실장
+    RETURN XCOORD,YCOORD,0
+ELSEIF XCOORD == 18 && YCOORD == 8
+    ;북쪽 작은 방의 첫 상호작용
+    PRINTL 상호작용2 이벤트 미실장
+    RETURN XCOORD,YCOORD,0
+ELSEIF XCOORD == 12 && YCOORD == 6
+    ;북쪽 작은 방의 두번째 상호작용
+    PRINTL 상호작용3 이벤트 미실장
+    RETURN XCOORD,YCOORD,0
+ELSEIF XCOORD == 16 && YCOORD == 16
+    ;남쪽 작은 방 상호작용
+    PRINTL 상호작용4 이벤트 미실장
+    RETURN XCOORD,YCOORD,0
+ELSEIF XCOORD == 13 && YCOORD == 2
+    ;중앙 잠긴 문 너머 작은 방 상호작용
+    PRINTL 상호작용5 이벤트 미실장
+    RETURN XCOORD,YCOORD,0
+ELSEIF XCOORD == 12 && YCOORD == 8
+    ;북동쪽 작은방 첫 보물상자
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 17 && YCOORD == 6
+    ;북동쪽 작은방 두번째 보물상자
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 17 && YCOORD == 13
+    ;남동쪽 작은방 보물상자
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 17 && YCOORD == 2
+    ;중앙 잠긴 문 너머 퍼즐 뒤쪽 보물상자
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 16 && YCOORD == 2
+    ;원거리 상호작용 튜토리얼 용 표적
+    PRINTL 원거리 상호작용 이벤트 미실장
+    RETURN XCOORD,YCOORD,1
+    ;반환 결과로 0으로 바꿔야한다. (현재 미작성)
 ENDIF
-;HERE
