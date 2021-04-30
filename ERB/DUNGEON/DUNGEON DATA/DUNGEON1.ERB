@@ -40,6 +40,29 @@ FOR LCOUNT2,0,19
     NEXT
 NEXT
 
+@DUNGEON1_ENCOUNTER_SET
+RETURN 1,5
+
+@DUNGEON1_RAND_ENCOUNTER(XCOORD,YCOORD)
+#DIM DYNAMIC XCOORD
+#DIM DYNAMIC YCOORD
+#DIM DYNAMIC LNUM
+IF XCOORD >= 7
+    LNUM = RAND:2
+    TFLAG:적무리번호 = LNUM
+    SELECTCASE LNUM
+        CASE 0
+            TFLAG:적위치2 = 100
+            TFLAG:적레벨2 = 1
+        CASE 1
+            TFLAG:적위치1 = 100
+            TFLAG:적레벨1 = 1
+            TFLAG:적위치2 = 100
+            TFLAG:적레벨2 = 1
+    ENDSELECT
+;ELSE
+ENDIF
+
 ;던전 1층에서 일어나는 이벤트
 ;이벤트 실행 후 통상 처리를 한다면 1
 ;안한다면 0을 RESULT:2에 반환한다
