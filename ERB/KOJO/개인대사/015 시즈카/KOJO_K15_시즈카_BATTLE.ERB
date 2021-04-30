@@ -1,0 +1,46 @@
+﻿@KOJO_BATTLE_ENCOUNTER_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+IF FLAG:탐색대상던전 == 1 && DUNGEON1_FLAG:3 == 0
+    ;FIRST BATTLE
+    LTEXT = 이것들은 뭐지?!
+    CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+    WAITANYKEY
+    RETURN 1
+ELSE
+    SELECTCASE RAND:2
+        CASE 0
+            LTEXT = 적 등장!
+        CASE 1
+            IF JONDAE([[시즈카]],FLAG:2)
+                LTEXT = 적들이에요!
+            ELSE
+                LTEXT = 적들이야!
+            ENDIF
+    ENDSELECT
+    CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+    WAITANYKEY
+    RETURN 1
+ENDIF
+@KOJO_BATTLE_ENCOUNTER_RES_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+IF FLAG:탐색대상던전 == 1 && DUNGEON1_FLAG:3 == 0
+    ;FIRST BATTLE
+    LTEXT = 잠깐, 츄파카브라?
+    CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+    WAITANYKEY
+    PRINTL ※ 각 캐릭터는 파란 색 게이지가 가득 차면 행동할 수 있습니다.
+    PRINTL 미리 키보드 입력으로 행동을 준비해두고,
+    PRINTL 게이지가 가득 차자 마자 결정 버튼을 눌러보세요. 
+    WAITANYKEY
+    DUNGEON1_FLAG:3 += 1
+    RETURN 1
+ELSE
+    LTEXT = 얼마든지 덤비시죠!
+    CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+    WAITANYKEY
+    RETURN 1
+ENDIF
