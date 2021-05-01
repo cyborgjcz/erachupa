@@ -1,0 +1,69 @@
+﻿;
+;기본 인공지능.
+;자신이 체력이 낮을 때 자신이 가진 회복 스킬 사용 시도.
+;콤보로 지정된 스킬 순차적으로 시전.
+;
+@BATTLE_AI0_COMMAND(ENEMYV)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIM DYNAMIC LNUM
+#DIM DYNAMIC ENEMYV;전달받은 ENEMYV는 1~6으로 적 위치를 지정하는 숫자. TFLAG에 넣자.
+#DIM DYNAMIC RESULTVALUE,3
+
+TRYCALLFORM ENEMY{NO:(TFLAG:ENEMYV)}_SKILL_FORAI
+
+
+;반환값 결정
+IF CFLAG:(TFLAG:ENEMYV):전회콤보사용
+    ;전회콤보를 사용한 경우
+    DEBUGPRINTFORML 콤보 후속 스킬 사용
+    LNUM = COMBOV:(CFLAG:(TFLAG:ENEMYV):전회콤보사용-1):(CFLAG:(TFLAG:ENEMYV):차회콤보번호)
+    RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(LNUM-1)
+    RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+    RESULTVALUE:1 = CFLAG:(TFLAG:ENEMYV):전회공격상대
+    IF COMBOV:(CFLAG:(TFLAG:ENEMYV):전회콤보사용):((CFLAG:(TFLAG:ENEMYV):차회콤보번호)+1)
+        CFLAG:(TFLAG:ENEMYV):전회콤보사용 = LNUM + 1
+        CFLAG:(TFLAG:ENEMYV):차회콤보번호 = LNUM + 1
+    ELSE
+        CFLAG:(TFLAG:ENEMYV):전회콤보사용 = 0
+        CFLAG:(TFLAG:ENEMYV):차회콤보번호 = 0
+    ENDIF
+    RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+ELSEIF BASE:(TFLAG:ENEMYV):희망 > MAXBASE:(TFLAG:ENEMYV):희망 /2
+    ;일단 떠넘겨보자
+    GOTO RAND_SKILL
+ELSE
+    $RAND_SKILL
+    SELECTCASE RAND:7
+        CASE 0 TO 1
+            DEBUGPRINTFORML 콤보 사용 시도
+            SIF COMBONUM == 0
+                GOTO NORMAL_ATTACK
+            DEBUGPRINTFORML 콤보 사용
+            ;콤보 시동
+            LNUM = RAND:COMBONUM
+            RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):((COMBOV:LNUM:0)-1)
+            RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+            RESULTVALUE:1 = (RAND:2)+1
+            CFLAG:(TFLAG:ENEMYV):전회공격상대 = RESULTVALUE:1
+            CFLAG:(TFLAG:ENEMYV):전회콤보사용 = LNUM+1
+            CFLAG:(TFLAG:ENEMYV):차회콤보번호 = 1
+            DEBUGPRINTFORML RESULTVALUE = {RESULTVALUE:0}, {RESULTVALUE:1}, {RESULTVALUE:2}
+            RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+        CASE 2
+            ;스킬 공격
+            ;ATTACK 분류 스킬 검색
+            DEBUGPRINTFORML 스킬 사용(미실장)
+            CFLAG:(TFLAG:ENEMYV):전회공격상대 = (RAND:2)+1
+            RETURN 0,CFLAG:(TFLAG:ENEMYV):전회공격상대,0
+        CASE 3 TO 6
+            ;평타
+            $NORMAL_ATTACK
+            DEBUGPRINTFORML 평타 사용
+            CFLAG:(TFLAG:ENEMYV):전회공격상대 = (RAND:2)+1
+            RETURN 0,CFLAG:(TFLAG:ENEMYV):전회공격상대,0
+    ENDSELECT
+ENDIF
+;RESULT:0 : 0 = "ATTACK", 1= "SKILL", 2= "GUARD", 3= "TRANS"
+;RESULT:1 : 타겟
+;RESULT:2 : SKILLV

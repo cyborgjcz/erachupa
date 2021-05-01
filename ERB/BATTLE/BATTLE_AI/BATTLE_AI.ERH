@@ -1,0 +1,6 @@
+#DIMS SKILLTYPES,8;ATTACK, HEAL, BUFF, DEBUFF, GUARD, SPECIAL, COMBO0, COMBO1 등...
+#DIM PRIORV,8;우선순위를 나타냄 콤보의 경우 동일 콤보 중에서만 우선순위를 가림
+#DIM SKILLDATALEN;SKILLTYPES,PRIORV의 길이를 나타내는 값.
+
+#DIM COMBOV,4,8;각 1인수는 콤보 종류, 2인수는 순서로 캐릭데이터 스킬 위치를 기록하는 콤보 데이터.
+#DIM COMBONUM;콤보 종류 의 개수
