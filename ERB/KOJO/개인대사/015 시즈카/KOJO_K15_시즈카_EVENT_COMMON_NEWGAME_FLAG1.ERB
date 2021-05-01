@@ -15,7 +15,7 @@ WAITANYKEY
 LTEXT = 그러고 보니...
 SELECTCASE FLAG:2
     CASE 50
-        LTEXT2 = %조사처리(BYNAMES([[시즈카]],[[줄리아]]),"은")% 지금 뭐하고 계실까?
+        LTEXT2 = %조사처리(BUDDY([[시즈카]]),"은")% 지금 뭐하고 계실까?
     CASEELSE
         IF NO:(FLAG:2) <= 13
             LTEXT2 = 선배들은 어떻게 지내고 있을까...?
@@ -48,9 +48,9 @@ WAITANYKEY
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[시즈카]]%
 IF JONDAE([[시즈카]],FLAG:2) == 1
-    LTEXT = 안녕하세요, %BYNAMES([[시즈카]],FLAG:2)%.
+    LTEXT = 안녕하세요, %BUDDY([[시즈카]])%.
 ELSE
-    LTEXT = 안녕, %BYNAMES([[시즈카]],FLAG:2)%.
+    LTEXT = 안녕, %BUDDY([[시즈카]])%.
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],1),LNAME,LTEXT)
 WAITANYKEY

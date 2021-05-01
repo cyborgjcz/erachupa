@@ -1,0 +1,42 @@
+﻿@KOJO_BATTLE_ENCOUNTER_K50
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+IF FLAG:탐색대상던전 == 1 && DUNGEON1_FLAG:3 == 0
+    ;FIRST BATTLE
+    LTEXT = 우와, 뭔가 나왔는데?
+    CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+    WAITANYKEY
+    RETURN 1
+ELSE
+    SELECTCASE RAND:2
+        CASE 0
+            LTEXT = 적이다!
+        CASE 1
+            LTEXT = 희생자들 등장!
+    ENDSELECT
+    CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+    WAITANYKEY
+    RETURN 1
+ENDIF
+@KOJO_BATTLE_ENCOUNTER_RES_K50
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+IF FLAG:탐색대상던전 == 1 && DUNGEON1_FLAG:3 == 0
+    ;FIRST BATTLE
+    LTEXT = 이건... 츄파카브라?
+    CALL TALK_WITH_IMG(FACE([[줄리아]],2),LNAME,LTEXT)
+    WAITANYKEY
+    PRINTL ※ 각 캐릭터는 파란 색 게이지가 가득 차면 행동할 수 있습니다.
+    PRINTL 미리 키보드 입력으로 행동을 준비해두고,
+    PRINTL 게이지가 가득 차자 마자 결정 버튼을 눌러보세요. 
+    WAITANYKEY
+    DUNGEON1_FLAG:3 += 1
+    RETURN 1
+ELSE
+    LTEXT = 얼마든지 덤비라고 해!
+    CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+    WAITANYKEY
+    RETURN 1
+ENDIF

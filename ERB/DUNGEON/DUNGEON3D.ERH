@@ -7,6 +7,7 @@
 #DIM CONST D3D_DOOR_COLOR = 0x00f5ff
 #DIM CONST D3D_TREASURE_COLOR = 0xffd300
 #DIM CONST D3D_EVENT_COLOR = 0xaf69ef
+#DIM CONST D3D_FLOOR_COLOR = 0x00498c
 #DIM CONST D3D_STAIR_COLOR = 0x3eff15
 #DIM CONST D3D_EXIT_COLOR = 0xCC5500
 
@@ -43,6 +44,8 @@
 #DIM D3D_TEXTBUTTONC,39
 ;텍스트버튼에 해당하는 위치의 좌표, 2차원배열변수
 #DIM D3D_TEXTBUTTONCOORD,39,2
+
+#DIMS CONST D3D_TEXTBUTTONSYMBOL,39 = "⓪","①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩","⑪","⑫","⑬","⑭","⑮","⑯","⑰","⑱","⑲","⑳","㉑","㉒","㉓","㉔","㉕","㉖","㉗","㉘","㉙","㉚","㉛","㉜","㉝","㉞","㉟","㊱","㊲","㊳"
 
 ;플레이어 기준 미니맵 반경. 9를 넘기면 망가진다
 #DIM CONST D3D_MINIMAP_RADIUS = 9

@@ -25,10 +25,24 @@ PRINTL 【정비 관련】
 PRINTLC [400] 미사키를 찾아간다
 PRINTLC [401] 소라를 찾아간다
 PRINTL
+IF FLAG:탐색대상던전 == 0
+    SETCOLORBYNAME DimGray
+    PRINTLC [???] ???
+    PRINTLC [???] ???
+    PRINTLC [???] ???
+    RESETCOLOR
+ELSEIF FLAG:탐색대상던전 != 0
+    PRINTLC [500] 능력 확인
+    PRINTLC [501] 장비품
+    PRINTLC [502] 스킬
+ENDIF
+PRINTL
 PRINTL 【시스템 관련】
 PRINTLC [600] 세이브
 PRINTLC [700] 로드
 PRINTLC [800] 컨피그
+PRINTL
+PRINTLC [900] 타이틀
 ;-----------------------------------------------------------
 ;USERSHOP
 ;SHOW_SHOP 출력 후 0~99 밖의 입력을 받으면 처리하는 함수
@@ -77,6 +91,8 @@ SELECTCASE KEY
     CASE 700
         LOADGAME
     CASE 800
+        PRINTL 미실장
+    CASE 900
         PRINTL 정말로 타이틀로 돌아갑니까?
         PRINTBUTTON "[0] 예",0
         PRINTBUTTON "[1] 아니오",1
