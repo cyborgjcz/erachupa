@@ -358,8 +358,10 @@ DO
 LOOP BATTLE_LOOP
 
 IF TFLAG:전투결과 == 1
+    ;승리
     PRINTL TFLAG:전투결과 == 1
 ELSEIF TFLAG:전투결과 == 2
+    ;패배
     PRINTL TFLAG:전투결과 == 2
 ENDIF
 
@@ -379,8 +381,6 @@ SELECTCASE COMMANDS
         SKILLV = 0
     CASE "SKILL"
         SIF !ISENEMY
-            DEBUGPRINTFORML USERV = {USERV}
-            DEBUGPRINTFORML {SKILLV} = {AVAILABLE_SKILL:(FLAG:USERV):(FLAG:(16+USERV))} {FLAG:USERV} FLAG:(16+{USERV})
             SKILLV = AVAILABLE_SKILL:(FLAG:USERV):(TFLAG:(16+USERV))
     CASE "GUARD"
         SKILLV = 1
@@ -392,6 +392,12 @@ SIF !ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(TFLAG:TARGETV)
     RETURN 0
 SIF ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(FLAG:TARGETV)
     RETURN 0
+
+;미리 처리하겠지만, 오작동을 막기 위해.
+;아군 스탯이 스킬 조건스탯에 미달하는 경우 발동 불가
+IF !ISENEMY && COMMANDS == "SKILL" && (SKILL_DATA:SKILLV:2 > BASE:(FLAG:USERV):((SKILL_DATA:SKILLV:1)+1) && SKILL_DATA:SKILLV:3 == 0)
+    RETURN 0
+ENDIF
 
 IF SKILL_DATA:SKILLV:10 > 0
     IF !ISENEMY
@@ -408,7 +414,6 @@ IF SKILL_DATA:SKILLV:10 > 0
         ENDIF
     ENDIF
 ENDIF
-DEBUGPRINTFORML 실제 스킬 내용 실행 전 SKILLV = {SKILLV}
 ;여기서 실제 스킬 내용 실행
 ;스킬 유형은 공격, 범위 유형은 단일일때
 IF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
@@ -598,6 +603,8 @@ ENDSELECT
 #DIMS REF R_COMMANDS
 #DIM REF R_TARGETV
 #DIM REF R_USERV
+
+#DIM DYNAMIC SKILLV
 IF KEYS == "탌" || KEYS == ""
     R_COMMANDS '= ""
     R_TARGETV = 0
@@ -656,10 +663,16 @@ SELECTCASE TFLAG:동료1ATB커서상태
             CASE "d"
                 TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("d",17)
             CASE "q"
-                IF SKILL_DATA:(AVAILABLE_SKILL:(FLAG:1):(TFLAG:동료1스킬커서위치)):5 == 0
-                    TFLAG:동료1ATB커서상태 = 4
+                SKILLV = (AVAILABLE_SKILL:(FLAG:동료1):(TFLAG:동료1스킬커서위치))
+                DEBUGPRINTFORML SKILLV = {SKILLV} (SKILL_DATA:SKILLV:1)+1 = {(SKILL_DATA:SKILLV:1)+1}
+                IF (SKILL_DATA:SKILLV:2 <= BASE:(FLAG:동료1):((SKILL_DATA:SKILLV:1)+1) || SKILL_DATA:SKILLV:3 != 0)
+                    IF SKILL_DATA:SKILLV:5 == 0
+                        TFLAG:동료1ATB커서상태 = 4
+                    ELSE
+                        TFLAG:동료1ATB커서상태 = 5
+                    ENDIF
                 ELSE
-                    TFLAG:동료1ATB커서상태 = 5
+                    TFLAG:동료1ATB커서상태 = 3
                 ENDIF
             CASE "e"
                 TFLAG:동료1ATB커서상태 = 0
@@ -770,10 +783,15 @@ SELECTCASE TFLAG:동료2ATB커서상태
             CASE "l"
                 TFLAG:동료2스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("l",18)
             CASE "u"
-                IF SKILL_DATA:(AVAILABLE_SKILL:(FLAG:2):(TFLAG:동료2스킬커서위치)):5 == 0
-                    TFLAG:동료2ATB커서상태 = 4
+                SKILLV = (AVAILABLE_SKILL:(FLAG:2):(TFLAG:동료2스킬커서위치))
+                IF (SKILL_DATA:SKILLV:2 <= BASE:(FLAG:동료2):((SKILL_DATA:SKILLV:1)+1) || SKILL_DATA:SKILLV:3 != 0)
+                    IF SKILL_DATA:SKILLV:5 == 0
+                        TFLAG:동료2ATB커서상태 = 4
+                    ELSE
+                        TFLAG:동료2ATB커서상태 = 5
+                    ENDIF
                 ELSE
-                    TFLAG:동료2ATB커서상태 = 5
+                    TFLAG:동료2ATB커서상태 = 3
                 ENDIF
             CASE "o"
                 TFLAG:동료2ATB커서상태 = 0
