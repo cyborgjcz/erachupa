@@ -17,3 +17,15 @@ ELSE
     DEBUGPRINTFORML 동료로 설정되지 않은 캐릭터({KEY}, %CALLNAME:KEY%)의 PARTNER를 확인하려 시도했습니다
     RETURNF 0
 ENDIF
+
+;등록번호로부터 동료 별명을 반환하는 식중함수
+@BUDDY(KEY)
+#FUNCTIONS
+#DIM DYNAMIC KEY
+IF CFLAG:KEY:동료
+    RETURNF BYNAMES(KEY,PARTNER(KEY))
+ELSE
+    DEBUGPRINTFORML 동료로 설정되지 않은 캐릭터({KEY}, %CALLNAME:KEY%)의 파트너의 별명을 확인하려 시도했습니다
+    RETURNF 0
+ENDIF
+

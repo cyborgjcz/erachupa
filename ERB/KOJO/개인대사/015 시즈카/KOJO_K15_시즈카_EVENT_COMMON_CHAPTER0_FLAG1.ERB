@@ -113,9 +113,9 @@ WAITANYKEY
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[시즈카]]%
 IF JONDAE([[시즈카]],FLAG:2) == 1
-    LTEXT = 예, %BYNAMES([[시즈카]],FLAG:2)%.
+    LTEXT = 예, %BUDDY([[시즈카]])%.
 ELSE
-    LTEXT = 응, %BYNAMES([[시즈카]],FLAG:2)%.
+    LTEXT = 응, %BUDDY([[시즈카]])%.
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
 WAITANYKEY
@@ -297,7 +297,7 @@ WAITANYKEY
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[시즈카]]%
-LTEXT = %BYNAMES([[시즈카]],FLAG:2)%,
+LTEXT = %BUDDY([[시즈카]])%,
 IF JONDAE([[시즈카]],FLAG:2)
     LTEXT += " 저기 좀 보세요."
 ELSE
@@ -409,9 +409,9 @@ WAITANYKEY
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[시즈카]]%
 IF JONDAE([[시즈카]],FLAG:2)
-    LTEXT = %BYNAMES([[시즈카]],FLAG:2)%, 이 일은 우리들만의 비밀로 하고 싶어요.
+    LTEXT = %BUDDY([[시즈카]])%, 이 일은 우리들만의 비밀로 하고 싶어요.
 ELSE
-    LTEXT = %BYNAMES([[시즈카]],FLAG:2)%, 이 일은 우리들만의 비밀로 해두자.
+    LTEXT = %BUDDY([[시즈카]])%, 이 일은 우리들만의 비밀로 해두자.
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
 WAITANYKEY
