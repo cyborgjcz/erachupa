@@ -96,6 +96,9 @@ RETURN 1
 #DIM DYNAMIC COM_USER;커맨드 실행 주체
 #DIM DYNAMIC COM_SKILLNUM;커맨드 실행 스킬 번호
 
+#DIMS DYNAMIC TALK_WHAT
+#DIM DYNAMIC TALK_WHATV
+
 IF TFLAG:0 < 1 ;첫턴처리
     {
         PRINTFORML ＿人人人人人人人人人人人人人人人人人＿
@@ -353,6 +356,29 @@ DO
                 CLEARLINE 6+1+2+2+1
             ENDIF
             REUSELASTLINE
+            ;자동 전투회화
+            TALK_WHAT =
+            TALK_WHATV = 0
+            IF TFLAG:경과시간 >= 120000 && TFLAG:전투경과시간회화 == 0
+                TALK_WHAT '= "TIMEFLIES"
+                TALK_WHATV = 1
+                TCALLER = (RAND:2)+1
+                TFLAG:전투경과시간회화 += 1
+            ELSEIF TFLAG:경과시간 >= 240000 && TFLAG:전투경과시간회화 == 1
+                TALK_WHAT '= "TIMEFLIES"
+                TALK_WHATV = 2
+                TCALLER = (RAND:2)+1
+                TFLAG:전투경과시간회화 += 1
+            ELSEIF TFLAG:경과시간 >= 360000 && TFLAG:전투경과시간회화 == 2
+                TALK_WHAT '= "TIMEFLIES"
+                TALK_WHATV = 3
+                TCALLER = (RAND:2)+1
+                TFLAG:전투경과시간회화 += 1
+            ENDIF
+            IF TALK_WHAT != ""
+                CALL BATTLE_TALK(TALK_WHAT,TCALLER,,TALK_WHATV)
+                CALL BATTLE_TALK(TALK_WHAT,TCALLER^3,1,TALK_WHATV)
+            ENDIF
         ENDIF
     ENDIF
     $BATTLE_END
@@ -665,7 +691,6 @@ SELECTCASE TFLAG:동료1ATB커서상태
                 TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("d",17)
             CASE "q"
                 SKILLV = (AVAILABLE_SKILL:(FLAG:동료1):(TFLAG:동료1스킬커서위치))
-                DEBUGPRINTFORML SKILLV = {SKILLV} (SKILL_DATA:SKILLV:1)+1 = {(SKILL_DATA:SKILLV:1)+1}
                 IF (SKILL_DATA:SKILLV:2 <= BASE:(FLAG:동료1):((SKILL_DATA:SKILLV:1)+1) || SKILL_DATA:SKILLV:3 != 0)
                     IF SKILL_DATA:SKILLV:5 == 0
                         TFLAG:동료1ATB커서상태 = 4
