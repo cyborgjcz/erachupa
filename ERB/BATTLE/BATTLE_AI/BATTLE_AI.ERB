@@ -39,6 +39,7 @@ IF CFLAG:(TFLAG:ENEMYV):전회콤보사용
     RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(LNUM-1)
     RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
     RESULTVALUE:1 = CFLAG:(TFLAG:ENEMYV):전회공격상대
+    ;코스트 판정
     CALL AI_CHECK_COST(ENEMYV,LNUM-1)
     IF RESULT
         IF COMBOV:(CFLAG:(TFLAG:ENEMYV):전회콤보사용):((CFLAG:(TFLAG:ENEMYV):차회콤보번호)+1)
@@ -55,8 +56,8 @@ IF CFLAG:(TFLAG:ENEMYV):전회콤보사용
     ELSE
         GOTO NORMAL_ATTACK
     ENDIF
-ELSEIF ((BASE:(TFLAG:ENEMYV):희망) * 2) < MAXBASE:(TFLAG:ENEMYV):희망
-    ;체력이 절반 미만인경우. 회복 스킬 사용. 단 SP가 모자라면 다음 우선순위 회복 스킬로.
+ELSEIF ((BASE:(TFLAG:ENEMYV):희망) * 4) < MAXBASE:(TFLAG:ENEMYV):희망
+    ;체력이 반의 반 미만인경우. 회복 스킬 사용. 단 SP가 모자라면 다음 우선순위 회복 스킬로.
     ;모두 SP가 모자라거나 적회복스톡 CFLAG가 떨어질 경우 일반 스킬로 이행
     ;SKILLTYPES에서 HEAL 스킬 탐색
     FOR LCOUNT,0,SKILLDATALEN
@@ -69,6 +70,7 @@ ELSEIF ((BASE:(TFLAG:ENEMYV):희망) * 2) < MAXBASE:(TFLAG:ENEMYV):희망
     LNUM = 0
     IF SKILLFINDLEN > 0
         FOR LCOUNT,0,SKILLFINDLEN
+            ;코스트 판정
             CALL AI_CHECK_COST(ENEMYV,SKILLFIND:LCOUNT)
             IF RESULT && CFLAG:(TFLAG:ENEMYV):적회복스톡 > 0
                 RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(SKILLFIND:LCOUNT)
@@ -93,6 +95,7 @@ ELSE
             RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):((COMBOV:LNUM:0)-1)
             RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
             RESULTVALUE:1 = (RAND:2)+1
+            ;코스트 판정, 실패 시 평타
             CALL AI_CHECK_COST(ENEMYV,SKILLFIND:LCOUNT)
             IF RESULT
                 CFLAG:(TFLAG:ENEMYV):전회공격상대 = RESULTVALUE:1
@@ -105,9 +108,28 @@ ELSE
         CASE 2
             ;스킬 공격
             ;ATTACK 분류 스킬 검색
-            DEBUGPRINTFORML 적 AI 스킬 사용(미실장)
-            CFLAG:(TFLAG:ENEMYV):전회공격상대 = (RAND:2)+1
-            RETURN 0,CFLAG:(TFLAG:ENEMYV):전회공격상대,0
+            FOR LCOUNT,0,SKILLDATALEN
+                IF SKILLTYPES:LCOUNT == "ATTACK"
+                    SKILLFIND:(PRIORV:LCOUNT) = LCOUNT
+                    SKILLFINDLEN += 1
+                ENDIF
+            NEXT
+            LNUM = 0
+            IF SKILLFINDLEN > 0
+                FOR LCOUNT,0,SKILLFINDLEN
+                    ;코스트 판정
+                    CALL AI_CHECK_COST(ENEMYV,SKILLFIND:LCOUNT)
+                    IF RESULT
+                        RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(SKILLFIND:LCOUNT)
+                        RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+                        RESULTVALUE:1 = (RAND:2)+1
+                        RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+                    ENDIF
+                    LNUM += 1
+                NEXT
+            ENDIF
+            SIF LNUM == SKILLFINDLEN
+                GOTO RAND_SKILL
         CASE 3 TO 6
             ;평타
             $NORMAL_ATTACK
