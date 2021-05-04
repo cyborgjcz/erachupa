@@ -110,7 +110,7 @@ ELSE
             ENDIF
             IF (RAND:100 + RESISTV) <= BASUTECHANCE:LCOUNT
                 BASUTESUCCESS:LCOUNT = 1
-                IF (CFLAG:TARGET:상태이상 & LNUM) != 0
+                IF (CFLAG:TARGETV:상태이상 & LNUM) != 0
                     BASUTESUCCESS:LCOUNT = 2
                 ELSE
                     CFLAG:TARGETV:상태이상 += LNUM
