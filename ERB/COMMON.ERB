@@ -28,3 +28,20 @@ ELSE
     DEBUGPRINTFORML 동료로 설정되지 않은 캐릭터({KEY}, %CALLNAME:KEY%)의 파트너의 별명을 확인하려 시도했습니다
     RETURNF 0
 ENDIF
+
+;전투불능 확인
+@ISDYING(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+RETURNF CFLAG:KEY:상태이상 & 1
+
+;상태이상 중인지 체크. KEY2는 bit 비교를 위한 값.
+@ISBASUTE(KEY,KEY2)
+#FUNCTION
+#DIM DYNAMIC KEY
+#DIM DYNAMIC KEY2
+IF CFLAG:KEY:상태이상 & (POWER(2,KEY2-1))
+    RETURNF 1
+ELSE
+    RETURNF 0
+ENDIF

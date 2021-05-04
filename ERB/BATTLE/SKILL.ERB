@@ -1,10 +1,16 @@
 ﻿;적 1체를 공격하는 경우
 @SKILL_SINGLE_ATTACK(TARGETV,USERV,SKILLV,ISENEMY=0)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LNUM
 #DIM DYNAMIC TARGETV
 #DIM DYNAMIC USERV
 #DIM DYNAMIC SKILLV
 #DIM DYNAMIC DAMAGEV
 #DIM DYNAMIC ISENEMY;적이 공격하고 있는 경우
+#DIM DYNAMIC BASUTECHECK;bit연산으로 거는 상태이상 체크
+#DIM DYNAMIC BASUTECHANCE,5;상태이상 확률 기록
+#DIM DYNAMIC BASUTESUCCESS,5;상태이상 성공여부?
+#DIM DYNAMIC RESISTV;상태이상 저항 값
 IF !ISENEMY
     CFLAG:(FLAG:USERV):전회공격상대 = TARGETV
     CFLAG:(FLAG:USERV):전회보조행동 = 0
@@ -53,8 +59,88 @@ ELSE
             DAMAGEV = SKILL_CALC_ARMOR(TARGETV,SKILLV,DAMAGEV)
     ENDSELECT
     BASE:TARGETV:희망 -= DAMAGEV
-    PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% {DAMAGEV} 피해를 받았다!
-    WAITANYKEY
+    FOR LCOUNT,12,16,2
+        IF SKILL_DATA:SKILLV:LCOUNT != 0
+            SELECTCASE SKILL_DATA:SKILLV:LCOUNT
+                CASE 1;즉사부여
+                    IF (BASUTECHECK & 1) == 0
+                        BASUTECHECK += 1
+                        BASUTECHANCE:0 = SKILL_DATA:SKILLV:(LCOUNT+1)
+                    ENDIF
+                CASE 2;독부여
+                    IF (BASUTECHECK & 2) == 0
+                        BASUTECHECK += 2
+                        BASUTECHANCE:1 = SKILL_DATA:SKILLV:(LCOUNT+1)
+                    ENDIF
+                CASE 3;출혈부여
+                    IF (BASUTECHECK & 4) == 0
+                        BASUTECHECK += 4
+                        BASUTECHANCE:2 = SKILL_DATA:SKILLV:(LCOUNT+1)
+                    ENDIF
+                CASE 4;공포부여
+                    IF (BASUTECHECK & 8) == 0
+                        BASUTECHECK += 8
+                        BASUTECHANCE:3 = SKILL_DATA:SKILLV:(LCOUNT+1)
+                    ENDIF
+                CASE 5;격앙부여
+                    IF (BASUTECHECK & 16) == 0
+                        BASUTECHECK += 16
+                        BASUTECHANCE:4 = SKILL_DATA:SKILLV:(LCOUNT+1)
+                    ENDIF
+            ENDSELECT
+        ENDIF
+    NEXT
+    FOR LCOUNT,0,5
+        IF LCOUNT == 0
+            LNUM = 1
+        ELSE
+            LNUM = POWER(2,LCOUNT)
+        ENDIF
+        IF (BASUTECHECK & LNUM) != 0
+            ;상태이상판정
+            RESISTV = 0
+            IF LCOUNT == 1
+                RESISTV = 20 * BASE:TARGETV:독내성
+            ELSEIF LCOUNT == 2
+                RESISTV = 20 * BASE:TARGETV:독내성
+            ELSEIF LCOUNT == 2
+                RESISTV = 20 * BASE:TARGETV:독내성
+            ELSEIF LCOUNT == 2
+                RESISTV = 20 * BASE:TARGETV:독내성
+            ENDIF
+            IF (RAND:100 + RESISTV) <= BASUTECHANCE:LCOUNT
+                BASUTESUCCESS:LCOUNT = 1
+                IF (CFLAG:TARGET:상태이상 & LNUM) != 0
+                    BASUTESUCCESS:LCOUNT = 2
+                ELSE
+                    CFLAG:TARGETV:상태이상 += LNUM
+                ENDIF
+            ENDIF
+        ENDIF
+    NEXT
+    IF DAMAGEV != 0
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% {DAMAGEV} 피해를 받았다!
+    ENDIF
+    SIF BASUTESUCCESS:0 == 2
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 이미 쓰러져있다.
+    SIF BASUTESUCCESS:0 == 1
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 힘이 다해 쓰러졌다.
+    SIF BASUTESUCCESS:1 == 2
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 이미 독에 걸려있다.
+    SIF BASUTESUCCESS:1 == 1
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 독에 걸렸다!
+    SIF BASUTESUCCESS:2 == 2
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 이미 피를 흘리고 있다.
+    SIF BASUTESUCCESS:2 == 1
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 피를 흘리고 있다!
+    SIF BASUTESUCCESS:3 == 2
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 이미 겁을 먹고 있다.
+    SIF BASUTESUCCESS:3 == 1
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 공포에 떨고 있다!
+    SIF BASUTESUCCESS:4 == 2
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 이미 흥분해 있다.
+    SIF BASUTESUCCESS:4 == 1
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% 제어할 수 없는 분노에 빠졌다!
 ENDIF
 
 @SKILL_HEAL_SELF(USERV,SKILLV,ISENEMY=0)
@@ -95,7 +181,8 @@ IF SKILL_DATA:SKILLV:8 == 0 || RAND:100 > (100-SKILL_DATA:SKILLV:8)
             DAMAGEV = SKILL_CALC_ARMOR(USERV,SKILLV,DAMAGEV)
     ENDSELECT
     BASE:USERV:희망 += DAMAGEV
-    IF BASE:USERV:희망 > MAXBASE:USERV:희망
+    ;오버힐 스킬이 아닌 경우 체력을 최대치 이하로 한다
+    IF (BASE:USERV:희망 > MAXBASE:USERV:희망) && (SKILL_DATA:SKILLV:16 == 0)
         BASE:USERV:희망 = MAXBASE:USERV:희망
     ENDIF
     IF DAMAGEV != 0
