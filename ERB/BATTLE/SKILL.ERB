@@ -102,11 +102,11 @@ ELSE
             IF LCOUNT == 1
                 RESISTV = 20 * BASE:TARGETV:독내성
             ELSEIF LCOUNT == 2
-                RESISTV = 20 * BASE:TARGETV:독내성
-            ELSEIF LCOUNT == 2
-                RESISTV = 20 * BASE:TARGETV:독내성
-            ELSEIF LCOUNT == 2
-                RESISTV = 20 * BASE:TARGETV:독내성
+                RESISTV = 20 * BASE:TARGETV:출혈내성
+            ELSEIF LCOUNT == 3
+                RESISTV = 20 * BASE:TARGETV:공포내성
+            ELSEIF LCOUNT == 4
+                RESISTV = 20 * BASE:TARGETV:격앙내성
             ENDIF
             IF (RAND:100 + RESISTV) <= BASUTECHANCE:LCOUNT
                 BASUTESUCCESS:LCOUNT = 1
