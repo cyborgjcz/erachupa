@@ -1,0 +1,142 @@
+﻿;소유 스킬번호를 받아서 HP,SP 등이 충분한지 판정한다
+@AI_CHECK_COST(ENEMYV,SKILLNUM)
+#DIM DYNAMIC ENEMYV
+#DIM DYNAMIC SKILLNUM
+#DIM DYNAMIC SKILLV
+#DIM DYNAMIC COSTNUM
+#DIM DYNAMIC COSTVALUE
+
+SKILLV = AVAILABLE_SKILL:(TFLAG:ENEMYV):SKILLNUM
+COSTNUM = SKILL_DATA:SKILLV:11
+COSTVALUE = SKILL_DATA:SKILLV:10
+
+IF BASE:(TFLAG:ENEMYV):COSTNUM >= COSTVALUE
+    RETURN 1
+ELSE
+    RETURN 0
+ENDIF
+;
+;기본 인공지능.
+;자신이 체력이 낮을 때 자신이 가진 회복 스킬 사용 시도.
+;콤보로 지정된 스킬 순차적으로 시전.
+;
+@BATTLE_AI0_COMMAND(ENEMYV)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIM DYNAMIC LNUM
+#DIM DYNAMIC ENEMYV;전달받은 ENEMYV는 1~6으로 적 위치를 지정하는 숫자. TFLAG에 넣자.
+#DIM DYNAMIC RESULTVALUE,3
+#DIM DYNAMIC SKILLFIND,8;함수중 스킬 탐색
+#DIM DYNAMIC SKILLFINDLEN
+
+TRYCALLFORM ENEMY{NO:(TFLAG:ENEMYV)}_SKILL_FORAI
+
+;반환값 결정
+IF CFLAG:(TFLAG:ENEMYV):전회콤보사용
+    ;전회콤보를 사용한 경우
+    LNUM = COMBOV:(CFLAG:(TFLAG:ENEMYV):전회콤보사용-1):(CFLAG:(TFLAG:ENEMYV):차회콤보번호)
+    ;각각 스킬번호, 스킬유형, 공격대상
+    RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(LNUM-1)
+    RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+    RESULTVALUE:1 = CFLAG:(TFLAG:ENEMYV):전회공격상대
+    ;코스트 판정
+    CALL AI_CHECK_COST(ENEMYV,LNUM-1)
+    IF RESULT
+        IF COMBOV:(CFLAG:(TFLAG:ENEMYV):전회콤보사용):((CFLAG:(TFLAG:ENEMYV):차회콤보번호)+1)
+            ;만약 다음 콤보가 있다면 플래그에 기록한다
+            CFLAG:(TFLAG:ENEMYV):전회콤보사용 = LNUM + 1
+            CFLAG:(TFLAG:ENEMYV):차회콤보번호 = LNUM + 1
+        ELSE
+            ;없다면, 플래그를 비워서 다음 턴에는 또 다른 판정을 한다
+            CFLAG:(TFLAG:ENEMYV):전회콤보사용 = 0
+            CFLAG:(TFLAG:ENEMYV):차회콤보번호 = 0
+        ENDIF
+        ;최종 반환 스킬유형,공격대상, 스킬번호
+        RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+    ELSE
+        GOTO NORMAL_ATTACK
+    ENDIF
+ELSEIF ((BASE:(TFLAG:ENEMYV):희망) * 4) < MAXBASE:(TFLAG:ENEMYV):희망
+    ;체력이 반의 반 미만인경우. 회복 스킬 사용. 단 SP가 모자라면 다음 우선순위 회복 스킬로.
+    ;모두 SP가 모자라거나 적회복스톡 CFLAG가 떨어질 경우 일반 스킬로 이행
+    ;SKILLTYPES에서 HEAL 스킬 탐색
+    FOR LCOUNT,0,SKILLDATALEN
+        IF SKILLTYPES:LCOUNT == "HEAL"
+            SKILLFIND:(PRIORV:LCOUNT) = LCOUNT
+            SKILLFINDLEN += 1
+        ENDIF
+    NEXT
+    ;
+    LNUM = 0
+    IF SKILLFINDLEN > 0
+        FOR LCOUNT,0,SKILLFINDLEN
+            ;코스트 판정
+            CALL AI_CHECK_COST(ENEMYV,SKILLFIND:LCOUNT)
+            IF RESULT && CFLAG:(TFLAG:ENEMYV):적회복스톡 > 0
+                RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(SKILLFIND:LCOUNT)
+                RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+                RESULTVALUE:1 = (RAND:2)+1
+                CFLAG:(TFLAG:ENEMYV):적회복스톡 -= 1
+                RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+            ENDIF
+            LNUM += 1
+        NEXT
+    ENDIF
+    SIF LNUM == SKILLFINDLEN
+        GOTO RAND_SKILL
+ELSE
+    $RAND_SKILL
+    SELECTCASE RAND:7
+        CASE 0 TO 1
+            SIF COMBONUM == 0
+                GOTO NORMAL_ATTACK
+            ;콤보 시동
+            LNUM = RAND:COMBONUM
+            RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):((COMBOV:LNUM:0)-1)
+            RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+            RESULTVALUE:1 = (RAND:2)+1
+            ;코스트 판정, 실패 시 평타
+            CALL AI_CHECK_COST(ENEMYV,SKILLFIND:LCOUNT)
+            IF RESULT
+                CFLAG:(TFLAG:ENEMYV):전회공격상대 = RESULTVALUE:1
+                CFLAG:(TFLAG:ENEMYV):전회콤보사용 = LNUM+1
+                CFLAG:(TFLAG:ENEMYV):차회콤보번호 = 1
+                RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+            ELSE
+                GOTO NORMAL_ATTACK
+            ENDIF
+        CASE 2
+            ;스킬 공격
+            ;ATTACK 분류 스킬 검색
+            FOR LCOUNT,0,SKILLDATALEN
+                IF SKILLTYPES:LCOUNT == "ATTACK"
+                    SKILLFIND:(PRIORV:LCOUNT) = LCOUNT
+                    SKILLFINDLEN += 1
+                ENDIF
+            NEXT
+            LNUM = 0
+            IF SKILLFINDLEN > 0
+                FOR LCOUNT,0,SKILLFINDLEN
+                    ;코스트 판정
+                    CALL AI_CHECK_COST(ENEMYV,SKILLFIND:LCOUNT)
+                    IF RESULT
+                        RESULTVALUE:2 = AVAILABLE_SKILL:(TFLAG:ENEMYV):(SKILLFIND:LCOUNT)
+                        RESULTVALUE:0 = SKILL_DATA:(RESULTVALUE:2):0
+                        RESULTVALUE:1 = (RAND:2)+1
+                        RETURN RESULTVALUE:0, RESULTVALUE:1, RESULTVALUE:2
+                    ENDIF
+                    LNUM += 1
+                NEXT
+            ENDIF
+            SIF LNUM == SKILLFINDLEN
+                GOTO RAND_SKILL
+        CASE 3 TO 6
+            ;평타
+            $NORMAL_ATTACK
+            CFLAG:(TFLAG:ENEMYV):전회공격상대 = (RAND:2)+1
+            RETURN 0,CFLAG:(TFLAG:ENEMYV):전회공격상대,0
+    ENDSELECT
+ENDIF
+;RESULT:0 : 0 = "ATTACK", 1= "SKILL", 2= "GUARD", 3= "TRANS"
+;RESULT:1 : 타겟
+;RESULT:2 : SKILLV

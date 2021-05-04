@@ -1,0 +1,3 @@
+﻿ENEMY_SKILL.ERB의 @ENEMY100_SKILL_FORAI 등을 호출, 반환값 RESULTS:0, RESULTS:1...로 문자열을 받는다.
+또한 RESULT:0, RESULT:1 ...로 문자열을 받는다.
+문자열의 내용은 CSV에 수록된 초기스킬과 일치해야한다.

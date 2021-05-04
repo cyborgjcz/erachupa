@@ -87,6 +87,7 @@ RETURN 1
 
 #DIM DYNAMIC REMAINTIME
 #DIM DYNAMIC TIMECOUNT
+#DIM DYNAMIC POISONTIMER
 
 #DIM DYNAMIC UILEN = 12
 #DIMS DYNAMIC COMMESSAGE,2
@@ -95,6 +96,9 @@ RETURN 1
 #DIM DYNAMIC COM_TARGETV;커맨드 실행 대상
 #DIM DYNAMIC COM_USER;커맨드 실행 주체
 #DIM DYNAMIC COM_SKILLNUM;커맨드 실행 스킬 번호
+
+#DIMS DYNAMIC TALK_WHAT
+#DIM DYNAMIC TALK_WHATV
 
 IF TFLAG:0 < 1 ;첫턴처리
     {
@@ -109,6 +113,7 @@ ENDIF
 
 
 REMAINTIME = ATB_TIME
+POISONTIMER = POISONTIME
 CALL RESET_BATTLE_CURSOR
 
 DO
@@ -284,6 +289,7 @@ DO
     CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER)
     GETMILLISECOND
     REMAINTIME -= (RESULT - TIMECOUNT)
+    POISONTIMER -= (RESULT - TIMECOUNT)
     ;ATB처리
     IF REMAINTIME < 0
         IF !ISDYING(FLAG:동료1)
@@ -312,13 +318,28 @@ DO
                 BREAK;한번에 한명의 적만 행동한다
             ENDIF
         NEXT
-        REMAINTIME == ATB_TIME
+        REMAINTIME = ATB_TIME
         TFLAG:경과시간 += (RESULT - TIMECOUNT)
+    ENDIF
+    IF POISONTIMER <= 0
+        ;독 대미지 처리
+        FOR LCOUNT,1,3
+            IF (CFLAG:(FLAG:LCOUNT):상태이상 & 2) != 0
+                BASE:(FLAG:LCOUNT):희망 -= (MAXBASE:(FLAG:LCOUNT):희망 / 32)
+            ENDIF
+        NEXT
+        FOR LCOUNT,1,7
+            IF (CFLAG:(TFLAG:LCOUNT):상태이상 & 2) != 0
+                BASE:(TFLAG:LCOUNT):희망 -= (MAXBASE:(TFLAG:LCOUNT):희망 / 32)
+            ENDIF
+        NEXT
+        POISONTIMER = POISONTIME
     ENDIF
     ;적 행동
     IF ENEMY_MOVE
         CLEARLINE 1
         REUSELASTLINE
+        ;간이 AI 함수를 호출한다. CFLAG를 참조하여 얻은 함수명이 존재하지 않으면 AI0 호출
         TRYCCALLFORM BATTLE_AI{CFLAG:(TFLAG:ENEMY_MOVE):AI타입}_COMMAND,ENEMY_MOVE
         CATCH
             DEBUGPRINTFORML BATTLE_AI{CFLAG:(TFLAG:ENEMY_MOVE):AI타입}_COMMAND 호출 실패
@@ -352,6 +373,131 @@ DO
                 CLEARLINE 6+1+2+2+1
             ENDIF
             REUSELASTLINE
+            ;전투회화 TFLAG 복구
+            SIF !ISDYING(FLAG:동료1) && (TFLAG:불리전투회화스위치 & POWER(2,11))
+                TFLAG:불리전투회화스위치 -= POWER(2,11)
+            SIF !ISDYING(FLAG:동료2) && (TFLAG:불리전투회화스위치 & POWER(2,12))
+                TFLAG:불리전투회화스위치 -= POWER(2,12)
+            SIF !ISBASUTE(FLAG:동료1,2) && (TFLAG:불리전투회화스위치 & POWER(2,3))
+                TFLAG:불리전투회화스위치 -= POWER(2,3);동료1독
+            SIF !ISBASUTE(FLAG:동료2,2) && (TFLAG:불리전투회화스위치 & POWER(2,4))
+                TFLAG:불리전투회화스위치 -= POWER(2,4);동료2독
+            SIF !ISBASUTE(FLAG:동료1,3) && (TFLAG:불리전투회화스위치 & POWER(2,5))
+                TFLAG:불리전투회화스위치 -= POWER(2,5);동료1출혈
+            SIF !ISBASUTE(FLAG:동료2,3) && (TFLAG:불리전투회화스위치 & POWER(2,6))
+                TFLAG:불리전투회화스위치 -= POWER(2,6);동료2출혈
+            SIF !ISBASUTE(FLAG:동료1,4) && (TFLAG:불리전투회화스위치 & POWER(2,7))
+                TFLAG:불리전투회화스위치 -= POWER(2,7);동료1공포
+            SIF !ISBASUTE(FLAG:동료2,4) && (TFLAG:불리전투회화스위치 & POWER(2,8))
+                TFLAG:불리전투회화스위치 -= POWER(2,8);동료2공포
+            SIF !ISBASUTE(FLAG:동료1,5) && (TFLAG:불리전투회화스위치 & POWER(2,9))
+                TFLAG:불리전투회화스위치 -= POWER(2,9);동료1격앙
+            SIF !ISBASUTE(FLAG:동료2,5) && (TFLAG:불리전투회화스위치 & POWER(2,10))
+                TFLAG:불리전투회화스위치 -= POWER(2,10);동료2격앙
+            SIF (((MAXBASE:(FLAG:동료1):희망 * 4) / 5) < BASE:(FLAG:동료1):희망) && ((TFLAG:불리전투회화스위치 & 1) != 0)
+                TFLAG:불리전투회화스위치 -= 1
+            SIF (((MAXBASE:(FLAG:동료2):희망 * 4) / 5) < BASE:(FLAG:동료2):희망) && ((TFLAG:불리전투회화스위치 & 2) != 0)
+                TFLAG:불리전투회화스위치 -= 2
+            ;자동 전투회화
+            TALK_WHAT =
+            TALK_WHATV = 0
+            IF CFLAG:(FLAG:동료1):상태이상 || CFLAG:(FLAG:동료2):상태이상
+                ;상태이상 전투회화
+                IF ISDYING(FLAG:동료1) && !(TFLAG:불리전투회화스위치 & POWER(2,11))
+                    ; 동료1 전투불능
+                    TALK_WHAT '= "DYING"
+                    TALK_WHATV = 1
+                    TCALLER = 2
+                    TFLAG:불리전투회화스위치 += POWER(2,11)
+                ELSEIF ISDYING(FLAG:동료2) && !(TFLAG:불리전투회화스위치 & POWER(2,12))
+                    ; 동료2 전투불능
+                    TALK_WHAT '= "DYING"
+                    TALK_WHATV = 2
+                    TCALLER = 1
+                    TFLAG:불리전투회화스위치 += POWER(2,12)
+                ELSEIF ISBASUTE(FLAG:동료1,2) && !(TFLAG:불리전투회화스위치 & POWER(2,3))
+                    ; 동료1 독
+                    TALK_WHAT '= "POISON"
+                    TALK_WHATV = 1
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,3)
+                ELSEIF ISBASUTE(FLAG:동료2,2) && !(TFLAG:불리전투회화스위치 & POWER(2,4))
+                    ; 동료2 독
+                    TALK_WHAT '= "POISON"
+                    TALK_WHATV = 2
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,4)
+                ELSEIF ISBASUTE(FLAG:동료1,3) && !(TFLAG:불리전투회화스위치 & POWER(2,5))
+                    ; 동료1 출혈
+                    TALK_WHAT '= "BLEEDING"
+                    TALK_WHATV = 1
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,5)
+                ELSEIF ISBASUTE(FLAG:동료2,3) && !(TFLAG:불리전투회화스위치 & POWER(2,6))
+                    ; 동료2 출혈
+                    TALK_WHAT '= "BLEEDING"
+                    TALK_WHATV = 2
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,6)
+                ELSEIF ISBASUTE(FLAG:동료1,4) && !(TFLAG:불리전투회화스위치 & POWER(2,7))
+                    ; 동료1 공포
+                    TALK_WHAT '= "TERRIFIED"
+                    TALK_WHATV = 1
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,7)
+                ELSEIF ISBASUTE(FLAG:동료2,4) && !(TFLAG:불리전투회화스위치 & POWER(2,8))
+                    ; 동료2 공포
+                    TALK_WHAT '= "TERRIFIED"
+                    TALK_WHATV = 2
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,8)
+                ELSEIF ISBASUTE(FLAG:동료1,5) && !(TFLAG:불리전투회화스위치 & POWER(2,9))
+                    ; 동료1 격앙
+                    TALK_WHAT '= "ENRAGE"
+                    TALK_WHATV = 1
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,9)
+                ELSEIF ISBASUTE(FLAG:동료2,5) && !(TFLAG:불리전투회화스위치 & POWER(2,10))
+                    ; 동료2 격앙
+                    TALK_WHAT '= "ENRAGE"
+                    TALK_WHATV = 2
+                    TCALLER = (RAND:2)+1
+                    TFLAG:불리전투회화스위치 += POWER(2,10)
+                ENDIF
+            ELSEIF ((BASE:(FLAG:동료1):희망 * 5) < MAXBASE:(FLAG:동료1):희망) && ((TFLAG:불리전투회화스위치 & 1) == 0)
+                ;동료1 체력 낮음 전투회화
+                TALK_WHAT '= "CRITHP"
+                TALK_WHATV = 1
+                TCALLER = (RAND:2)+1
+                TFLAG:불리전투회화스위치 += 1
+            ELSEIF ((BASE:(FLAG:동료2):희망 * 5) < MAXBASE:(FLAG:동료2):희망) && ((TFLAG:불리전투회화스위치 & 2) == 0)
+                ;동료2 체력 낮음 전투회화
+                TALK_WHAT '= "CRITHP"
+                TALK_WHATV = 2
+                TCALLER = (RAND:2)+1
+                TFLAG:불리전투회화스위치 += 2
+            ELSE
+                IF TFLAG:경과시간 >= 120000 && TFLAG:전투경과시간회화 == 0
+                    TALK_WHAT '= "TIMEFLIES"
+                    TALK_WHATV = 1
+                    TCALLER = (RAND:2)+1
+                    TFLAG:전투경과시간회화 += 1
+                ELSEIF TFLAG:경과시간 >= 240000 && TFLAG:전투경과시간회화 == 1
+                    TALK_WHAT '= "TIMEFLIES"
+                    TALK_WHATV = 2
+                    TCALLER = (RAND:2)+1
+                    TFLAG:전투경과시간회화 += 1
+                ELSEIF TFLAG:경과시간 >= 360000 && TFLAG:전투경과시간회화 == 2
+                    TALK_WHAT '= "TIMEFLIES"
+                    TALK_WHATV = 3
+                    TCALLER = (RAND:2)+1
+                    TFLAG:전투경과시간회화 += 1
+                ENDIF
+            ENDIF
+            IF TALK_WHAT != ""
+                CALL BATTLE_TALK(TALK_WHAT,TCALLER,,TALK_WHATV)
+                CALL BATTLE_TALK(TALK_WHAT,TCALLER^3,1,TALK_WHATV)
+            ENDIF
         ENDIF
     ENDIF
     $BATTLE_END
@@ -371,6 +517,7 @@ FOR LCOUNT,0,TFLAG:적캐릭터초기화
 NEXT
 TFLAG:적캐릭터초기화 = 0
 @RUN_BATTLE_COMMAND(COMMANDS,TARGETV,USERV,SKILLV,ISENEMY=0)
+#DIM DYNAMIC LNUM
 #DIMS DYNAMIC COMMANDS
 #DIM DYNAMIC TARGETV
 #DIM DYNAMIC USERV
@@ -387,6 +534,26 @@ SELECTCASE COMMANDS
     CASE "TRANS"
         SKILLV = 0
 ENDSELECT
+
+;격앙 처리
+{
+    IF ((!ISENEMY && (CFLAG:(FLAG:USERV):상태이상 & 16) != 0) ||
+    (ISENEMY && (CFLAG:(TFLAG:USERV):상태이상 & 16) != 0)) && (RAND:3 == 0)
+}
+    PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% 엉뚱한 공격을 했다!
+    TARGETV = 0
+    IF !ISENEMY
+        DO
+            LNUM = (RAND:6)+1
+            SIF TFLAG:LNUM != 0
+                TARGETV = LNUM
+        LOOP TARGETV == 0
+    ELSEIF ISENEMY
+        TARGETV = (RAND:2)+1
+    ENDIF
+    SKILLV = 0
+ENDIF
+
 ;전투불능의 적을 공격할 수는 없다
 SIF !ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(TFLAG:TARGETV)
     RETURN 0
@@ -414,6 +581,33 @@ IF SKILL_DATA:SKILLV:10 > 0
         ENDIF
     ENDIF
 ENDIF
+
+;출혈 처리
+IF !ISENEMY && (CFLAG:(FLAG:USERV):상태이상 & 4) != 0
+    BASE:(FLAG:USERV):희망 -= (MAXBASE:(FLAG:USERV):희망 / 32)
+    PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% {MAXBASE:(FLAG:USERV):희망 / 32} 피해를 입었다!
+    WAITANYKEY
+ENDIF
+IF ISENEMY && (CFLAG:(TFLAG:USERV):상태이상 & 4) != 0
+    BASE:(TFLAG:USERV):희망 -= (MAXBASE:(TFLAG:USERV):희망 / 32)
+    PRINTFORML ({USERV}) %조사처리(CALLNAME:(TFLAG:USERV),"은")% {MAXBASE:(TFLAG:USERV):희망 / 32} 피해를 입었다!
+    WAITANYKEY
+ENDIF
+
+;공포 처리
+{
+    IF ((!ISENEMY && (CFLAG:(FLAG:USERV):상태이상 & 8) != 0) ||
+    (ISENEMY && (CFLAG:(TFLAG:USERV):상태이상 & 8) != 0)) && (RAND:3 == 0)
+}
+    IF ISENEMY
+        PRINTFORML ({USERV}) %조사처리(CALLNAME:(TFLAG:USERV),"은")% 움직일 수 없다!
+    ELSEIF !ISENEMY
+        PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% 움직일 수 없다!
+    ENDIF
+    WAITANYKEY
+    GOTO SKIP_ACTION
+ENDIF
+
 ;여기서 실제 스킬 내용 실행
 ;스킬 유형은 공격, 범위 유형은 단일일때
 IF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
@@ -425,7 +619,7 @@ ELSEIF SKILL_DATA:SKILLV:0 == 1 && SKILL_DATA:SKILLV:5 == 1
 ELSEIF SKILL_DATA:SKILLV:0 == 2
     CALL SKILL_GUARD(USERV,SKILLV,ISENEMY)
 ENDIF
-
+$SKIP_ACTION
 IF !ISENEMY
     CFLAG:(FLAG:USERV):ATB카운터 = 0
 ELSEIF ISENEMY
@@ -605,6 +799,11 @@ ENDSELECT
 #DIM REF R_USERV
 
 #DIM DYNAMIC SKILLV
+
+SIF ISDYING(FLAG:동료1) && (STRFIND("qweasd",KEYS) != -1)
+    RETURN 0
+SIF ISDYING(FLAG:동료2) && (STRFIND("uiojkl",KEYS) != -1)
+    RETURN 0
 IF KEYS == "탌" || KEYS == ""
     R_COMMANDS '= ""
     R_TARGETV = 0
@@ -664,7 +863,6 @@ SELECTCASE TFLAG:동료1ATB커서상태
                 TFLAG:동료1스킬커서위치 = MOVE_BATTLE_TARGET_CURSOR("d",17)
             CASE "q"
                 SKILLV = (AVAILABLE_SKILL:(FLAG:동료1):(TFLAG:동료1스킬커서위치))
-                DEBUGPRINTFORML SKILLV = {SKILLV} (SKILL_DATA:SKILLV:1)+1 = {(SKILL_DATA:SKILLV:1)+1}
                 IF (SKILL_DATA:SKILLV:2 <= BASE:(FLAG:동료1):((SKILL_DATA:SKILLV:1)+1) || SKILL_DATA:SKILLV:3 != 0)
                     IF SKILL_DATA:SKILLV:5 == 0
                         TFLAG:동료1ATB커서상태 = 4
@@ -983,8 +1181,3 @@ ELSEIF LNUM == 17 || LNUM == 18
             ENDIF
     ENDSELECT
 ENDIF
-
-@ISDYING(KEY)
-#FUNCTION
-#DIM DYNAMIC KEY
-RETURNF CFLAG:KEY:상태이상 & 1
