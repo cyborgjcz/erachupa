@@ -289,7 +289,7 @@ DO
     CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER)
     GETMILLISECOND
     REMAINTIME -= (RESULT - TIMECOUNT)
-    POISONTIME -= (RESULT - TIMECOUNT)
+    POISONTIMER -= (RESULT - TIMECOUNT)
     ;ATB처리
     IF REMAINTIME < 0
         IF !ISDYING(FLAG:동료1)
@@ -321,16 +321,18 @@ DO
         REMAINTIME = ATB_TIME
         TFLAG:경과시간 += (RESULT - TIMECOUNT)
     ENDIF
-    IF POISONTIMER < 0
+    IF POISONTIMER <= 0
         ;독 대미지 처리
-        ;HERE
-        [SKIPSTART]
         FOR LCOUNT,1,3
-            
+            IF (CFLAG:(FLAG:LCOUNT):상태이상 & 2) != 0
+                BASE:(FLAG:LCOUNT):희망 -= (MAXBASE:(FLAG:LCOUNT):희망 / 32)
+            ENDIF
         NEXT
         FOR LCOUNT,1,7
+            IF (CFLAG:(TFLAG:LCOUNT):상태이상 & 2) != 0
+                BASE:(TFLAG:LCOUNT):희망 -= (MAXBASE:(TFLAG:LCOUNT):희망 / 32)
+            ENDIF
         NEXT
-        [SKIPEND]
         POISONTIMER = POISONTIME
     ENDIF
     ;적 행동
@@ -515,6 +517,7 @@ FOR LCOUNT,0,TFLAG:적캐릭터초기화
 NEXT
 TFLAG:적캐릭터초기화 = 0
 @RUN_BATTLE_COMMAND(COMMANDS,TARGETV,USERV,SKILLV,ISENEMY=0)
+#DIM DYNAMIC LNUM
 #DIMS DYNAMIC COMMANDS
 #DIM DYNAMIC TARGETV
 #DIM DYNAMIC USERV
@@ -531,6 +534,26 @@ SELECTCASE COMMANDS
     CASE "TRANS"
         SKILLV = 0
 ENDSELECT
+
+;격앙 처리
+{
+    IF ((!ISENEMY && (CFLAG:(FLAG:USERV):상태이상 & 16) != 0) ||
+    (ISENEMY && (CFLAG:(TFLAG:USERV):상태이상 & 16) != 0)) && (RAND:3 == 0)
+}
+    PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% 엉뚱한 공격을 했다!
+    TARGETV = 0
+    IF !ISENEMY
+        DO
+            LNUM = (RAND:6)+1
+            SIF TFLAG:LNUM != 0
+                TARGETV = LNUM
+        LOOP TARGETV == 0
+    ELSEIF ISENEMY
+        TARGETV = (RAND:2)+1
+    ENDIF
+    SKILLV = 0
+ENDIF
+
 ;전투불능의 적을 공격할 수는 없다
 SIF !ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(TFLAG:TARGETV)
     RETURN 0
@@ -558,6 +581,33 @@ IF SKILL_DATA:SKILLV:10 > 0
         ENDIF
     ENDIF
 ENDIF
+
+;출혈 처리
+IF !ISENEMY && (CFLAG:(FLAG:USERV):상태이상 & 4) != 0
+    BASE:(FLAG:USERV):희망 -= (MAXBASE:(FLAG:USERV):희망 / 32)
+    PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% {MAXBASE:(FLAG:USERV):희망 / 32} 피해를 입었다!
+    WAITANYKEY
+ENDIF
+IF ISENEMY && (CFLAG:(TFLAG:USERV):상태이상 & 4) != 0
+    BASE:(TFLAG:USERV):희망 -= (MAXBASE:(TFLAG:USERV):희망 / 32)
+    PRINTFORML ({USERV}) %조사처리(CALLNAME:(TFLAG:USERV),"은")% {MAXBASE:(TFLAG:USERV):희망 / 32} 피해를 입었다!
+    WAITANYKEY
+ENDIF
+
+;공포 처리
+{
+    IF ((!ISENEMY && (CFLAG:(FLAG:USERV):상태이상 & 8) != 0) ||
+    (ISENEMY && (CFLAG:(TFLAG:USERV):상태이상 & 8) != 0)) && (RAND:3 == 0)
+}
+    IF ISENEMY
+        PRINTFORML ({USERV}) %조사처리(CALLNAME:(TFLAG:USERV),"은")% 움직일 수 없다!
+    ELSEIF !ISENEMY
+        PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% 움직일 수 없다!
+    ENDIF
+    WAITANYKEY
+    GOTO SKIP_ACTION
+ENDIF
+
 ;여기서 실제 스킬 내용 실행
 ;스킬 유형은 공격, 범위 유형은 단일일때
 IF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
@@ -569,7 +619,7 @@ ELSEIF SKILL_DATA:SKILLV:0 == 1 && SKILL_DATA:SKILLV:5 == 1
 ELSEIF SKILL_DATA:SKILLV:0 == 2
     CALL SKILL_GUARD(USERV,SKILLV,ISENEMY)
 ENDIF
-
+$SKIP_ACTION
 IF !ISENEMY
     CFLAG:(FLAG:USERV):ATB카운터 = 0
 ELSEIF ISENEMY

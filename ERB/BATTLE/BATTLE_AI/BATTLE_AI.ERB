@@ -86,7 +86,7 @@ ELSEIF ((BASE:(TFLAG:ENEMYV):희망) * 4) < MAXBASE:(TFLAG:ENEMYV):희망
         GOTO RAND_SKILL
 ELSE
     $RAND_SKILL
-    SELECTCASE RAND:20
+    SELECTCASE RAND:7
         CASE 0 TO 1
             SIF COMBONUM == 0
                 GOTO NORMAL_ATTACK
@@ -105,7 +105,7 @@ ELSE
             ELSE
                 GOTO NORMAL_ATTACK
             ENDIF
-        CASE 7 TO 19,2
+        CASE 2
             ;스킬 공격
             ;ATTACK 분류 스킬 검색
             FOR LCOUNT,0,SKILLDATALEN
