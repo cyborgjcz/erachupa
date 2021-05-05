@@ -285,10 +285,16 @@ SELECTCASE SKILL_DATA:SKILLV:7
         RETURNF DAMAGEV
     CASE 1
         ;방어력 계산 시 예리 *2의 제곱근 + 방어력으로 나눈다
-        RETURNF (DAMAGEV / (SQRT((BASE:TARGETV:예리 * 2) + BASE:TARGETV:방어력) + 1)) / ((CFLAG:TARGETV:방어) + 1)
+        DAMAGEV = DAMAGEV / (SQRT((BASE:TARGETV:예리 * 2) + BASE:TARGETV:방어력) + 1)
+        SIF CFLAG:TARGETV:방어
+            TIMES DAMAGEV, 0.50
+        RETURNF DAMAGEV
     CASE 2
         ;방어력 반감
-        RETURNF (DAMAGEV / (SQRT((BASE:TARGETV:예리 * 2) + BASE:TARGETV:방어력)/2 + 1)) / ((CFLAG:TARGETV:방어) + 1)
+        DAMAGEV = DAMAGEV / (SQRT((BASE:TARGETV:예리 * 2) + BASE:TARGETV:방어력)/2 + 1)
+        SIF CFLAG:TARGETV:방어
+            TIMES DAMAGEV, 0.50
+        RETURNF DAMAGEV
     CASE 3
         ;전체HP비례피해
         RETURNF MAXBASE:TARGETV:희망 * (DAMAGE/100)

@@ -41,7 +41,7 @@ LNAME = %CALLNAME:[[나오]]%
 LTEXT = 쪼매 부끄럽지만...
 CALL TALK_WITH_IMG(FACE([[나오]],3),LNAME,LTEXT)
 WAITANYKEY
-LTEXT = %BYNAMES([[나오]],PARTNER([[나오]]))%한테는 안 진데이!
+LTEXT = %BUDDY([[나오]])%한테는 안 진데이!
 CALL TALK_WITH_IMG(FACE([[나오]],5),LNAME,LTEXT)
 WAITANYKEY
 PRINTFORM %조사처리(CALLNAME:[[나오]],"은")% 적을 있는 힘껏 공격했다.
