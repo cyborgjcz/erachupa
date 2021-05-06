@@ -40,15 +40,62 @@ RETURNF (POWER(2 * NEXTLV,3) + POWER(9 * NEXTLV,2) + (61 * NEXTLV))/6
 
 ;등록번호, 레벨업 횟수를 인수로 받아 스탯 상승 처리
 @RPG_STATUP(KEYV,NUMV)
+#DIM DYNAMIC LCOUNT
 #DIM DYNAMIC KEYV
 #DIM DYNAMIC NUMV
 #DIM DYNAMIC LOOPV
 
-
-[SKIPSTART]
+#DIM DYNAMIC CURSORV
+#DIM DYNAMIC PLUSV,3
+#DIM DYNAMIC ERASEMORE
 LOOPV = 1
-
 DO
-;HERE
+    PRINTFORML %CALLNAME:KEYV%의 능력치를 {NUMV}만큼 분배해주세요.
+    FOR LCOUNT,0,3
+        PRINTFORM %BASENAME:(LCOUNT+2)%
+        IF CURSORV == LCOUNT
+            PRINT ＜
+        ELSE
+            PRINT_SPACE 100
+        ENDIF
+        PRINTFORM {BASE:KEYV:(LCOUNT+2)} + {PLUSV:LCOUNT}
+        PRINTL
+    NEXT
+    PRINT_SPACE 420
+    PRINT [w] 위　 
+    PRINT_SPACE 420
+    SIF (PLUSV:0 + PLUSV:1 + PLUSV:2) == NUMV
+        PRINT [u] 결정
+    PRINTL
+    PRINT [a] 감소 
+    PRINT [s] 아래 
+    PRINT [d] 증가 
+    ONEINPUTS
+    SELECTCASE RESULTS
+        CASE "w"
+            SIF CURSORV > 0
+                CURSORV -= 1
+        CASE "s"
+            SIF CURSORV < 2
+                CURSORV += 1
+        CASE "a"
+            SIF PLUSV:CURSORV > 0
+                PLUSV:CURSORV -= 1
+        CASE "d"
+            SIF PLUSV:CURSORV < NUMV && (PLUSV:0 + PLUSV:1 + PLUSV:2) < NUMV
+                PLUSV:CURSORV += 1
+        CASE "u"
+            SIF (PLUSV:0 + PLUSV:1 + PLUSV:2) == NUMV
+                LOOPV = 0
+    ENDSELECT
+    ERASEMORE = 0
+    SIF RESULTS != ""
+        ERASEMORE = 1
+    IF LOOPV
+        CLEARLINE 6 + ERASEMORE
+        REUSELASTLINE
+    ENDIF
 LOOP LOOPV
-[SKIPEND]
+FOR LCOUNT,0,3
+    BASE:KEYV:(LCOUNT+2) += PLUSV:LCOUNT
+NEXT
