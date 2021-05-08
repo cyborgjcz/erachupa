@@ -1,0 +1,130 @@
+﻿;레벨업 함수. ;반환값은 레벨업한 횟수이다. 
+;이것은 함수 호출 후 출력 텍스트 및 능력 상승 등에 반영한다
+@LEVELUP(KEYV)
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC LSWITCH
+#DIM DYNAMIC PASTLV
+LSWITCH = 1
+PASTLV = BASE:KEYV:레벨
+DO
+    IF CHECK_RPG_LVUP(KEYV)
+        RPG_EXP:KEYV:0 -= NEXT_RPG_EXP(KEYV)
+        BASE:KEYV:레벨 += 1
+    ELSE 
+        LSWITCH = 0
+    ENDIF
+LOOP LSWITCH
+SIF PASTLV < BASE:KEYV:레벨
+    RETURN BASE:KEYV:레벨 - PASTLV
+RETURN 0
+
+;다음 레벨까지 경험치와 현재 경험치를 대조해 레벨업 여부 판정
+@CHECK_RPG_LVUP(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+
+SIF RPG_EXP:KEYV:0 >= NEXT_RPG_EXP(KEYV)
+    RETURNF 1
+RETURNF 0
+
+;경험치 0을 보유하고 있을 때 다음 레벨까지 필요한 경험치를 반환
+;즉, NEXT EXP라고 예쁘게 표시할 때는 RPG_EXP 값을 빼줘야한다.
+@NEXT_RPG_EXP(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC NEXTLV
+#DIM DYNAMIC NEXTEXP
+NEXTLV = BASE:KEYV:레벨 + 1
+
+RETURNF (POWER(2 * NEXTLV,3) + POWER(9 * NEXTLV,2) + (61 * NEXTLV))/6
+
+;등록번호, 레벨업 횟수를 인수로 받아 스탯 상승 처리
+@RPG_STATUP(KEYV,NUMV)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC NUMV
+#DIM DYNAMIC LOOPV
+
+#DIM DYNAMIC CURSORV
+#DIM DYNAMIC PLUSV,3
+#DIM DYNAMIC ERASEMORE
+LOOPV = 1
+NUMV *= 2
+DO
+    PRINTFORML %CALLNAME:KEYV%의 능력치를 {NUMV}만큼 분배해주세요.
+    FOR LCOUNT,0,3
+        PRINTFORM %BASENAME:(LCOUNT+2)%
+        IF CURSORV == LCOUNT
+            PRINT ＜
+        ELSE
+            PRINT_SPACE 100
+        ENDIF
+        PRINTFORM {BASE:KEYV:(LCOUNT+2)} + {PLUSV:LCOUNT}
+        PRINTL
+    NEXT
+    PRINT_SPACE 420
+    PRINT [w] 위　 
+    PRINT_SPACE 420
+    SIF (PLUSV:0 + PLUSV:1 + PLUSV:2) == NUMV
+        PRINT [u] 결정
+    PRINTL
+    PRINT [a] 감소 
+    PRINT [s] 아래 
+    PRINT [d] 증가 
+    ONEINPUTS
+    SELECTCASE RESULTS
+        CASE "w"
+            SIF CURSORV > 0
+                CURSORV -= 1
+        CASE "s"
+            SIF CURSORV < 2
+                CURSORV += 1
+        CASE "a"
+            SIF PLUSV:CURSORV > 0
+                PLUSV:CURSORV -= 1
+        CASE "d"
+            SIF PLUSV:CURSORV < NUMV && (PLUSV:0 + PLUSV:1 + PLUSV:2) < NUMV
+                PLUSV:CURSORV += 1
+        CASE "u"
+            SIF (PLUSV:0 + PLUSV:1 + PLUSV:2) == NUMV
+                LOOPV = 0
+    ENDSELECT
+    ERASEMORE = 0
+    SIF RESULTS != ""
+        ERASEMORE = 1
+    IF LOOPV
+        CLEARLINE 6 + ERASEMORE
+        REUSELASTLINE
+    ENDIF
+LOOP LOOPV
+FOR LCOUNT,0,3
+    BASE:KEYV:(LCOUNT+2) += PLUSV:LCOUNT
+NEXT
+
+;등록번호, 레벨업 횟수를 인수로 받아 스탯 상승 처리
+@ENEMY_LEVEL(KEYV)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC NUMV
+#DIM DYNAMIC PLUSV,3
+SIF BASE:KEYV:레벨 == CFLAG:KEYV:초기레벨
+    RETURN 0
+NUMV = BASE:KEYV:레벨 - CFLAG:KEYV:초기레벨
+IF NUMV > 0
+    FOR LCOUNT,0,NUMV
+        PLUSV:(RAND:3) += 1
+    NEXT
+    FOR LCOUNT,0,3
+        BASE:KEYV:(LCOUNT+2) += PLUSV:LCOUNT
+    NEXT
+ELSEIF NUMV < 0
+    FOR LCOUNT,0,NUMV,-1
+        PLUSV:(RAND:3) -= 1
+    NEXT
+    FOR LCOUNT,0,3
+        BASE:KEYV:(LCOUNT+2) += PLUSV:LCOUNT
+    NEXT
+ENDIF
+BASE:6 = SQRT(8*POWER(BASE:KEYV:레벨,2))+SQRT(BASE:KEYV:레벨 * CFLAG:KEYV:공격성장계수)
+BASE:7 = SQRT(8*POWER(BASE:KEYV:레벨,2))+SQRT(BASE:KEYV:레벨 * CFLAG:KEYV:방어성장계수)
+RETURN 1

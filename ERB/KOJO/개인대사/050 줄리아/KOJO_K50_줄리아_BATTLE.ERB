@@ -40,3 +40,24 @@ ELSE
     WAITANYKEY
     RETURN 1
 ENDIF
+
+@KOJO_BATTLE_SKILL7_K50
+;도깨비불
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+SELECTCASE RAND:2
+    CASE 0
+        LTEXT = 핫하!
+        CALL TALK_WITH_IMG(FACE([[줄리아]],2),LNAME,LTEXT)
+        WAITANYKEY
+        LTEXT = 시끄러운 일 벌이는 게 특기거든!
+        CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+        WAITANYKEY
+    CASE 1
+        LTEXT = 1, 2, 3, GO!
+        CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+        WAITANYKEY
+ENDSELECT
+PRINTFORM %조사처리(CALLNAME:[[줄리아]],"은")% 차례대로 터지는 폭발을 일으켜 공격했다.
+WAITANYKEY
