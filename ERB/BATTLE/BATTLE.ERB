@@ -34,8 +34,8 @@ FOR LCOUNT,1,7
         BASE:TO_ENTRY:레벨 = ENEMY_LV
     ELSE
         BASE:TO_ENTRY:레벨 = CFLAG:ENEMY_KEY:초기레벨
-    ENDIF    
-    ;초기레벨+세트된레벨차에 따른 능력증감 추가예정
+    ENDIF
+    CALL ENEMY_LEVEL(TO_ENTRY)
     ;적 보유 스킬 설정.
     FOR LCOUNT2,22,30
         AVAILABLE_SKILL:TO_ENTRY:(-22+LCOUNT2) = CFLAG:TO_ENTRY:LCOUNT2
