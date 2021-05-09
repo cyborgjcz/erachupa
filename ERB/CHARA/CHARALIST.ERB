@@ -94,10 +94,18 @@ DO
         PRINTSL CSTR:KEYV:LCOUNT
     NEXT
     DRAWLINE
+    SIF KEYV == FLAG:1 || KEYV == FLAG:2
+        PRINTBUTTON "[a], [d] 다른 동료를 본다","a"
     PRINTBUTTON "[x] 돌아간다","x"
     ONEINPUTS
     SELECTCASE RESULTS
         CASE "x"
             LOOPSWITCH = 0
+        CASE "a","d"
+            IF KEYV == FLAG:1
+                KEYV = FLAG:2
+            ELSEIF KEYV == FLAG:2
+                KEYV = FLAG:1
+            ENDIF
     ENDSELECT
 LOOP LOOPSWITCH
