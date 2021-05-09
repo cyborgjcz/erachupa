@@ -10,15 +10,12 @@ BASE:CHARAV:회피율 += 17
 @EQ_스킬수정_13(CHARAV)
 #DIM DYNAMIC CHARAV
 @EQ_위치_13
-#FUNCTION
-RETURNF 0
+CHUPA_EQUIP_PLACE:13 = 0
 @EQ_이름_13
-#FUNCTIONS
-RETURNF "인피니트 스카이"
+CHUPA_EQUIP_NAME:13 '= "인피니트 스카이"
 @EQ_설명_13
-#FUNCTIONS
 {
-    RETURNF "방어력+280 회피율+17 희망+200 패기,예리,자비+1
+    CHUPA_EQUIP_HELP:13 '= "방어력+280 회피율+17 희망+200 패기,예리,자비+1
     \n그건 마치, 무한히 펼쳐지는 하늘처럼...
     \n우리들의 발자국은 새로운 지도가 된다.
     \n자, 빛나는 날들을 향해, 함께 도전을 계속하자!"

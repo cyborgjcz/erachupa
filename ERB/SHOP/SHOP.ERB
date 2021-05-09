@@ -87,6 +87,9 @@ SELECTCASE KEY
         IF RESULT == 1
             ;통상 소라 이벤트
         ENDIF
+    CASE 500
+        SIF FLAG:탐색대상던전 != 0
+            CALL SHOW_CHARA_INFO(FLAG:1)
     CASE 600
         SAVEGAME
     CASE 700
