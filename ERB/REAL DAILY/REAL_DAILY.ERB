@@ -1,13 +1,16 @@
 ﻿@REAL_DAILY
 #DIM DYNAMIC MONTHV
 #DIM DYNAMIC DAYV
+#DIM DYNAMIC YEARV
 GETTIME
 MONTHV = (RESULT % 10000000000000) / 100000000000
 DAYV = (RESULT % 100000000000) / 1000000000
+YEARV = RESULT / 10000000000000
 
 RESULT = 0
 
-SIF FLAG:리얼데일리월 == MONTHV && FLAG:리얼데일리일 == DAYV
+DEBUGPRINTFORML MONTHV = {MONTHV} DAYV = {DAYV} FLAG:5 = {FLAG:5} FLAG:6 = {FLAG:6}
+SIF FLAG:리얼데일리월 == MONTHV && FLAG:리얼데일리일 == DAYV && FLAG:리얼데일리년 == YEARV
     RETURN 0
 SELECTCASE MONTHV
     CASE 1
@@ -89,6 +92,10 @@ SELECTCASE MONTHV
             CASE 5
                 ;미나세 이오리 생일
                 TRYCALL BIRTHDAY_EVENT,[[이오리]]
+            CASE 9
+                ;테스트
+                CALL TALK_WITH_IMG(FACE([[타카네]],1),CALLNAME:[[타카네]],"오늘은 별로 특별한 날은 아니지만","테스트 문자열을 출력해야하는군요","기묘한 일이네요...")
+                RESULT = 1
             CASE 17
                 ;키타카미 레이카 생일
                 TRYCALL BIRTHDAY_EVENT,[[레이카]]
@@ -220,6 +227,7 @@ ENDSELECT
 IF RESULT
     FLAG:리얼데일리월 = MONTHV
     FLAG:리얼데일리일 = DAYV
+    FLAG:리얼데일리년 = YEARV
 ENDIF
 
 RETURN RESULT
