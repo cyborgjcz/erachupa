@@ -1,0 +1,225 @@
+﻿@REAL_DAILY
+#DIM DYNAMIC MONTHV
+#DIM DYNAMIC DAYV
+GETTIME
+MONTHV = (RESULT % 10000000000000) / 100000000000
+DAYV = (RESULT % 100000000000) / 1000000000
+
+RESULT = 0
+
+SIF FLAG:리얼데일리월 == MONTHV && FLAG:리얼데일리일 == DAYV
+    RETURN 0
+SELECTCASE MONTHV
+    CASE 1
+        SELECTCASE DAYV
+            CASE 1
+                ;신정
+            CASE 8
+                ;에밀리 스튜어트 생일
+                TRYCALL BIRTHDAY_EVENT,[[에밀리]]
+            CASE 18
+                ;키타자와 시호 생일
+                TRYCALL BIRTHDAY_EVENT,[[시호]]
+            CASE 21
+                ;시죠 타카네 생일
+                TRYCALL BIRTHDAY_EVENT,[[타카네]]
+            CASE 27
+                ;마카베 미즈키 생일
+                TRYCALL BIRTHDAY_EVENT,[[미즈키]]
+        ENDSELECT
+    CASE 2
+        SELECTCASE DAYV
+            CASE 4
+                ;토쿠가와 마츠리 생일
+                TRYCALL BIRTHDAY_EVENT,[[마츠리]]
+            CASE 12
+                ;요코야마 나오 생일
+                TRYCALL BIRTHDAY_EVENT,[[나오]]
+            CASE 14
+                ;해피 발렌타인
+            CASE 20
+                ;하코자키 세리카 생일
+                TRYCALL BIRTHDAY_EVENT,[[세리카]]
+            CASE 25
+                ;키사라기 치하야 생일
+                TRYCALL BIRTHDAY_EVENT,[[치하야]]
+        ENDSELECT
+    CASE 3
+        SELECTCASE DAYV
+            CASE 1
+                ;로코 생일
+                TRYCALL BIRTHDAY_EVENT,[[로코]]
+            CASE 14
+                ;화이트 데이
+            CASE 18
+                ;나나오 유리코 생일
+                TRYCALL BIRTHDAY_EVENT,[[유리코]]
+            CASE 22
+                ;사타케 미나코 생일
+                TRYCALL BIRTHDAY_EVENT,[[미나코]]
+            CASE 25
+                ;타카츠이 야요이 생일
+                TRYCALL BIRTHDAY_EVENT,[[야요이]]
+            CASE 27
+                ;사쿠라모리 카오리 생일
+                TRYCALL BIRTHDAY_EVENT,[[카오리]]
+            CASE 30
+                ;후쿠다 노리코 생일
+                TRYCALL BIRTHDAY_EVENT,[[노리코]]
+        ENDSELECT
+    CASE 4
+        SELECTCASE DAYV
+            CASE 1
+                ;만우절
+            CASE 3
+                ;아마미 하루카 생일
+                TRYCALL BIRTHDAY_EVENT,[[하루카]]
+            CASE 15
+                ;토코로 메구미 생일
+                TRYCALL BIRTHDAY_EVENT,[[메구미]]
+            CASE 24
+                ;미야오 미야 생일
+                TRYCALL BIRTHDAY_EVENT,[[미야]]
+            CASE 29
+                ;오오가미 타마키 생일
+                TRYCALL BIRTHDAY_EVENT,[[타마키]]
+        ENDSELECT
+    CASE 5
+        SELECTCASE DAYV
+            CASE 5
+                ;미나세 이오리 생일
+                TRYCALL BIRTHDAY_EVENT,[[이오리]]
+            CASE 17
+                ;키타카미 레이카 생일
+                TRYCALL BIRTHDAY_EVENT,[[레이카]]
+            CASE 22
+                ;후타미 아미, 마미 생일
+                TRYCALL BIRTHDAY_EVENT,[[아미]]
+            CASE 29
+                ;시라이시 츠무기 생일
+                TRYCALL BIRTHDAY_EVENT,[[츠무기]]
+            CASE 31
+                ;모치즈키 안나 생일
+                TRYCALL BIRTHDAY_EVENT,[[안나]]
+        ENDSELECT
+    CASE 6
+        SELECTCASE DAYV
+            CASE 7
+                ;마츠다 아리사 생일
+                TRYCALL BIRTHDAY_EVENT,[[아리사]]
+            CASE 12
+                ;바바 코노미 생일
+                TRYCALL BIRTHDAY_EVENT,[[코노미]]
+            CASE 23
+                ;아키즈키 리츠코 생일
+                TRYCALL BIRTHDAY_EVENT,[[리츠코]]
+            CASE 28
+                ;카스가 미라이 생일
+                TRYCALL BIRTHDAY_EVENT,[[미라이]]
+            CASE 29
+                ;아오바 미사키 생일
+                TRYCALL BIRTHDAY_EVENT,[[미사키]]
+        ENDSELECT
+    CASE 7
+        SELECTCASE DAYV
+            CASE 4
+                ;키노시타 히나타 생일
+                TRYCALL BIRTHDAY_EVENT,[[히나타]]
+            CASE 19
+                ;미우라 아즈사 생일
+                TRYCALL BIRTHDAY_EVENT,[[아즈사]]
+            CASE 23
+                ;마이하마 아유무 생일
+                TRYCALL BIRTHDAY_EVENT,[[아유무]]
+            CASE 30
+                ;이부키 츠바사 생일
+                TRYCALL BIRTHDAY_EVENT,[[츠바사]]
+        ENDSELECT
+    CASE 8
+        SELECTCASE DAYV
+            CASE 10
+                ;코사카 우미 생일
+                TRYCALL BIRTHDAY_EVENT,[[우미]]
+            CASE 18
+                ;야부키 카나 생일
+                TRYCALL BIRTHDAY_EVENT,[[카나]]
+            CASE 27
+                ;시노미야 카렌 생일
+                TRYCALL BIRTHDAY_EVENT,[[카렌]]
+            CASE 29
+                ;키쿠치 마코토
+                TRYCALL BIRTHDAY_EVENT,[[마코토]]
+        ENDSELECT
+    CASE 9
+        SELECTCASE DAYV
+            CASE 2
+                ;토요카와 후우카 생일
+                TRYCALL BIRTHDAY_EVENT,[[후우카]]
+            CASE 9
+                ;오토나시 코토리 생일
+                TRYCALL BIRTHDAY_EVENT,[[코토리]]
+            CASE 14
+                ;모가미 시즈카 생일
+                TRYCALL BIRTHDAY_EVENT,[[시즈카]]
+            CASE 20
+                ;나가요시 스바루 생일
+                TRYCALL BIRTHDAY_EVENT,[[스바루]]
+            CASE 26
+                ;줄리아 생일
+                TRYCALL BIRTHDAY_EVENT,[[줄리아]]
+        ENDSELECT
+    CASE 10
+        SELECTCASE DAYV
+            CASE 5
+                ;타나카 코토하 생일
+                TRYCALL BIRTHDAY_EVENT,[[코토하]]
+            CASE 10
+                ;가나하 히비키 생일
+                TRYCALL BIRTHDAY_EVENT,[[히비키]]
+            CASE 21
+                ;니카이도 치즈루 생일
+                TRYCALL BIRTHDAY_EVENT,[[치즈루]]
+            CASE 26
+                ;시마바라 엘레나 생일
+                TRYCALL BIRTHDAY_EVENT,[[엘레나]]
+        ENDSELECT
+    CASE 11
+        SELECTCASE DAYV
+            CASE 6
+                ;스오 모모코 생일
+                TRYCALL BIRTHDAY_EVENT,[[모모코]]
+            CASE 11
+                ;텐쿠바시 토모카 생일
+                TRYCALL BIRTHDAY_EVENT,[[토모카]]
+            CASE 21
+                ;모모세 리오 생일
+                TRYCALL BIRTHDAY_EVENT,[[리오]]
+            CASE 23
+                ;호시이 미키 생일
+                TRYCALL BIRTHDAY_EVENT,[[미키]]
+        ENDSELECT
+    CASE 12
+        SELECTCASE DAYV
+            CASE 3
+                ;노노하라 아카네 생일
+                TRYCALL BIRTHDAY_EVENT,[[아카네]]
+            CASE 16
+                ;나가타니 이쿠 생일
+                TRYCALL BIRTHDAY_EVENT,[[이쿠]]
+            CASE 24
+                ;하기와라 유키호 생일, 크리스마스 이브
+                TRYCALL BIRTHDAY_EVENT,[[유키호]]
+            CASE 25
+                ;크리스마스
+            CASE 29
+                ;타카야마 사요코 생일
+                TRYCALL BIRTHDAY_EVENT,[[사요코]]
+        ENDSELECT
+ENDSELECT
+
+IF RESULT
+    FLAG:리얼데일리월 = MONTHV
+    FLAG:리얼데일리일 = DAYV
+ENDIF
+
+RETURN RESULT
