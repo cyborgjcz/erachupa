@@ -1,2 +1,122 @@
 ﻿@SHOW_CHARA_INFO(KEYV)
-#DIM DYNAMIC KEYV   
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC LOOPSWITCH
+#DIM DYNAMIC ESWITCH;장비 선택 화면으로 이행?
+LOOPSWITCH = 1
+DO
+    ESWITCH = 0
+    DRAWLINE
+    ;이름 관련 출력. IMAGE_MAG * 100는 포트레이트 출력 용도
+    PRINT_SPACE IMAGE_MAG * 100
+    PRINT 이름 : 
+    PRINTS NAME:KEYV
+    PRINTL
+    PRINT_SPACE IMAGE_MAG * 100
+    PRINT 통칭 : 
+    PRINTS CALLNAME:KEYV
+    PRINTL
+    IF KEYV == FLAG:1 || KEYV == FLAG:2
+        PRINT_SPACE IMAGE_MAG * 100
+        PRINTS CALLNAME:PARTNER(KEYV)
+        PRINT 에게 불리는 이름 : 
+        PRINTS BUDDY(PARTNER(KEYV))
+    ENDIF
+    PRINTL
+    PRINTL
+    ;세계선 기억 출력
+    PRINT_SPACE IMAGE_MAG * 100
+    IF TALENT:KEYV:2 == 1
+        PRINT 그녀는
+    ELSE
+        PRINT 그는
+    ENDIF
+    SIF CFLAG:KEYV:세계선기억 & 1 != 0
+        PRINT  다른 역사의 미래에서 아이돌로 활동했
+    IF (CFLAG:KEYV:세계선기억 & 1 != 0) && (CFLAG:KEYV:세계선기억 & 2 != 0)
+        PRINTL 으며, 이상현상 사건 해결에 가담하고 있다.
+    ELSEIF (CFLAG:KEYV:세계선기억 & 1 == 0) && (CFLAG:KEYV:세계선기억 & 2 != 0)
+        PRINTL 이상현상 사건 해결에 가담하고 있다.
+    ELSEIF (CFLAG:KEYV:세계선기억 & 1 != 0) && (CFLAG:KEYV:세계선기억 & 2 == 0)
+        PRINTL 다.
+    ELSEIF CFLAG:KEYV:세계선기억 == 0
+        PRINTL  아무것도 기억하고 있지 않다.
+    ENDIF
+    HTML_PRINT @"<p align='left'><img src='%FACE(KEYV,1)%' height='{IMAGE_MAG * 100}' width='{IMAGE_MAG * 100}' ypos='-{(IMAGE_MAG * 100) - 100}'>"
+    DRAWLINE
+    ;능력치 표시
+    CALL EQ_APPLY_STAT(KEYV)
+    PRINTFORM 레벨 : %TOSTR(BASE:KEYV:레벨),3,RIGHT% 
+    PRINTFORM 희망 : %TOSTR(BASE:KEYV:희망),4,RIGHT%／%TOSTR(MAXBASE:KEYV:희망),4,RIGHT%
+    PRINTFORM 영혼 : %TOSTR(BASE:KEYV:영혼),4,RIGHT%／%TOSTR(MAXBASE:KEYV:영혼),4,RIGHT%
+    PRINT_SPACE 50
+    PRINTFORML 패기 : {BASE:KEYV:패기} 예리 : {BASE:KEYV:예리} 자비 : {BASE:KEYV:자비}
+    PRINT_SPACE 700
+    CALL PRINT_COLORBAR(BASE:KEYV:희망,MAXBASE:KEYV:희망,72,UNICODE(0x258F), UNICODE(0x258F), 0xB73232, 0x626262)
+    PRINT_SPACE 280
+    CALL PRINT_COLORBAR(BASE:KEYV:영혼,MAXBASE:KEYV:영혼,72,UNICODE(0x258F), UNICODE(0x258F), 0x3232B7, 0x626262)
+    PRINT_SPACE 50
+    PRINTFORML 공격력 : {BASE:KEYV:공격력} 방어력 : {BASE:KEYV:방어력} 회피율 : {BASE:KEYV:회피율} 행동력 : {BASE:KEYV:행동력}
+    PRINT_SPACE 420
+    PRINT 상태이상
+    FOR LCOUNT,0,4
+        SELECTCASE LCOUNT
+            CASE 0
+                PRINT  독
+            CASE 1
+                PRINT  출혈
+            CASE 2
+                PRINT  공포
+            CASE 3
+                PRINT  격앙
+        ENDSELECT
+        IF ISBASUTE(KEYV,LCOUNT+2)
+            PRINT  발동중
+        ELSE
+            PRINTFORM  내성: {BASE:KEYV:(LCOUNT+10)}
+        ENDIF
+    NEXT
+    PRINTL
+    DRAWLINE
+    ;장비 출력
+    FOR LCOUNT,0,3
+        IF !LCOUNT
+            PRINT 장비　
+        ELSE
+            PRINT_SPACE 300
+        ENDIF
+        CALLFORM EQ_이름_{EQUIP:KEYV:LCOUNT}
+        PRINTS EQUIPNAME:LCOUNT
+        PRINT  : 
+        PRINTS CHUPA_EQUIP_NAME:(EQUIP:KEYV:LCOUNT)
+        PRINTL
+    NEXT
+    DRAWLINE
+    ;CSTR로 Chara.CSV에 작성된 소개문 출력
+    FOR LCOUNT,10,21
+        PRINTSL CSTR:KEYV:LCOUNT
+    NEXT
+    DRAWLINE
+    SIF KEYV == FLAG:1 || KEYV == FLAG:2
+        PRINTBUTTON "[a], [d] 다른 동료를 본다","a"
+    PRINTBUTTON "[e] 장비 설정","e"
+    PRINTBUTTON "[x] 돌아간다","x"
+    ONEINPUTS
+    SELECTCASE RESULTS
+        CASE "x"
+            LOOPSWITCH = 0
+        CASE "a","d"
+            IF KEYV == FLAG:1
+                KEYV = FLAG:2
+            ELSEIF KEYV == FLAG:2
+                KEYV = FLAG:1
+            ENDIF
+        CASE "e"
+            LOOPSWITCH = 0
+            ESWITCH = 1
+    ENDSELECT
+LOOP LOOPSWITCH
+IF ESWITCH
+    INFO_TO_EQUIP = 1
+    CALL SHOW_SET_EQUIP(KEYV)
+ENDIF
