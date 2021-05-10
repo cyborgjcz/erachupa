@@ -222,6 +222,8 @@ DO
                     IF PAGEV > 0
                         PAGEV -= 1
                         CURSOR2 -= 5
+                        SIF CURSOR2 < 0
+                            CURSOR2 = 0
                     ENDIF
                 CASE "d"
                     IF PAGEV < PAGEMAX
