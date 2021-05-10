@@ -2,8 +2,10 @@
 #DIM DYNAMIC LCOUNT
 #DIM DYNAMIC KEYV
 #DIM DYNAMIC LOOPSWITCH
+#DIM DYNAMIC ESWITCH;장비 선택 화면으로 이행?
 LOOPSWITCH = 1
 DO
+    ESWITCH = 0
     DRAWLINE
     ;이름 관련 출력. IMAGE_MAG * 100는 포트레이트 출력 용도
     PRINT_SPACE IMAGE_MAG * 100
@@ -76,6 +78,7 @@ DO
     NEXT
     PRINTL
     DRAWLINE
+    ;장비 출력
     FOR LCOUNT,0,3
         IF !LCOUNT
             PRINT 장비　
@@ -96,6 +99,7 @@ DO
     DRAWLINE
     SIF KEYV == FLAG:1 || KEYV == FLAG:2
         PRINTBUTTON "[a], [d] 다른 동료를 본다","a"
+    PRINTBUTTON "[e] 장비 설정","e"
     PRINTBUTTON "[x] 돌아간다","x"
     ONEINPUTS
     SELECTCASE RESULTS
@@ -107,5 +111,10 @@ DO
             ELSEIF KEYV == FLAG:2
                 KEYV = FLAG:1
             ENDIF
+        CASE "e"
+            LOOPSWITCH = 0
+            ESWITCH = 1
     ENDSELECT
 LOOP LOOPSWITCH
+SIF ESWITCH
+    CALL SHOW_SET_EQUIP(KEYV)

@@ -1,0 +1,265 @@
+﻿@SHOW_SET_EQUIP(KEYV)
+#DIM DYNAMIC KEYV;캐릭등록번호
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LOOPSWITCH = 1
+#DIM DYNAMIC SSWITCH;스탯 표시 화면으로 이행?
+
+#DIM DYNAMIC STAT_LEN = 26;TOSTR을 쓴 스탯 숫자들의 최대 길이
+#DIM DYNAMIC HELP_LEN = 40;장비 설명 및 장비 설명 상단의 스탯 숫자들의 최대 길이
+#DIMS DYNAMIC STATS;STAT_LEN에 맞게 출력하는 문자열
+#DIMS DYNAMIC STATS2;HELP_LEN에 맞게 출력하는 문자열
+#DIMS DYNAMIC STATS3;그 2
+
+#DIM DYNAMIC SCENEV;장면 전환 스위치
+#DIM DYNAMIC CURSOR1;장비 슬롯 선택 커서
+#DIM DYNAMIC CURSOR2;소지 중 장비 선택 커서
+#DIM DYNAMIC SELECTEQ;장비 슬롯 선택 후 변경 중 선택중인 장비
+
+#DIM DYNAMIC NONEQSTAT;장비 뗀 스탯
+#DIM DYNAMIC EQDSTAT;장비 붙인 스탯
+#DIM DYNAMIC EQ1STAT;장비 자체 스탯(장비중)
+#DIM DYNAMIC EQ2STAT;장비 자체 스탯(소지품 선택중)
+
+#DIMS DYNAMIC EQUIPHELPSPLIT,5;장비품 HELP문자열을 SPLIT한 결과물 기록 변수
+
+#DIM DYNAMIC ITEMLISTA,2000;장비품 목록. 많아지면 적당히 늘릴 필요 있음.
+#DIM DYNAMIC EQUIPNUMV;ITEMLISTA 채우는 도중 기록하는 장비 아이템 갯수 
+#DIMS DYNAMIC EQUIPSIMPLEHELP; | 로 SPLIT한 결과물 기록 변수
+#DIM DYNAMIC PAGEV;소지 장비 선택 중 페이지 번호
+#DIM DYNAMIC PAGEMAX;소지 장비 선택 중 페이지 최대수
+
+CALL EQ_APPLY_STAT(KEYV)
+SELECTEQ = EQUIP:KEYV:0
+DO
+    ;소지 장비품 관련 처리
+    IF SCENEV == 1
+        VARSET ITEMLISTA,0
+        EQUIPNUMV = 0
+        FOR LCOUNT,1001,VARSIZE("ITEM")
+            RESULT:1 = 0
+            CALL ISEQUIP(LCOUNT)
+            IF RESULT:0 == 0
+                ;장비가 아니면 스킵
+                CONTINUE
+            ELSEIF RESULT:1 == CURSOR1 && ITEM:LCOUNT > 0
+                ;검색된 장비 슬롯이 선택 중 슬롯과 일치하면? 또한 보유중
+                CALLFORM EQ_이름_{LCOUNT}
+                ITEMLISTA:EQUIPNUMV = LCOUNT
+                EQUIPNUMV += 1
+            ENDIF
+            PAGEMAX = (EQUIPNUMV - 1) / 5
+        NEXT
+    ENDIF
+    SSWITCH = 0
+    DRAWLINE
+    PRINT_SPACE 500
+    PRINTFORMLC %" ",STAT_LEN,LEFT%
+    ;선택중 장비 이름 표시
+    CALLFORM EQ_이름_{EQUIP:KEYV:CURSOR1}
+    PRINTFORMLC %CHUPA_EQUIP_NAME:(EQUIP:KEYV:CURSOR1),HELP_LEN,LEFT%
+    ;선택중 소지 장비 이름 표시
+    IF SCENEV == 1
+        PRINTFORMLC %CHUPA_EQUIP_NAME:(ITEMLISTA:CURSOR2),HELP_LEN,LEFT%
+    ENDIF
+    PRINTL
+    FOR LCOUNT,0,14;격앙내성까지 BASE 표시
+        SIF LCOUNT == 9
+            CONTINUE;레벨은 표시하지 않는다
+        IF SELECTEQ != 0
+            ADDCOPYCHARA 0
+            CALLFORM EQ_위치_{SELECTEQ}
+            EQUIP:(CHARANUM-1):0 = EQUIP:KEYV:0
+            EQUIP:(CHARANUM-1):1 = EQUIP:KEYV:1
+            EQUIP:(CHARANUM-1):2 = EQUIP:KEYV:2
+            EQUIP:(CHARANUM-1):RESULT = SELECTEQ
+            CALL EQ_APPLY_STAT(CHARANUM-1)
+            NONEQSTAT = CSVBASE(KEYV,LCOUNT) + CFLAG:KEYV:(30+LCOUNT)
+            EQDSTAT = BASE:(CHARANUM-1):LCOUNT
+            DELCHARA CHARANUM - 1
+        ENDIF
+        ;변경하려는 장비 스탯 측정
+        IF SCENEV == 1 && ITEMLISTA:CURSOR2 != 0
+            ADDCOPYCHARA 0
+            CALLFORM EQ_위치_{ITEMLISTA:CURSOR2}
+            EQUIP:(CHARANUM-1):RESULT = ITEMLISTA:CURSOR2
+            CALL EQ_APPLY_STAT(CHARANUM-1)
+            EQ2STAT = BASE:(CHARANUM-1):LCOUNT
+            DELCHARA CHARANUM - 1
+        ENDIF
+        ;BASE 이름 표시
+        PRINTS BASENAME:LCOUNT
+        STRLENSU BASENAME:LCOUNT
+        PRINT_SPACE 100 * (5 -RESULT)
+        ;스탯 표시
+        STATS '= @"%TOSTR(BASE:KEYV:LCOUNT)% (+%TOSTR(BASE:KEYV:LCOUNT - NONEQSTAT)%)"
+        ;변경하려는 장비의 스탯 추가 표시
+        SIF SCENEV == 1
+            STATS += @" -> %TOSTR(NONEQSTAT + EQ2STAT)% (+%TOSTR(EQ2STAT)%)"
+        PRINTFORMLC %STATS + " ",STAT_LEN,LEFT%
+        ;선택중인 슬롯 장비 표시
+        ADDCOPYCHARA 0
+        EQUIP:(CHARANUM-1):CURSOR1 = EQUIP:KEYV:CURSOR1
+        CALL EQ_APPLY_STAT(CHARANUM-1)
+        EQ1STAT = BASE:(CHARANUM-1):LCOUNT
+        DELCHARA CHARANUM-1
+        STATS2 '= @"+ %TOSTR(EQ1STAT)%"
+        ;올려주지 않는 스탯이라면 흐리게 표시
+        SIF EQ1STAT == 0
+            SETCOLORBYNAME DimGray
+        ;장비중 장비 스탯 표시
+        PRINTFORMLC %STATS2 + " ",HELP_LEN,LEFT%
+        RESETCOLOR
+        IF SCENEV == 1
+            STATS3 '= @"+ %TOSTR(EQ2STAT)%"
+            ;올려주지 않는 스탯이라면 흐리게 표시
+            SIF EQ2STAT == 0
+                SETCOLORBYNAME DimGray
+            ;장비중 장비 스탯 표시
+            PRINTFORMLC %STATS3 + " ",HELP_LEN,LEFT%
+            RESETCOLOR
+        ENDIF
+        PRINTL
+    NEXT
+    DRAWLINE
+    FOR LCOUNT,0,3
+        IF !LCOUNT
+            PRINT 장비　
+        ELSE
+            PRINT_SPACE 300
+        ENDIF
+        CALLFORM EQ_이름_{EQUIP:KEYV:LCOUNT}
+        PRINTS EQUIPNAME:LCOUNT
+        PRINT  : 
+        SIF LCOUNT == CURSOR1
+            SETCOLOR 0xfee12b
+        PRINTS CHUPA_EQUIP_NAME:(EQUIP:KEYV:LCOUNT)
+        RESETCOLOR
+        SIF LCOUNT == CURSOR1
+            PRINT ＜
+        PRINTL
+    NEXT
+    DRAWLINE
+    ;소지품 중 선택중인 경우 장비 목록 표시
+    IF SCENEV == 0
+        VARSET EQUIPHELPSPLIT,""
+        CALLFORM EQ_설명_{EQUIP:KEYV:CURSOR1}
+        SPLIT CHUPA_EQUIP_HELP:(EQUIP:KEYV:CURSOR1),"\n",EQUIPHELPSPLIT
+        PRINTSL EQUIPHELPSPLIT:0
+        PRINTSL EQUIPHELPSPLIT:1
+        PRINTSL EQUIPHELPSPLIT:2
+        PRINTSL EQUIPHELPSPLIT:3
+        PRINTSL EQUIPHELPSPLIT:4
+        PRINTL
+    ELSEIF SCENEV == 1
+        FOR LCOUNT,0,5
+            ;페이지의 아이템 목록들을 표시한다
+            IF ITEMLISTA:((PAGEV * 5)+LCOUNT) != 0
+                SIF CURSOR2 == (PAGEV * 5)+LCOUNT
+                    SETCOLOR 0xfee12b
+                CALLFORM EQ_이름_{ITEMLISTA:((PAGEV * 5)+LCOUNT)}
+                PRINTFORMLC %CHUPA_EQUIP_NAME:(ITEMLISTA:((PAGEV * 5)+LCOUNT))%
+                IF CURSOR2 == (PAGEV * 5)+LCOUNT
+                    RESETCOLOR
+                    PRINT ＜
+                    PRINT_SPACE 200
+                ELSE
+                    PRINT_SPACE 300
+                ENDIF
+                CALLFORM EQ_설명_{ITEMLISTA:((PAGEV * 5)+LCOUNT)}
+                SPLIT CHUPA_EQUIP_HELP:(ITEMLISTA:((PAGEV * 5)+LCOUNT))," | ",EQUIPHELPSPLIT
+                PRINTSL EQUIPHELPSPLIT:0
+            ELSE
+                PRINTL
+            ENDIF
+        NEXT
+        SIF PAGEV > 0
+            PRINTBUTTON "[a] ← 이전 페이지" ,"a"
+        PRINT |
+        SIF PAGEV < PAGEMAX && PAGEV != PAGEMAX
+            PRINTBUTTON "[d] → 다음 페이지","d"
+        PRINTL
+    ENDIF
+    DRAWLINE
+    IF SCENEV == 0
+        PRINTL 변경할 장비를 선택하세요
+        PRINTBUTTON "[q] 스테이터스 표시","q" 
+        PRINTBUTTON "[w] ↑ ","w"
+        PRINTBUTTON "[s] ↓ ","s"
+        PRINTBUTTON "[u] 결정","u"
+        PRINTBUTTON "[x] 돌아간다","x"
+    ELSEIF SCENEV == 1
+        PRINTL 소지하고 있는 장비 중 선택하세요.
+        PRINTBUTTON "[w] ↑ ","w"
+        PRINTBUTTON "[s] ↓ ","s"
+        PRINTBUTTON "[u] 결정","u"
+        PRINTBUTTON "[o] 취소","o"
+    ENDIF
+    ONEINPUTS
+    SELECTCASE SCENEV
+        CASE 0
+            SELECTCASE RESULTS
+                CASE "x"
+                    LOOPSWITCH = 0
+                CASE "w"
+                    IF CURSOR1 > 0
+                        CURSOR1 -= 1
+                        CURSOR2 = 0
+                    ENDIF
+                CASE "s"
+                    IF CURSOR1 < 2
+                        CURSOR1 += 1
+                        CURSOR2 = 0
+                    ENDIF
+                CASE "u"
+                    SCENEV = 1
+                CASE "q"
+                    LOOPSWITCH = 0
+                    SSWITCH = 1
+            ENDSELECT
+        CASE 1
+            SELECTCASE RESULTS
+                CASE "a"
+                    IF PAGEV > 0
+                        PAGEV -= 1
+                        CURSOR2 -= 5
+                    ENDIF
+                CASE "d"
+                    IF PAGEV < PAGEMAX
+                        PAGEV += 1
+                        CURSOR2 += 5
+                        SIF CURSOR2 > (EQUIPNUMV - 1)
+                            CURSOR2 = (EQUIPNUMV - 1)
+                    ENDIF
+                CASE "w"
+                    IF CURSOR2 > 0
+                        SIF CURSOR2 % 5 == 0
+                            PAGEV -= 1
+                        CURSOR2 -= 1
+                    ENDIF
+                CASE "s"
+                    IF CURSOR2 < EQUIPNUMV-1
+                        SIF CURSOR2 % 5 == 4
+                            PAGEV += 1
+                        CURSOR2 += 1
+                    ENDIF
+                CASE "u"
+                    IF ITEMLISTA:CURSOR2 != 0
+                        ITEM:(EQUIP:KEYV:CURSOR1) += 1
+                        EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
+                        ITEM:(ITEMLISTA:CURSOR2) -= 1
+                        SCENEV = 0
+                        PAGEV = 0
+                        CURSOR2 = 0
+                    ENDIF
+                CASE "o"
+                    SCENEV = 0
+            ENDSELECT
+    ENDSELECT
+    ;줄 지우기 및 재사용
+    CLEARLINE 29
+    SIF RESULTS != ""
+        CLEARLINE 1
+    REUSELASTLINE
+LOOP LOOPSWITCH
+SIF SSWITCH
+    CALL SHOW_CHARA_INFO(KEYV)
