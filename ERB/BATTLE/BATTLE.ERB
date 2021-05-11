@@ -544,6 +544,7 @@ FOR LCOUNT,0,TFLAG:적캐릭터초기화
 NEXT
 TFLAG:적캐릭터초기화 = 0
 @RUN_BATTLE_COMMAND(COMMANDS,TARGETV,USERV,SKILLV,ISENEMY=0)
+#DIM DYNAMIC LCOUNT
 #DIM DYNAMIC LNUM
 #DIMS DYNAMIC COMMANDS
 #DIM DYNAMIC TARGETV
@@ -692,36 +693,48 @@ ELSEIF ISENEMY && BASE:(FLAG:TARGETV):희망 <= 0 && ((CFLAG:(FLAG:TARGETV):상�
     CFLAG:(FLAG:TARGETV):상태이상 += 1
 ENDIF
 
+IF !ISENEMY
+    FOR LCOUNT,0,VARSIZE("버프지속시간")
+        CALL TURNOFF_BUFF(FLAG:USERV,LCOUNT)
+    NEXT
+ELSEIF ISENEMY
+    FOR LCOUNT,0,VARSIZE("버프지속시간")
+        CALL TURNOFF_BUFF(TFLAG:USERV,LCOUNT)
+    NEXT
+ENDIF
+
 @SETCOLOR_BATTLE_ENEMY(LNUM)
 #DIM DYNAMIC LNUM
-{
-    IF TFLAG:동료1ATB커서위치 == LNUM && TFLAG:동료2ATB커서위치 == LNUM &&
-    ((TFLAG:동료1ATB커서상태 >= 1 && TFLAG:동료1ATB커서상태 <= 2 &&
-    TFLAG:동료2ATB커서상태 >= 1 && TFLAG:동료2ATB커서상태 <= 2 &&
-    TFLAG:동료1ATB커서상태 != 3 && TFLAG:동료2ATB커서상태 != 3) ||
-    ((SKILL_DATA:(AVAILABLE_SKILL:(FLAG:1):(TFLAG:동료1스킬커서위치)):5 == 0 &&
-    (TFLAG:동료1ATB커서상태 == 4 || TFLAG:동료1ATB커서상태 == 5)) ||
-    (SKILL_DATA:(AVAILABLE_SKILL:(FLAG:2):(TFLAG:동료2스킬커서위치)):5 &&
-    (TFLAG:동료2ATB커서상태 == 4 || TFLAG:동료2ATB커서상태 == 5))))
-}
+#DIM DYNAMIC YELLOWV
+#DIM DYNAMIC GREENV
+#DIM DYNAMIC DOUBLEV
+IF TFLAG:동료1ATB커서위치 == LNUM
+    SELECTCASE TFLAG:동료1ATB커서상태
+        CASE 1,2
+            YELLOWV = 1
+        CASE 4,5
+            SIF SKILL_DATA:(AVAILABLE_SKILL:(FLAG:1):(TFLAG:동료1스킬커서위치)):5 == 0
+                YELLOWV = 1    
+    ENDSELECT
+ENDIF
+IF TFLAG:동료2ATB커서위치 == LNUM
+    SELECTCASE TFLAG:동료2ATB커서상태
+        CASE 1,2
+            GREENV = 1
+        CASE 4,5
+            SIF SKILL_DATA:(AVAILABLE_SKILL:(FLAG:2):(TFLAG:동료2스킬커서위치)):5 == 0
+                GREENV = 1
+    ENDSELECT
+ENDIF
+SIF GREENV == 1 && YELLOWV == 1
+    DOUBLEV = 1
+
+IF DOUBLEV == 1
     SETCOLORBYNAME GreenYellow
-{
-    ELSEIF TFLAG:동료1ATB커서위치 == LNUM &&
-    ((TFLAG:동료1ATB커서상태 >= 1 && TFLAG:동료1ATB커서상태 <= 2 &&
-    TFLAG:동료1ATB커서상태 != 3) ||
-    (SKILL_DATA:(AVAILABLE_SKILL:(FLAG:1):(TFLAG:동료1스킬커서위치)):5 == 0 &&
-    (TFLAG:동료1ATB커서상태 == 4 || TFLAG:동료1ATB커서상태 == 5)))
-}
-    SETCOLORBYNAME Yellow
-{
-    ELSEIF TFLAG:동료2ATB커서위치 == LNUM &&
-    ((TFLAG:동료2ATB커서상태 >= 1 && TFLAG:동료2ATB커서상태 <= 2 &&
-    TFLAG:동료2ATB커서상태 != 3) ||
-    (SKILL_DATA:(AVAILABLE_SKILL:(FLAG:2):(TFLAG:동료2스킬커서위치)):5 == 0 &&
-    (TFLAG:동료2ATB커서상태 == 4 || TFLAG:동료2ATB커서상태 == 5)))
-}
+ELSEIF GREENV == 1
     SETCOLORBYNAME Green
-ELSE
+ELSEIF YELLOWV == 1
+    SETCOLORBYNAME Yellow
 ENDIF
 
 ;스킬 선택 중 표시하는 스킬 이름을 출력
@@ -961,7 +974,7 @@ SELECTCASE TFLAG:동료1ATB커서상태
                     RETURN 1
                 ENDIF
             CASE "e"
-                TFLAG:동료1ATB커서상태 = 4
+                TFLAG:동료1ATB커서상태 = 3
         ENDSELECT
     CASE 6;방어확인
         SELECTCASE RESULTS
@@ -1080,7 +1093,7 @@ SELECTCASE TFLAG:동료2ATB커서상태
                     RETURN 1
                 ENDIF
             CASE "o"
-                TFLAG:동료2ATB커서상태 = 4
+                TFLAG:동료2ATB커서상태 = 3
         ENDSELECT
     CASE 6;방어확인
         SELECTCASE RESULTS
@@ -1240,4 +1253,23 @@ ELSEIF LNUM == 17 || LNUM == 18
                 RETURNF TFLAG:LNUM
             ENDIF
     ENDSELECT
+ENDIF
+
+;버프의 지속시간을 줄이고 지속시간이 0이라면 해제하는 함수
+@TURNOFF_BUFF(USERV,KEYV)
+#DIM DYNAMIC USERV
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC BITV
+
+SELECTCASE KEYV
+    CASE 0
+        BITV = 1
+    CASEELSE
+        BITV = POWER(2,KEYV)
+ENDSELECT
+IF (CFLAG:USERV:버프적용중 & BITV) != 0
+    SIF 버프지속시간:USERV:KEYV > 0
+        버프지속시간:USERV:KEYV -= 1
+    SIF 버프지속시간:USERV:KEYV <= 0
+        CFLAG:USERV:버프적용중 -= BITV
 ENDIF

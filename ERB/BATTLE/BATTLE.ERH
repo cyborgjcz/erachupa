@@ -8,4 +8,6 @@
 #DIMS CONST BATTLEKEY,12 = "q","w","e","u","i","o","a","s","d","j","k","l" 
 
 #DIM CHARADATA 상태이상시간,5
+;1=독 2=출혈 3=공포 4=격앙
 #DIM CHARADATA 버프지속시간,1
+;0 = 카운터
