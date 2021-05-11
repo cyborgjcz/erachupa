@@ -128,7 +128,19 @@ ELSE
                 IF (CFLAG:TARGETV:상태이상 & LNUM) != 0
                     BASUTESUCCESS:LCOUNT = 2
                 ELSE
+                    ;여기서 실제로 상태이상 부여
                     CFLAG:TARGETV:상태이상 += LNUM
+                    ;상태이상 지속시간 부여
+                    SELECTCASE LCOUNT
+                        CASE 1
+                            상태이상시간:TARGETV:LCOUNT = (8 - (2 * BASE:TARGETV:독내성))
+                        CASE 2
+                            상태이상시간:TARGETV:LCOUNT = (8 - (2 * BASE:TARGETV:출혈내성))
+                        CASE 3
+                            상태이상시간:TARGETV:LCOUNT = (6 - (BASE:TARGETV:공포내성))
+                        CASE 4
+                            상태이상시간:TARGETV:LCOUNT = (6 - (BASE:TARGETV:격앙내성))
+                    ENDSELECT
                 ENDIF
             ENDIF
         ENDIF
