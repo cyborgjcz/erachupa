@@ -10,6 +10,7 @@ DO
     IF CHECK_RPG_LVUP(KEYV)
         RPG_EXP:KEYV:0 -= NEXT_RPG_EXP(KEYV)
         BASE:KEYV:레벨 += 1
+        CFLAG:KEYV:레벨증가치 += 1
     ELSE 
         LSWITCH = 0
     ENDIF
@@ -99,6 +100,7 @@ DO
 LOOP LOOPV
 FOR LCOUNT,0,3
     BASE:KEYV:(LCOUNT+2) += PLUSV:LCOUNT
+    CFLAG:KEYV:(LCOUNT+32) += PLUSV:LCOUNT
 NEXT
 
 ;등록번호, 레벨업 횟수를 인수로 받아 스탯 상승 처리

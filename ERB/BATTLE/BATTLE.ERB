@@ -176,6 +176,8 @@ DO
                 SIF !LENEMY_NUM
                     SETCOLORBYNAME DimGray
                 CALL SETCOLOR_BATTLE_ENEMY(LCOUNT)
+                SIF ISDYING(LENEMY_NUM) != 0
+                    SETCOLORBYNAME DimGray
                 PRINTFORM ［%TOFULL(TOSTR(LCOUNT))%］
                 IF LENEMY_NUM > 0
                     PRINTFORM %CALLNAME:LENEMY_NUM%
