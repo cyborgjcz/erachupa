@@ -562,7 +562,7 @@ SELECTCASE COMMANDS
     CASE "GUARD"
         SKILLV = 1
     CASE "TRANS"
-        SKILLV = 0
+        SKILLV = 1
 ENDSELECT
 
 ;격앙 처리
@@ -671,7 +671,9 @@ ENDIF
 
 ;여기서 실제 스킬 내용 실행
 ;스킬 유형은 공격, 범위 유형은 단일일때
-IF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
+IF COMMANDS == "TRANS"
+    CALL GO_TRANSFORM(USERV,ISENEMY)
+ELSEIF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
     CALL SKILL_SINGLE_ATTACK(TARGETV,USERV,SKILLV,ISENEMY)
 ;자가 힐/버프일때
 ELSEIF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 3
@@ -775,7 +777,7 @@ RESETCOLOR
 SELECTCASE TFLAG:동료1ATB커서상태
     CASE 0
         LBUTTONS:0 = 
-        IF CFLAG:(FLAG:1):변신가능
+        IF CFLAG:(FLAG:1):변신가능 != 0
             LBUTTONS:1 = 변신
         ELSE
             LBUTTONS:1 = 
@@ -802,7 +804,7 @@ ENDSELECT
 SELECTCASE TFLAG:동료2ATB커서상태
     CASE 0
         LBUTTONS:3 = 
-        IF CFLAG:(FLAG:1):변신가능
+        IF CFLAG:(FLAG:2):변신가능 != 0
             LBUTTONS:4 = 변신
         ELSE
             LBUTTONS:4 = 
@@ -997,6 +999,7 @@ SELECTCASE TFLAG:동료1ATB커서상태
                 IF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
                     TFLAG:동료1ATB커서상태 = 0
                     R_COMMANDS '= "TRANS"
+                    R_TARGETV = 1
                     R_USERV = 1
                     RETURN 1
                 ENDIF
@@ -1008,7 +1011,7 @@ SELECTCASE TFLAG:동료2ATB커서상태
     CASE 0;초기
         SELECTCASE KEYS
             CASE "i";변신커맨드
-                SIF CFLAG:(FLAG:1):변신가능
+                SIF CFLAG:(FLAG:2):변신가능
                     TFLAG:동료2ATB커서상태 = 7
             CASE "j";공격
                 TFLAG:동료2ATB커서상태 = 1
@@ -1116,6 +1119,7 @@ SELECTCASE TFLAG:동료2ATB커서상태
                 IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
                     TFLAG:동료2ATB커서상태 = 0
                     R_COMMANDS '= "TRANS"
+                    R_TARGETV = 2
                     R_USERV = 2
                     RETURN 1
                 ENDIF

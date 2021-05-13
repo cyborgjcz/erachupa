@@ -1,0 +1,103 @@
+﻿;변신 실행
+@GO_TRANSFORM(USERV,ISENEMY=0)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC USERV
+#DIM DYNAMIC ISENEMY
+#DIM DYNAMIC NUMV
+#DIM DYNAMIC NUMV2
+#DIM DYNAMIC STATTOUP,3
+IF !ISENEMY
+    USERV = FLAG:USERV
+ELSEIF ISENEMY != 0
+    USERV = TFLAG:USERV
+ENDIF
+
+IF CFLAG:USERV:변신 == 0
+    ;실행 전 상태가 변신중이 아닌 경우 즉 변신 처리
+    ;스탯변경
+    FOR LCOUNT,0,STATBASENUM
+        SELECTCASE LCOUNT
+            CASE 0,1
+                {
+                    MAXBASE:USERV:LCOUNT = CSVBASE(NO:USERV,LCOUNT) +
+                    CFLAG:(NO:USERV):(30+LCOUNT) + TRANSFORM_STAT:USERV:LCOUNT
+                }
+            CASE 9
+            CASEELSE
+                BASE:USERV:LCOUNT = TRANSFORM_STAT:USERV:LCOUNT
+        ENDSELECT
+    NEXT
+    ;스킬 변경
+    FOR LCOUNT,0,8
+        AVAILABLE_SKILL:USERV:LCOUNT = TRANSFORM_SKILL:USERV:LCOUNT
+    NEXT
+    ;공격력,방어력, 주요 3스탯 레벨스케일링
+    IF CFLAG:USERV:초기레벨 != BASE:USERV:레벨
+        FOR LCOUNT,0,2
+            BASE:USERV:(6+LCOUNT) = STAT_CURV(BASE:USERV:레벨,TRANSFORM_STAT_CURV:USERV:LCOUNT)
+        NEXT
+        NUMV = BASE:USERV:레벨 - CFLAG:USERV:초기레벨
+        STATTOUP:0 = 2,3,4
+        ;능력치 성장편향 설정
+        SELECTCASE TRANSFORM_STAT_GROW:USERV:0
+            CASE 0 TO 2
+                ;한가지 스탯만 주구장창 올리는 경우
+                NUMV2 = TRANSFORM_STAT_GROW:USERV:0 + 2
+                ARRAYREMOVE STATTOUP,(NUMV2-2),1
+                STATTOUP:2 = STATTOUP:0
+                STATTOUP:0 = NUMV2
+            CASE 3 TO 5
+                ;한가지 스탯 위주로 올림
+                NUMV2 = TRANSFORM_STAT_GROW:USERV:0 - 1
+                ARRAYREMOVE STATTOUP,(NUMV2-2),1
+                STATTOUP:2 = STATTOUP:0
+                STATTOUP:0 = NUMV2
+            ;6은 공평분배
+        ENDSELECT
+        NUMV2 = NUMV
+        LCOUNT = 0
+        ;실제 분배
+        DO
+            IF LCOUNT > 2
+                {
+                    IF LCOUNT < 4 && !(TRANSFORM_STAT_GROW:USERV:0 < 3 &&
+                    TRANSFORM_STAT_GROW:USERV:0 > 5)
+                }
+                ELSE
+                    LCOUNT = 0
+                ENDIF
+            ENDIF
+            SELECTCASE TRANSFORM_STAT_GROW:USERV:0
+                CASE 0 TO 2
+                    BASE:USERV:(STATTOUP:0) += 1
+                CASEELSE
+                    IF LCOUNT < 3
+                        BASE:USERV:(STATTOUP:LCOUNT) += 1
+                    ELSE
+                        BASE:USERV:(STATTOUP:0) += 1
+                    ENDIF
+            ENDSELECT
+            NUMV -= 1
+            LCOUNT += 1
+            SIF NUMV <= 0
+                BREAK
+        LOOP 1
+        [SKIPSTART]
+        IF NUMV > 0
+            FOR LCOUNT,0,NUMV
+                PLUSV:(RAND:3) += 1
+            NEXT
+        ELSEIF NUMV < 0
+            FOR LCOUNT,0,NUMV,-1
+                PLUSV:(RAND:3) -= 1
+            NEXT
+        ENDIF
+        [SKIPEND]
+    ENDIF
+    CALLNAME:USERV = %TRANSFORM_CALLNAME:USERV:0%
+    CFLAG:USERV:변신 = 1
+ELSE
+    ;변신 해제
+    CALL EQ_APPLY_STAT(USERV)
+    CALLNAME:USERV = CSVCALLNAME(NO:USERV)
+ENDIF
