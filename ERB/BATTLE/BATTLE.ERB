@@ -677,6 +677,10 @@ ENDIF
 ;스킬 유형은 공격, 범위 유형은 단일일때
 IF COMMANDS == "TRANS"
     CALL GO_TRANSFORM(USERV,ISENEMY)
+    IF !ISENEMY
+        CALL BATTLE_TALK("TRANSFORM",USERV,,CFLAG:(FLAG:USERV):변신가능)
+        CALL BATTLE_TALK("TRANSFORM",USERV^3,1,CFLAG:(FLAG:USERV):변신가능)
+    ENDIF
 ELSEIF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
     CALL SKILL_SINGLE_ATTACK(TARGETV,USERV,SKILLV,ISENEMY)
 ;자가 힐/버프일때
@@ -784,7 +788,11 @@ SELECTCASE TFLAG:동료1ATB커서상태
     CASE 0
         LBUTTONS:0 = 
         IF CFLAG:(FLAG:1):변신가능 != 0
-            LBUTTONS:1 = 변신
+            IF CFLAG:(FLAG:1):변신 == 0
+                LBUTTONS:1 = 변신
+            ELSE
+                LBUTTONS:1 = 해제
+            ENDIF
         ELSE
             LBUTTONS:1 = 
         ENDIF
@@ -811,7 +819,11 @@ SELECTCASE TFLAG:동료2ATB커서상태
     CASE 0
         LBUTTONS:3 = 
         IF CFLAG:(FLAG:2):변신가능 != 0
-            LBUTTONS:4 = 변신
+            IF CFLAG:(FLAG:2):변신 == 0
+                LBUTTONS:4 = 변신
+            ELSE
+                LBUTTONS:4 = 해제
+            ENDIF
         ELSE
             LBUTTONS:4 = 
         ENDIF
@@ -870,7 +882,11 @@ SELECTCASE TFLAG:(7+LNUM)
     CASE 6
         COMMESSAGES:LNUM = 방어
     CASE 7
-        COMMESSAGES:LNUM = 변신
+        IF CFLAG:(FLAG:(LNUM+1)):변신 == 0
+            COMMESSAGES:LNUM = 변신
+        ELSE
+            COMMESSAGES:LNUM = 변신해제
+        ENDIF
 ENDSELECT
 
 ;입력값 처리
