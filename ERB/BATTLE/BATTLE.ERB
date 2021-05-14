@@ -572,6 +572,7 @@ IF TFLAG:전투결과 == 2
     INPUT
     IF RESULT == 0
         LOADGAME
+        GOTO BATTLE_DEFEAT_INPUT_LOOP
     ELSEIF RESULT == 1
         BEGIN TITLE
     ELSE
