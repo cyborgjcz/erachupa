@@ -524,17 +524,15 @@ IF TFLAG:전투결과 == 1
     PRINTFORML 승리했다!
     PRINTL ...
     WAITANYKEY
-    FOR LCOUNT,1,3
-        FOR LCOUNT2,1,7
-            IF TFLAG:LCOUNT2
-                CALL DROP_ITEM(NO:(TFLAG:LCOUNT2))
-                IF RESULT > -1
-                    ITEM:RESULT += 1
-                    PRINTFORML 전리품으로 %조사처리(ITEMNAME:RESULT,"을")% 얻었다!
-                    WAITANYKEY
-                ENDIF
+    FOR LCOUNT2,1,7
+        IF TFLAG:LCOUNT2
+            CALL DROP_ITEM(NO:(TFLAG:LCOUNT2))
+            IF RESULT > -1
+                ITEM:RESULT += 1
+                PRINTFORML 전리품으로 %조사처리(ITEMNAME:RESULT,"을")% 얻었다!
+                WAITANYKEY
             ENDIF
-        NEXT
+        ENDIF
     NEXT
     FOR LCOUNT,1,3
         FOR LCOUNT2,1,7
