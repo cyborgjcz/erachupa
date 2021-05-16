@@ -21,6 +21,9 @@ SELECTCASE COMV
         ELSEIF FLAG:스토리0진행도 == 3
             CALL EVENT_COMMON_CHAPTER0_200_3
             RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 4
+            CALL EVENT_COMMON_CHAPTER0_200_4
+            RETURN RESULT
         ENDIF
     CASE 201
         IF FLAG:스토리0진행도 <= 1
@@ -39,6 +42,9 @@ SELECTCASE COMV
         ELSEIF FLAG:스토리0진행도 == 3
             CALL EVENT_COMMON_CHAPTER0_MAIN3
             RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 4
+            CALL EVENT_COMMON_CHAPTER0_201_3
+            RETURN RESULT
         ENDIF
     CASE 202
         IF FLAG:스토리0진행도 <= 1
@@ -50,6 +56,21 @@ SELECTCASE COMV
         ELSEIF FLAG:스토리0진행도 == 3
             CALL EVENT_COMMON_CHAPTER0_202_3
             RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 4
+            CALL EVENT_COMMON_CHAPTER0_202_4
+            RETURN RESULT
+        ENDIF
+    CASE 300
+        IF FLAG:스토리0진행도 == 4
+            IF (TFLAG:회화키워드1 & 4) == 0
+                TFLAG:회화키워드1 += 4
+                CALL EVENT_COMMON_CHAPTER0_300
+                RETURN RESULT
+            ELSE
+                RETURN 1
+            ENDIF
+        ELSE
+            RETURN 0
         ENDIF
     CASE 400
         IF FLAG:스토리0진행도 <= 1
@@ -59,6 +80,14 @@ SELECTCASE COMV
         ELSEIF FLAG:스토리0진행도 == 2 || FLAG:스토리0진행도 == 3
             CALL EVENT_COMMON_CHAPTER0_400_2
             RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 4
+            IF (TFLAG:회화키워드1 & 2) == 0
+                TFLAG:회화키워드1 += 2
+                CALL EVENT_COMMON_CHAPTER0_400_3
+                RETURN RESULT
+            ELSE
+                RETURN 1
+            ENDIF
         ENDIF
     CASE 401
         IF FLAG:스토리0진행도 <= 1
@@ -71,13 +100,26 @@ SELECTCASE COMV
                 RETURN RESULT
             ENDIF
         ELSEIF FLAG:스토리0진행도 == 2 || FLAG:스토리0진행도 == 3
-            IF TFLAG:회화키워드1 == 0
+            IF (TFLAG:회화키워드1 & 1) == 0
                 TFLAG:회화키워드1 += 1
                 CALL EVENT_COMMON_CHAPTER0_401_2
                 RETURN RESULT
             ELSE
-                CALL EVENt_COMMON_CHAPTER0_401_3
+                CALL EVENT_COMMON_CHAPTER0_401_3
                 RETURN RESULT
+            ENDIF
+        ELSEIF FLAG:스토리0진행도 == 4
+            IF (TFLAG:회화키워드1 & 8) == 0
+                TFLAG:회화키워드1 += 8
+                IF (TFLAG:회화키워드1 & 1) == 0
+                    TFLAG:회화키워드1 += 1
+                    CALL EVENT_COMMON_CHAPTER0_401_4(1)
+                ELSE
+                    CALL EVENT_COMMON_CHAPTER0_401_4
+                ENDIF
+                RETURN RESULT
+            ELSE
+                RETURN 1
             ENDIF
         ENDIF
     CASEELSE

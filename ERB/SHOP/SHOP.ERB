@@ -88,9 +88,15 @@ SELECTCASE KEY
     CASE 200
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(200)
+        IF RESULT == 1
+            ;통상 극장 살펴보기 이벤트
+        ENDIF
     CASE 201
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(201)
+        IF RESULT == 1
+            ;통상 거리 살펴보기 이벤트
+        ENDIF
     CASE 202
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(202)
