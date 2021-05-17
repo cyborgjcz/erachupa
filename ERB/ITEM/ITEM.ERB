@@ -4,7 +4,245 @@
 TRYCCALLFORM EQ_위치_{KEYV}
     RETURN 1,CHUPA_EQUIP_PLACE:KEYV
 CATCH
-    SIF KEYV == 3002
-        DEBUGPRINTFORML 3002 ISEQUIP 실행실패
     RETURN 0
 ENDCATCH
+
+;
+@ITEM_CONSUME_UI
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TARGETCHARA;1or2
+#DIM DYNAMIC CURSORV;
+#DIM DYNAMIC ITEMLISTA,500;히트한 아이템 번호 저장하는 일차원 배열
+#DIM DYNAMIC ITEMNUMV
+#DIM DYNAMIC PAGEV;소지 장비 선택 중 페이지 번호
+#DIM DYNAMIC PAGEMAX;소지 장비 선택 중 페이지 최대수
+#DIM DYNAMIC ITEMUSE,2;0= HPorSP(0,1) or-1(부정) 1= 회복량
+;TARGETCHARA를 현재 HP를 참고하여 자동초기화. (체력 낮은 캐릭 우선)
+{
+    IF BASE:(FLAG:1):희망 <= (MAXBASE:(FLAG:1):희망 / 2) &&
+    BASE:(FLAG:1):희망 <= BASE:(FLAG:2):희망
+}
+    TARGETCHARA = 1
+{
+    ELSEIF BASE:(FLAG:2):희망 <= (MAXBASE:(FLAG:2):희망 / 2) &&
+    BASE:(FLAG:2):희망 <= BASE:(FLAG:1):희망
+}
+    TARGETCHARA = 2
+ELSE
+    TARGETCHARA = 1
+ENDIF
+
+PAGEV = 0
+DO
+    PRINTFORML %CALLNAME:(FLAG:TARGETCHARA)%(HP: {BASE:(FLAG:TARGETCHARA):희망} SP: {BASE:(FLAG:TARGETCHARA):영혼})에게 사용할 아이템을 선택해주세요.
+    ITEMUSE:0 = -1
+    VARSET ITEMLISTA,0
+    ITEMNUMV = 0
+    FOR LCOUNT,101,VARSIZE("ITEM")
+        IF !ISCONSUMABLE(LCOUNT)
+            CONTINUE
+        ELSE
+            IF ITEM:LCOUNT > 0
+                ITEMLISTA:ITEMNUMV = LCOUNT
+                ITEMNUMV += 1
+            ENDIF
+        ENDIF
+        PAGEMAX = (ITEMNUMV - 1) / 10
+    NEXT
+
+    ;아이템 목록 표시
+    DRAWLINE
+    FOR LCOUNT,0,10
+        IF ITEMLISTA:((PAGEV * 10)+LCOUNT) != 0
+            SIF CURSORV == (PAGEV * 10)+LCOUNT
+                SETCOLOR 0xfee12b
+            PRINTFORM %ITEMNAME:(ITEMLISTA:((PAGEV * 10)+LCOUNT))% * {ITEM:(ITEMLISTA:((PAGEV * 10)+LCOUNT))} 개 
+            IF CURSORV == (PAGEV * 10)+LCOUNT
+                RESETCOLOR                
+                PRINT ＜ 
+            ENDIF
+            PRINTSL POTION_HELP(ITEMLISTA:((PAGEV * 10)+LCOUNT))
+        ELSE
+            PRINTL
+        ENDIF
+    NEXT
+    SIF PAGEV > 0
+        PRINTBUTTON "［ａ］← 이전 페이지","a"
+    PRINT |
+    SIF PAGEV < PAGEMAX && PAGEV != PAGEMAX
+        PRINTBUTTON "［ｄ］→ 다음 페이지","d"
+    PRINTL
+    DRAWLINE
+    ;커맨드 표시
+    PRINTBUTTON "［ｗ］↑","w"
+    PRINTBUTTON "［ｓ］↓","s"
+    SIF TARGETCHARA == 2
+        PRINTBUTTON @"［ｑ］%CALLNAME:(FLAG:1)%","q"
+    SIF TARGETCHARA == 1
+        PRINTBUTTON @"［ｅ］%CALLNAME:(FLAG:2)%","e"
+    PRINTBUTTON "［ｕ］사용","u"
+    PRINTBUTTON "［ｘ］뒤로","x"
+    ;입력 처리
+    ONEINPUTS
+    SELECTCASE RESULTS
+        CASE "a"
+            IF PAGEV > 0
+                PAGEV -= 1
+                CURSORV -= 10
+                SIF CURSORV < 0
+                    CURSORV = 0
+            ENDIF
+        CASE "d"
+            IF PAGEV < PAGEMAX
+                PAGEV += 1
+                CURSORV += 10
+                SIF CURSORV > (ITEMNUMV - 1)
+                    CURSORV = (ITEMNUMV - 1)
+            ENDIF
+        CASE "w"
+            IF CURSORV > 0
+                SIF CURSORV % 10 == 0
+                    PAGEV -= 1
+                CURSORV -= 1
+            ENDIF
+        CASE "s"
+            IF CURSORV < ITEMNUMV-1
+                SIF CURSORV % 10 == 9
+                    PAGEV += 1
+                CURSORV += 1
+            ENDIF
+        CASE "q"
+            SIF TARGETCHARA == 2
+                TARGETCHARA = 1
+        CASE "e"
+            SIF TARGETCHARA == 1
+                TARGETCHARA = 2
+        CASE "u"
+            IF ITEMLISTA:CURSORV != 0
+                IF ISHPPOTION(ITEMLISTA:CURSORV) && !ISMAXHP(FLAG:TARGETCHARA)
+                    ITEMUSE:0 = 0, ISHPPOTION(ITEMLISTA:CURSORV)
+                ELSEIF ISSPPOTION(ITEMLISTA:CURSORV) && !ISMAXSP(FLAG:TARGETCHARA)
+                    ITEMUSE:0 = 1, ISSPPOTION(ITEMLISTA:CURSORV)
+                ENDIF
+            ENDIF
+        CASE "x"
+            BREAK
+    ENDSELECT
+    ;실제 아이템 사용
+    IF ITEMUSE != -1
+        BASE:(FLAG:TARGETCHARA):(ITEMUSE:0) += ITEMUSE:1
+        SIF BASE:(FLAG:TARGETCHARA):(ITEMUSE:0) > MAXBASE:(FLAG:TARGETCHARA):(ITEMUSE:0)
+            BASE:(FLAG:TARGETCHARA):(ITEMUSE:0) = MAXBASE:(FLAG:TARGETCHARA):(ITEMUSE:0)
+        ITEM:(ITEMLISTA:CURSORV) -= 1
+        PRINTS CALLNAME:(FLAG:TARGETCHARA)
+        SELECTCASE ITEMUSE:0
+            CASE 0
+                PRINTFORM 의 HP가
+            CASE 1
+                PRINTFORM 의 SP가
+        ENDSELECT
+        PRINTFORML {ITEMUSE:1} 회복됐다!
+        WAITANYKEY
+        PAGEV = 0
+        CURSORV = 0
+    ELSE
+        CLEARLINE 16
+        REUSELASTLINE
+    ENDIF
+LOOP 1
+
+;사용 소모품 여부 확인
+@ISCONSUMABLE(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE 101
+        RETURNF 1
+    CASE 102
+        RETURNF 1
+    CASE 103
+        RETURNF 1
+    CASE 104
+        RETURNF 1
+    CASE 105
+        RETURNF 1
+    CASE 106
+        RETURNF 1
+    CASE 107
+        RETURNF 1
+    CASEELSE
+        RETURNF 0
+ENDSELECT
+
+;HP 회복 아이템 확인, 회복량 반환
+@ISHPPOTION(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE 104
+        RETURNF 50
+    CASE 105
+        RETURNF 100
+    CASE 106
+        RETURNF 150
+    CASE 107
+        RETURNF 200
+    CASEELSE
+        RETURNF 0
+ENDSELECT
+
+;HP 회복 아이템 확인, 회복량 반환
+@ISSPPOTION(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE 101
+        RETURNF 10
+    CASE 102
+        RETURNF 20
+    CASE 103
+        RETURNF 30
+    CASEELSE
+        RETURNF 0
+ENDSELECT
+
+;회복 아이템 설명문 출력
+@POTION_HELP(KEYV)
+#FUNCTIONS
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE 101
+        RETURNF "SP를 10 회복시켜주는 음료"
+    CASE 102
+        RETURNF "SP를 20 회복시켜주는 음료"
+    CASE 103
+        RETURNF "SP를 30 회복시켜주는 음료"
+    CASE 104
+        RETURNF "HP 50 회복 건조한 목을 적셔주는 사탕"
+    CASE 105
+        RETURNF "HP 100 회복 톡톡 튀는 식감이 재미있는 음료수"
+    CASE 106
+        RETURNF "HP 150 회복 맛있는 데다 미용 효과도 있는 초콜릿"
+    CASE 107
+        RETURNF "HP 200 회복 과일이 듬뿍 들어간 롤케이크"
+    CASEELSE
+        RETURNF
+ENDSELECT
+
+@ISMAXHP(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+IF BASE:KEYV:희망 >= MAXBASE:KEYV:희망
+    RETURNF 1
+ELSE
+    RETURNF 0
+ENDIF
+
+@ISMAXSP(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+IF BASE:KEYV:영혼 >= MAXBASE:KEYV:영혼
+    RETURNF 1
+ELSE
+    RETURNF 0
+ENDIF

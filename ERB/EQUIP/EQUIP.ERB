@@ -4,7 +4,7 @@
 #DIM DYNAMIC LCOUNT;FOR 반복문 카운터
 #DIM DYNAMIC CHARAV;캐릭터 등록번호
 
-FOR LCOUNT,0,12;공포내성까지. 스탯이 확장되면 더 늘릴것
+FOR LCOUNT,0,STATBASENUM;전투 관련 BASE의 수만큼.
     SIF LCOUNT == 9
         CONTINUE;레벨(9)은 건드리지 않는다
     ;CSV를 참조하여 대입, 초기화한다
@@ -13,7 +13,7 @@ FOR LCOUNT,0,12;공포내성까지. 스탯이 확장되면 더 늘릴것
     ELSE
         BASE:CHARAV:LCOUNT = CSVBASE(NO:CHARAV,LCOUNT)
     ENDIF
-    ;CFLAG 20~부터 참조하여 증가치를 반영한다
+    ;CFLAG 30~부터 참조하여 증가치를 반영한다
     IF LCOUNT == 0 || LCOUNT == 1
         MAXBASE:CHARAV:LCOUNT += CFLAG:(NO:CHARAV):(30+LCOUNT)
     ELSE

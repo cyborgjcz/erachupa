@@ -1,0 +1,27 @@
+﻿;의상 츄파카브라T F Size
+@EQ_능력수정_1003(CHARAV)
+#DIM DYNAMIC CHARAV
+BASE:CHARAV:방어력 += 20
+BASE:CHARAV:회피율 += 2
+
+CFLAG:CHARAV:변신가능 = 1;츄파카브라
+TRANSFORM_CALLNAME:CHARAV:0 = %TRANSFORM_NAME(CHARAV,1)%
+TRANSFORM_STAT:CHARAV:0 = 20, 5, 7, 7, 4, 7,37,11, 5, 0, 0, 0, 0, 0
+TRANSFORM_STAT_CURV:CHARAV:0 = 7, 5
+TRANSFORM_STAT_GROW:CHARAV:0 = 3;패기 위주
+@EQ_스킬수정_1003(CHARAV)
+#DIM DYNAMIC CHARAV
+TRANSFORM_SKILL:CHARAV:0 = 9;츄파빔
+TRANSFORM_SKILL:CHARAV:1 = 10;츄파할퀴기
+@EQ_위치_1003
+CHUPA_EQUIP_PLACE:1003 = 0
+@EQ_이름_1003
+CHUPA_EQUIP_NAME:1003 '= "츄파카브라T F Size"
+@EQ_설명_1003
+{
+    CHUPA_EQUIP_HELP:1003 '= "방어력+20 회피율+2, 츄파카브라 변신 |
+    \n변신 스킬 : 츄파빔, 츄파할퀴기
+    \n항상 스마일이 나의 스타일,
+    \n깎아지른 절벽이라도 우리가 가는 곳이
+    \n곧 아이돌의 길! 츄파츄파!"
+}
