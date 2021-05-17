@@ -537,8 +537,8 @@ IF TFLAG:전투결과 == 1
     FOR LCOUNT,1,3
         FOR LCOUNT2,1,7
             IF TFLAG:LCOUNT2
-                RPG_EXP:(FLAG:LCOUNT):0 += CFLAG:(TFLAG:LCOUNT2):제공경험치
-                TOTAL_RPG_EXP:(FLAG:LCOUNT):0 += CFLAG:(TFLAG:LCOUNT2):제공경험치
+                RPG_EXP:(FLAG:LCOUNT):0 += AUTOMATED_EXP(TFLAG:LCOUNT2)
+                TOTAL_RPG_EXP:(FLAG:LCOUNT):0 += AUTOMATED_EXP(TFLAG:LCOUNT2)
             ENDIF
         NEXT
     NEXT

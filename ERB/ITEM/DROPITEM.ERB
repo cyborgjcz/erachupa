@@ -8,10 +8,12 @@ SELECTCASE NOV
     CASE 100
         ;츄파카브라
         SELECTCASE RAND:100
-            CASE 0 TO 16
+            CASE 0 TO 14
                 ITEMNUM = [[츄파에센스]]
-            CASE 17 TO 40
+            CASE 15 TO 34
                 ITEMNUM = [[스파크드링크10]]
+            CASE 35 TO 50
+                ITEMNUM = [[목캔디]]
         ENDSELECT
 ENDSELECT
 RETURN ITEMNUM
