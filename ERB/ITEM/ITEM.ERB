@@ -56,10 +56,10 @@ DO
         IF ITEMLISTA:((PAGEV * 10)+LCOUNT) != 0
             SIF CURSORV == (PAGEV * 10)+LCOUNT
                 SETCOLOR 0xfee12b
-            PRINTFORM %ITEMNAME:(ITEMLISTA:((PAGEV * 10)+LCOUNT))% * {ITEM:(ITEMLISTA:((PAGEV * 10)+LCOUNT))} 개
+            PRINTFORM %ITEMNAME:(ITEMLISTA:((PAGEV * 10)+LCOUNT))% * {ITEM:(ITEMLISTA:((PAGEV * 10)+LCOUNT))} 개 
             IF CURSORV == (PAGEV * 10)+LCOUNT
                 RESETCOLOR                
-                PRINT ＜
+                PRINT ＜ 
             ENDIF
             PRINTSL POTION_HELP(ITEMLISTA:((PAGEV * 10)+LCOUNT))
         ELSE
