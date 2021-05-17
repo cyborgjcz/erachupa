@@ -10,13 +10,15 @@
 #DIM DYNAMIC CURRENTCOLOR
 
 PRINTBUTTON "［ｑ］←","q"
-PRINTBUTTON "［ｗ］↑","q"
-PRINTBUTTON "［ｅ］→","q"
+PRINTBUTTON "［ｗ］↑","w"
+PRINTBUTTON "［ｅ］→","e"
+PRINT_SPACE 400
+PRINTBUTTON "［ｉ］아이템","i"
 PRINTL
-PRINTBUTTON "［ａ］↶","q"
+PRINTBUTTON "［ａ］↶","a"
 PRINT_SPACE 40
-PRINTBUTTON "［ｓ］↓","q"
-PRINTBUTTON "［ｄ］↷","q"
+PRINTBUTTON "［ｓ］↓","s"
+PRINTBUTTON "［ｄ］↷","d"
 PRINTL
 PRINTBUTTON "［ｚ］상호작용","z"
 PRINTL
@@ -51,6 +53,8 @@ ELSE
             RETURN 0
         CASE "z"
             CALL DUNGEON_INTERACT
+        CASE "i"
+            CALL ITEM_CONSUME_UI
         CASE ""
             RESTART
         CASEELSE
