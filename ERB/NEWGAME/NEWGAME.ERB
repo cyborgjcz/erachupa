@@ -58,11 +58,10 @@ IF RESULT == 0
     CALL SET_FIRSTBATTLE
     CALL BATTLE_START
     ;이상
+    ;디버그용 퍼스트배틀의 동료 정보 초기화
+    CFLAG:37:1 = 0
+    CFLAG:55:1 = 0
 ENDIF
-
-;디버그용 퍼스트배틀의 동료 정보 초기화
-CFLAG:37:1 = 0
-CFLAG:55:1 = 0
 
 CALL EVENT_COMMON_NEWGAME
 
