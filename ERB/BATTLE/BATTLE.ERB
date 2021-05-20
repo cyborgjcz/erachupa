@@ -428,13 +428,13 @@ DO
                     ; 동료1 전투불능
                     TALK_WHAT '= "DYING"
                     TALK_WHATV = 1
-                    TCALLER = 2
+                    TCALLER = (RAND:2)+1
                     TFLAG:불리전투회화스위치 += POWER(2,11)
                 ELSEIF ISDYING(FLAG:동료2) && !(TFLAG:불리전투회화스위치 & POWER(2,12))
                     ; 동료2 전투불능
                     TALK_WHAT '= "DYING"
                     TALK_WHATV = 2
-                    TCALLER = 1
+                    TCALLER = (RAND:2)+1
                     TFLAG:불리전투회화스위치 += POWER(2,12)
                 ELSEIF ISBASUTE(FLAG:동료1,2) && !(TFLAG:불리전투회화스위치 & POWER(2,3))
                     ; 동료1 독
@@ -529,6 +529,11 @@ IF TFLAG:전투결과 == 1
     PRINTFORML 승리했다!
     PRINTL ...
     WAITANYKEY
+    ;승리 전투회화
+    TCALLER = (RAND:2)+1
+    ;과정에 따라 TALK_WHATV 반영?
+    CALL BATTLE_TALK("WIN",TCALLER)
+    CALL BATTLE_TALK("WIN",TCALLER^3,1)
     FOR LCOUNT2,1,7
         IF TFLAG:LCOUNT2 && !ENEMY_GONE:(TFLAG:LCOUNT2):0
             CALL DROP_ITEM(NO:(TFLAG:LCOUNT2))
@@ -561,11 +566,17 @@ ELSEIF TFLAG:전투결과 == 2
     PRINTFORML 패배했다...
     PRINTL ...
     WAITANYKEY
+    ;패배 전투회화
+    TCALLER = (RAND:2)+1
+    ;과정에 따라 TALK_WHATV 반영?
+    CALL BATTLE_TALK("LOSE",TCALLER)
+    CALL BATTLE_TALK("LOSE",TCALLER^3,1)
 ELSEIF TFLAG:전투결과 == 3
     ;아군 도주
     PRINTFORML %조사처리(CALLNAME:(FLAG:1),"와")% %조사처리(CALLNAME:(FLAG:2),"은")% 도망쳤다!
     PRINTL ...
     WAITANYKEY
+    ;전투회화는 스킬 부분에서 호출
 ENDIF
 
 ;임시 등록한 적 캐릭터 삭제
@@ -715,13 +726,14 @@ ENDIF
 ENDIF
 
 ;여기서 실제 스킬 내용 실행
-;스킬 유형은 공격, 범위 유형은 단일일때
+;변신
 IF COMMANDS == "TRANS"
-    CALL GO_TRANSFORM(USERV,ISENEMY)
-    IF !ISENEMY
+    IF !ISENEMY && CFLAG:(FLAG:USERV):변신 == 0
         CALL BATTLE_TALK("TRANSFORM",USERV,,CFLAG:(FLAG:USERV):변신가능)
         CALL BATTLE_TALK("TRANSFORM",USERV^3,1,CFLAG:(FLAG:USERV):변신가능)
     ENDIF
+    CALL GO_TRANSFORM(USERV,ISENEMY)
+;도주
 ELSEIF COMMANDS == "ESCAPE" || SKILL_DATA:SKILLV:0 == 4
     CALL SKILL_ESCAPE(USERV,SKILLV,ISENEMY)
 ;단일 공격
