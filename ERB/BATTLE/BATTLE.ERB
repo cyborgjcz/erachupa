@@ -64,18 +64,18 @@ RETURNF TFLAG:WHERE
 TFLAG:경과시간 = 0
 ;전투결과 초기화
 TFLAG:전투결과 = 0
-;장비에 의한 스탯 증감 초기화
 FOR LCOUNT,1,3
     IF CFLAG:(FLAG:LCOUNT):변신 != 0
+    ;변신중이라면 변신 상태 재돌입
         CALL GO_TRANSFORM(FLAG:LCOUNT)
     ELSE
+    ;장비에 의한 스탯 증감 초기화
         CALL EQ_APPLY_STAT(FLAG:LCOUNT)
     ENDIF
-NEXT
-
-FOR LCOUNT,0,2
+    ;ATB카운터 초기화
     CFLAG:(FLAG:LCOUNT):ATB카운터 = 0
 NEXT
+
 RETURN 1
 ;---------------------------------------------------
 ;BATTLE_MAIN
