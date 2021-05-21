@@ -296,11 +296,11 @@ FOR LCOUNT,12,16,2
     IF SKILL_DATA:SKILLV:LCOUNT != 0
         SELECTCASE SKILL_DATA:SKILLV:LCOUNT
             CASE 6;카운터부여
-                IF (CFLAG:USERV:버프적용중 & 1) == 0
-                    CFLAG:USERV:버프적용중 += 1
-                    버프지속시간:USERV:0 = 2;발동 턴에 한번 사라지므로 2로 한다.
-                    COUNTER_POWER:USERV:0 = SKILL_DATA:SKILLV:(LCOUNT+1)
-                ENDIF
+                SIF (CFLAG:USERV:버프적용중 & 1) != 0
+                    CFLAG:USERV:버프적용중 -= 1
+                CFLAG:USERV:버프적용중 += 1
+                버프지속시간:USERV:0 = 2;발동 턴에 한번 사라지므로 2로 한다.
+                COUNTER_POWER:USERV:0 = SKILL_DATA:SKILLV:(LCOUNT+1)
         ENDSELECT
     ENDIF
 NEXT
@@ -408,9 +408,11 @@ ENDSELECT
 #DIM DYNAMIC ISENEMY
 #DIM DYNAMIC DAMAGEV
 
-SIF !ISENEMY
-    CALL BATTLE_TALK("COUNTER",USERV)
-PRINTFORML %조사처리(CALLNAME:USERV,"은")% 반격을 구사했다.
+IF !ISENEMY
+    CALL BATTLE_TALK("COUNTER",CFLAG:USERV:1)
+ELSE
+    PRINTFORML %조사처리(CALLNAME:USERV,"은")% 반격을 구사했다.
+ENDIF
 PRINT ...
 WAITANYKEY
 IF RAND:100 <= (100-SKILL_DATA:0:8)+(BASE:TARGETV:회피율)-(SKILL_DATA:0:9)

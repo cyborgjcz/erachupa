@@ -104,6 +104,8 @@ RETURN 1
 #DIMS DYNAMIC TALK_WHAT
 #DIM DYNAMIC TALK_WHATV
 
+#DIM DYNAMIC LINETOCLEARV
+
 IF TFLAG:0 < 1 ;첫턴처리
     {
         PRINTFORML ＿人人人人人人人人人人人人人人人人人＿
@@ -121,6 +123,7 @@ POISONTIMER = POISONTIME
 CALL RESET_BATTLE_CURSOR
 
 DO
+    LINETOCLEARV = 6+1+2+2
     ;전열이 비었다면, 후열을 전열로 땡긴다
     LCOUNT2 = 1
     FOR LCOUNT,1,4
@@ -297,7 +300,7 @@ DO
     TIMECOUNT = RESULT
     TONEINPUTS REMAINTIME,"탌",0,""
     ;입력처리
-    CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER)
+    CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER,LINETOCLEARV)
     GETMILLISECOND
     REMAINTIME -= (RESULT - TIMECOUNT)
     POISONTIMER -= (RESULT - TIMECOUNT)
@@ -389,9 +392,10 @@ DO
             CALL RUN_BATTLE_COMMAND(COMMANDS,COM_TARGETV,COM_USER,COM_SKILLNUM)
         ELSE
             IF RESULTS == ""
-                CLEARLINE 6+1+2+2
+                CLEARLINE LINETOCLEARV
             ELSE 
-                CLEARLINE 6+1+2+2+1
+                LINETOCLEARV += 1
+                CLEARLINE LINETOCLEARV
             ENDIF
             REUSELASTLINE
             ;전투회화 TFLAG 복구
@@ -950,11 +954,12 @@ ENDSELECT
 
 ;입력값 처리
 ;ATB를 소모하는 경우 RETURN 1
-@BATTLE_INPUT(KEYS,R_COMMANDS,R_TARGETV,R_USERV)
+@BATTLE_INPUT(KEYS,R_COMMANDS,R_TARGETV,R_USERV,LINETOCLEARV)
 #DIMS DYNAMIC KEYS
 #DIMS REF R_COMMANDS
 #DIM REF R_TARGETV
 #DIM REF R_USERV
+#DIM REF LINETOCLEARV
 
 #DIM DYNAMIC SKILLV
 
@@ -1030,6 +1035,9 @@ SELECTCASE TFLAG:동료1ATB커서상태
                         TFLAG:동료1ATB커서상태 = 5
                     ENDIF
                 ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 스킬을 사용하기엔 능력이 부족하다!
+                    WAITANYKEY
                     TFLAG:동료1ATB커서상태 = 3
                 ENDIF
             CASE "e"
@@ -1165,6 +1173,9 @@ SELECTCASE TFLAG:동료2ATB커서상태
                         TFLAG:동료2ATB커서상태 = 5
                     ENDIF
                 ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 스킬을 사용하기엔 능력이 부족하다!
+                    WAITANYKEY
                     TFLAG:동료2ATB커서상태 = 3
                 ENDIF
             CASE "o"

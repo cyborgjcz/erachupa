@@ -42,18 +42,53 @@ ELSE
 ENDIF
 ;변신
 @KOJO_BATTLE_TRANSFORM1_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 우리들은...
+LTEXT2 = ...츄파카브라라구♡
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_TRANSFORM1_RES_K50
-PRINTW 미실장
-@KOJO_BATTLE_TRANSFORM1_K50_TR1
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 츄, 츄파카브라?
+CALL TALK_WITH_IMG(FACE([[줄리아]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_TRANSFORM1_RES_K50_TR1
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 츄파♡츄파한~
+LTEXT2 = ...카브라입니다!
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+RETURN 1
 
 ;스킬 등
 ;일반공격
 @KOJO_BATTLE_SKILL0_K50
-PRINTW KOJO_BATTLE_SKILL0_K50
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+SELECTCASE RAND:3
+    CASE 0
+        LTEXT = 어떤 녀석부터 손 봐줄까, 앙?
+    CASE 1
+        LTEXT = 어금니가 있으면 꽉 깨물라고!
+    CASE 2
+        LTEXT = 긴 말 없이 간다!
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT)
+WAITANYKEY
+PRINTFORM %조사처리(CALLNAME:[[줄리아]],"은")% 적을 인정사정 없이 공격했다.
+WAITANYKEY
+RETURN 1
 ;도깨비불
 @KOJO_BATTLE_SKILL2_K50
 PRINTW 미실장
@@ -80,37 +115,253 @@ SELECTCASE RAND:2
 ENDSELECT
 PRINTFORM %조사처리(CALLNAME:[[줄리아]],"은")% 차례대로 터지는 폭발을 일으켜 공격했다.
 WAITANYKEY
+RETURN 1
 ;해골용자세
 @KOJO_BATTLE_SKILL8_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 길 아닌 길이라 한들 하나의 여흥.
+CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+WAITANYKEY
+LTEXT = 자, 한꺼번에 덤벼!
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT)
+WAITANYKEY
+PRINTFORM %조사처리(CALLNAME:[[줄리아]],"은")% 반격을 노리는 자세를 취했다.
+WAITANYKEY
+RETURN 1
 ;방어
 @KOJO_BATTLE_GUARD_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 준비를 갖춰두면 뒷일 걱정은 없음,
+LTEXT2 = 가드를 올리면 줄리아는 무적!
+CALL TALK_WITH_IMG(FACE([[줄리아]],2),LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+PRINTFORM %조사처리(CALLNAME:[[줄리아]],"은")% 단단히 가드를 올렸다.
+WAITANYKEY
+RETURN 1
 ;빗나감
 @KOJO_BATTLE_MISS_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 크윽!
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;도주
 @KOJO_BATTLE_ESCAPE_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 지금이다, 도망치자!
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;도주 실패
 @KOJO_BATTLE_ESCAPE_FAIL_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 아차......
+CALL TALK_WITH_IMG(FACE([[줄리아]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;도주 성공
 @KOJO_BATTLE_ESCAPE_SUCC_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 먼저 간다!
+CALL TALK_WITH_IMG(FACE([[줄리아]],2),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_ESCAPE_SUCC_RES_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+LTEXT = 수고들 하라고!
+CALL TALK_WITH_IMG(FACE([[줄리아]],2),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;카운터
 @KOJO_BATTLE_COUNTER_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[줄리아]]%
+SELECTCASE RAND:2
+    CASE 0
+        LTEXT = 그 정도로 날 어떻게 해보겠다는거냐?
+    CASE 1
+        LTEXT = 아직 한참 부족해!
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[줄리아]],5),LNAME,LTEXT)
+WAITANYKEY
+PRINTFORM %CALLNAME:[[줄리아]]%의 반격이 작렬!
+WAITANYKEY
+
 ;승리
 @KOJO_BATTLE_WIN_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[줄리아]]%
+IF (TFLAG:불리전투회화스위치 & 1) != 0 || (TFLAG:불리전투회화스위치 & 2) != 0
+    ;체력이 상당히 떨어짐
+    LTEXT = 이 정도는 아무것도 아니지!
+    FACEV = 5
+    TFLAG:전투회화키워드1 = 5
+    TFLAG:전투회화키워드2 = 1
+ELSEIF TFLAG:전투경과시간회화 > 1
+    ;전투에서 시간을 상당히 오래 끔
+    LTEXT = 본래 실력은 이 정도가 아닌데...
+    FACEV = 2
+    TFLAG:전투회화키워드1 = 4
+ELSEIF TFLAG:경과시간 < 60000
+    ;1분 컷
+    LTEXT = 낙승이었지!
+    FACEV = 5
+    TFLAG:전투회화키워드1 = 3
+ELSE
+    ;통상
+    LTEXT = 짜자잔~ %CALLNAME:[[줄리아]]% 님의 승리! 핫하!
+    FACEV = 5
+    TFLAG:전투회화키워드1 = 2
+ENDIF
+CALL TALK_WITH_IMG(FACE([[줄리아]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_WIN_RES_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+#DIM DYNAMIC FACEV = 1
+LNAME = %CALLNAME:[[줄리아]]%
+IF (TFLAG:불리전투회화스위치 & 1) != 0 || (TFLAG:불리전투회화스위치 & 2) != 0
+    SELECTCASE TFLAG:전투회화키워드1
+    ;체력이 상당히 떨어짐
+        CASE 1
+            ;걱정
+            LTEXT = 난 괜찮아, %BUDDY([[줄리아]])%
+            FACEV = 3
+        CASE 2
+            ;웃음
+        CASE 3
+            ;장난
+        CASE 4
+            ;거만
+        CASE 5
+            ;피로
+        CASE 6
+            ;공복
+        CASE 7
+            ;분함
+            LTEXT = 내 능력은 아직 이 정도인가, 제길!
+            FACEV = 5
+        CASEELSE
+            ;기타
+    ENDSELECT
+ELSEIF TFLAG:전투경과시간회화 > 1
+    ;전투에서 시간을 상당히 오래 끔
+    SELECTCASE TFLAG:전투회화키워드1
+        CASE 1
+            ;걱정
+        CASE 2
+            ;웃음
+        CASE 3
+            ;장난
+        CASE 4
+            ;거만
+        CASE 5
+            ;피로
+            LTEXT = 제길, 만만한 녀석이 없네.
+            FACEV = 4
+        CASE 6
+            ;공복
+        CASEELSE
+            ;기타
+    ENDSELECT
+ELSEIF TFLAG:경과시간 < 60000
+    ;1분 컷
+    SELECTCASE TFLAG:전투회화키워드1
+        CASE 1
+            ;걱정         
+        CASE 2
+            ;웃음
+        CASE 3
+            ;장난
+            LTEXT = 한 주먹거리도 안 되네!
+            FACEV = 2
+        CASE 4
+            ;거만
+        CASE 5
+            ;피로
+        CASE 6
+            ;공복
+        CASEELSE
+            ;기타
+    ENDSELECT
+ELSE
+    ;통상
+    SELECTCASE TFLAG:전투회화키워드1
+        CASE 1
+            ;걱정         
+        CASE 2
+            ;웃음
+        CASE 3
+            ;장난
+        CASE 4
+            ;거만
+        CASE 5
+            ;피로
+        CASE 6
+            ;공복
+            FACEV = 2
+            IF PARTNER([[줄리아]]) == [[시즈카]]
+                LTEXT = 돌아가면 맛있는 우동집에 가자고.
+            ELSE
+                LTEXT = 하하, 그건 어쩔 수 없네.
+            ENDIF
+        CASEELSE
+            ;기타
+    ENDSELECT
+ENDIF
+CALL TALK_WITH_IMG(FACE([[줄리아]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;패배
 @KOJO_BATTLE_LOSE_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[줄리아]]%
+SELECTCASE RAND:3
+    CASE 0
+        LTEXT = 미안, %BYNAMES([[줄리아]],0)%
+        CALL TALK_WITH_IMG(FACE([[줄리아]],4),LNAME,LTEXT)
+        WAITANYKEY
+        LTEXT = 미안해, %BUDDY([[줄리아]])%...
+        FACEV = 4
+        TFLAG:전투회화키워드1 = 8
+    CASE 1
+        LTEXT = 이런 곳에서 끝날리가......
+        FACEV = 5
+        TFLAG:전투회화키워드1 = 7
+    CASE 2
+        LTEXT = 일어나, %BUDDY([[줄리아]])%!
+        CALL TALK_WITH_IMG(FACE([[줄리아]],3),LNAME,LTEXT)
+        WAITANYKEY
+        LTEXT = 제발...
+        FACEV = 4
+        TFLAG:전투회화키워드1 = 1        
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[줄리아]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
+
 @KOJO_BATTLE_LOSE_RES_K50
 PRINTW 미실장
 

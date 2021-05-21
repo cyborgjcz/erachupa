@@ -61,7 +61,7 @@ SELECTCASE COMV
             RETURN RESULT
         ENDIF
     CASE 300
-        IF FLAG:스토리0진행도 == 4
+        IF FLAG:스토리0진행도 >= 4
             IF (TFLAG:회화키워드1 & 4) == 0
                 TFLAG:회화키워드1 += 4
                 CALL EVENT_COMMON_CHAPTER0_300

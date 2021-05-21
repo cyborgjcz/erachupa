@@ -29,6 +29,17 @@ ELSE
     RETURNF 0
 ENDIF
 
+;등록번호로부터 동료의 주인공번호를 반환하는 식중함수
+@BUDDYWHERE(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+IF CFLAG:KEY:동료
+    RETURNF CFLAG:PARTNER(KEY):동료
+ELSE
+    DEBUGPRINTFORML 동료로 설정되지 않은 캐릭터({KEY}, %CALLNAME:KEY%)의 파트너의 주인공 번호를 확인하려 시도했습니다
+    RETURNF 0
+ENDIF
+
 ;전투불능 확인
 @ISDYING(KEY)
 #FUNCTION
@@ -45,3 +56,36 @@ IF CFLAG:KEY:상태이상 & (POWER(2,KEY2-1))
 ELSE
     RETURNF 0
 ENDIF
+
+@MIXELLIPSIS(VALUES,MIXS="...",KEYV=2)
+#FUNCTIONS
+#DIM DYNAMIC LOOPCOUNT
+#DIMS DYNAMIC VALUES;원본문자열
+#DIMS DYNAMIC MIXS;섞을 문자열. 기본은 말줄임표(...)
+#DIM DYNAMIC KEYV;빈도,많을수록 드물게
+#DIM DYNAMIC ELLIPSISNUM;갯수 체크
+#DIMS DYNAMIC FINALSTRINGS
+
+DO
+    ;최종 문자열 초기화
+    FINALSTRINGS '= ""
+    LOOPCOUNT = 0
+    DO
+        CHARATU VALUES,LOOPCOUNT
+        ;CHARATU 결과가 빈 문자열이라면 문자열 끝이므로 반복 중단
+        SIF RESULTS:0 == ""
+            BREAK
+        FINALSTRINGS += RESULTS:0
+        IF RESULTS:0 != " "
+            IF RAND:KEYV == 0
+                FINALSTRINGS += MIXS
+                ELLIPSISNUM += 1
+            ENDIF
+        ENDIF
+        LOOPCOUNT += 1
+    LOOP 1
+    ;단 한번도 MIXS를 추가하여 문자열을 만들지 않았다면 다시.
+    SIF ELLIPSISNUM > 0
+        BREAK
+LOOP 1
+RETURNF FINALSTRINGS
