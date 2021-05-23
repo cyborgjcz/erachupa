@@ -2,3 +2,4 @@
 #DIM CONST 캐릭터수상한 = 63
 ;캐릭터 수가 증가하면 늘려야 함 57(통상 캐릭터)+6(일시적으로 등록되는 적 캐릭터)
 #DIM INFO_TO_EQUIP
+#DIMS BGM_BEFORE_BATTLE

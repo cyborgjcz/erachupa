@@ -301,8 +301,19 @@ IF (TFLAG:불리전투회화스위치 & 1) != 0 || (TFLAG:불리전투회화스�
             ENDIF
         CASE 5
             ;피로
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+            IF TFLAG:전투회화키워드2 == 2
+                ;허세
+                IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                    LTEXT = %BUDDY([[시즈카]])%, 무리는 금물이에요.
+                ELSE
+                    LTEXT = %BUDDY([[시즈카]])%...
+                ENDIF
             ELSE
+                IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                    LTEXT = 무리하면 안 돼요, %BUDDY([[시즈카]])%
+                ELSE
+                    LTEXT = %BUDDY([[시즈카]])%, 너무 무리하면 안 돼.
+                ENDIF
             ENDIF
         CASE 6
             ;공복
