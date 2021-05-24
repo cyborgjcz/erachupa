@@ -14,7 +14,7 @@ ELSE
         CASE 0
             LTEXT = 적 등장!
         CASE 1
-            IF JONDAE([[시즈카]],FLAG:2)
+            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
                 LTEXT = 적들이에요!
             ELSE
                 LTEXT = 적들이야!
@@ -34,10 +34,7 @@ IF FLAG:탐색대상던전 == 1 && DUNGEON1_FLAG:3 == 0
     LTEXT = 잠깐, 츄파카브라?
     CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
     WAITANYKEY
-    PRINTL ※ 각 캐릭터는 파란 색 게이지가 가득 차면 행동할 수 있습니다.
-    PRINTL 미리 키보드 입력으로 행동을 준비해두고,
-    PRINTL 게이지가 가득 차자 마자 결정 버튼을 눌러보세요. 
-    WAITANYKEY
+    CALL PRINT_BATTLE_TUTORIAL(1)
     DUNGEON1_FLAG:3 += 1
     RETURN 1
 ELSE
@@ -279,35 +276,12 @@ LNAME = %CALLNAME:[[시즈카]]%
 IF (TFLAG:불리전투회화스위치 & 1) != 0 || (TFLAG:불리전투회화스위치 & 2) != 0
     SELECTCASE TFLAG:전투회화키워드1
     ;체력이 상당히 떨어짐
-        CASE 1
-            ;걱정
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 2
-            ;웃음
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 3
-            ;장난
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 4
-            ;거만
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
         CASE 5
             ;피로
+            FACEV = 4
             IF TFLAG:전투회화키워드2 == 2
                 ;허세
-                IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-                    LTEXT = %BUDDY([[시즈카]])%, 무리는 금물이에요.
-                ELSE
-                    LTEXT = %BUDDY([[시즈카]])%...
-                ENDIF
+                LTEXT = %BUDDY([[시즈카]])%...
             ELSE
                 IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
                     LTEXT = 무리하면 안 돼요, %BUDDY([[시즈카]])%
@@ -315,93 +289,47 @@ IF (TFLAG:불리전투회화스위치 & 1) != 0 || (TFLAG:불리전투회화스�
                     LTEXT = %BUDDY([[시즈카]])%, 너무 무리하면 안 돼.
                 ENDIF
             ENDIF
-        CASE 6
-            ;공복
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
         CASEELSE
             ;기타
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
+            LTEXT = 하아... 하아...
+            FACEV = 5
     ENDSELECT
 ELSEIF TFLAG:전투경과시간회화 > 1
     ;전투에서 시간을 상당히 오래 끔
     SELECTCASE TFLAG:전투회화키워드1
-        CASE 1
-            ;걱정
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF         
-        CASE 2
-            ;웃음
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 3
-            ;장난
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
         CASE 4
             ;거만
             IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                FACEV = 5
+                LTEXT = 주변 경계를 소홀히 하면 안 돼요.
             ELSE
-            ENDIF
-        CASE 5
-            ;피로
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 6
-            ;공복
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
+                FACEV = 1
+                LTEXT = 너무 까불다간 혼난다.
             ENDIF
         CASEELSE
             ;기타
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
+            FACEV = 4
+            LTEXT = 후... 이걸로 전부?
     ENDSELECT
 ELSEIF TFLAG:경과시간 < 60000
     ;1분 컷
     SELECTCASE TFLAG:전투회화키워드1
-        CASE 1
-            ;걱정
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF         
-        CASE 2
-            ;웃음
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
         CASE 3
             ;장난
             IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                FACEV = 4
+                LTEXT = 무슨 소리에요 그게...
             ELSE
-            ENDIF
-        CASE 4
-            ;거만
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 5
-            ;피로
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 6
-            ;공복
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
+                FACEV = 3
+                LTEXT = 장난치지 말고, %BUDDY([[시즈카]])%
             ENDIF
         CASEELSE
             ;기타
+            FACEV = 1
             IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                LTEXT = 하던 일로 돌아가죠.
             ELSE
+                LTEXT = 하던 일로 돌아가자.
             ENDIF
     ENDSELECT
 ELSE
@@ -410,37 +338,22 @@ ELSE
         CASE 1
             ;걱정
             IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                LTEXT = 저는 괜찮아요.
+                FACEV = 2
             ELSE
-            ENDIF         
+                LTEXT = 난 괜찮아.
+            ENDIF
         CASE 2
             ;웃음
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 3
-            ;장난
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 4
-            ;거만
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 5
-            ;피로
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
-        CASE 6
-            ;공복
-            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
-            ELSE
-            ENDIF
+            FACEV = 1
+            LTEXT = 후후, %BUDDY([[시즈카]])%...
         CASEELSE
             ;기타
+            FACEV = 1
             IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                LTEXT = 다음에 대비하죠.
             ELSE
+                LTEXT = 다음에 대비하자.
             ENDIF
     ENDSELECT
 ENDIF
@@ -449,7 +362,34 @@ WAITANYKEY
 RETURN 1
 ;패배
 @KOJO_BATTLE_LOSE_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV = 3
+LNAME = %CALLNAME:[[시즈카]]%
+SELECTCASE RAND:3
+    CASE 0
+        LTEXT = 여기까지인가봐...
+        FACEV = 3
+        SIF PARTNER([[시즈카]]) != [[미라이]]
+            LTEXT += %BYNAMES([[시즈카]],[[미라이]])% 
+        SIF PARTNER([[시즈카]]) != [[츠바사]]
+            LTEXT += %MIXELLIPSIS(BYNAMES([[시즈카]],[[츠바사]]))%
+        CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+        WAITANYKEY
+        LTEXT = %MIXELLIPSIS(BUDDY([[시즈카]]))%...
+        TFLAG:전투회화키워드1 = 8
+    CASE 1
+        LTEXT = 안돼, 이젠...
+        FACEV = 3
+        TFLAG:전투회화키워드1 = 8
+    CASE 2
+        LTEXT = %MIXELLIPSIS(BUDDY([[시즈카]]))%... 도...망쳐...
+        FACEV = 3
+        TFLAG:전투회화키워드1 = 9
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_LOSE_RES_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
@@ -457,6 +397,7 @@ PRINTW 미실장
 LNAME = %CALLNAME:[[시즈카]]%
 SELECTCASE TFLAG:전투회화키워드1
     CASE 1
+        ;걱정
         FACEV = 3
         SELECTCASE RAND:2
             CASE 0
@@ -465,15 +406,18 @@ SELECTCASE TFLAG:전투회화키워드1
                 LTEXT = ......
         ENDSELECT
     CASE 7
+        ;분함
         LTEXT = 이럴 순 없는데...
         CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
         WAITANYKEY
         FACEV = 3
         LTEXT = %MIXELLIPSE(BUDDY([[시즈카]]))%        
     CASE 8
+        ;체념
         FACEV = 3
         LTEXT = 여기서 끝날 수는...
     CASEELSE
+    ;   ;기타
         FACEV = 3
         LTEXT = ......
 ENDSELECT
@@ -485,7 +429,7 @@ RETURN 1
 
 ;일반공격
 @KOJO_BATTLE_SKILL0_K15_TR1
-PRINTW KOJO_BATTLE_SKILL0_K15_TR1 미실장\
+PRINTW KOJO_BATTLE_SKILL0_K15_TR1 미실장
 ;츄파빔
 @KOJO_BATTLE_SKILL9_K15_TR1
 PRINTW KOJO_BATTLE_SKILL9_K15_TR1 미실장
@@ -556,13 +500,57 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_DYING_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_DYING_SELF_K15
-PRINTW @KOJO_BATTLE_DYING_SELF_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV = 3
+LNAME = %CALLNAME:[[시즈카]]%
+SELECTCASE RAND:2
+    CASE 0
+        LTEXT = 꺄악!
+    CASE 1
+        LTEXT = 아악!
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_DYING_PARTNER_K15
-PRINTW @KOJO_BATTLE_DYING_PARTENR_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF ISDYING([[시즈카]])
+    FACEV = 3
+    LTEXT = ......
+ELSE
+    FACEV = 4
+    LTEXT = %BUDDY([[시즈카]])%!
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_DYING_RES_SELF_K15
-PRINTW @KOJO_BATTLE_DYING_RES_SELF_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 우읏... 흑.
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_DYING_RES_PARTNER_K15
-PRINTW @KOJO_BATTLE_DYING_RES_PARTENR_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF ISDYING([[시즈카]])
+    FACEV = 3
+    LTEXT = ......
+ELSE
+    FACEV = 4
+    LTEXT = 안돼, %BUDDY([[시즈카]])%!
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;상태이상...
 ;독
 @KOJO_BATTLE_POISON1_K15
@@ -594,13 +582,42 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_POISON_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_POISON_SELF_K15
-PRINTW @KOJO_BATTLE_POISON_SELF_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 으엑... 기분 나빠.
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_POISON_PARTNER_K15
-PRINTW @KOJO_BATTLE_POISON_PARTNER_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+    LTEXT = 괜찮아요, 
+ELSE
+    LTEXT = 괜찮아, 
+ENDIF
+LTEXT += @"%BUDDY([[시즈카]])%?!"
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_POISON_RES_SELF_K15
-PRINTW @KOJO_BATTLE_POISON_RES_SELF_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 우윽... 속이 메스꺼워...
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_POISON_RES_PARTNER_K15
-PRINTW @KOJO_BATTLE_POISON_RES_PARTNER_K15 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = (%BUDDY([[시즈카]])%의 안색이...)
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;출혈
 @KOJO_BATTLE_BLEEDING1_K15
 SELECTCASE CFLAG:[[시즈카]]:1
@@ -631,9 +648,46 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_BLEEDING_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_BLEEDING_SELF_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 아파!
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_BLEEDING_PARTNER_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = %BUDDY([[시즈카]])%?! 
+IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+    LTEXT += "괜찮아요?"
+ELSE
+    LTEXT += "괜찮아?"
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_BLEEDING_RES_SELF_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 빨리 지혈을 해야...
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_BLEEDING_RES_PARTNER_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+    LTEXT = 지금 지혈을 준비할게요!
+ELSE
+    LTEXT = 기다려, %BUDDY([[시즈카]])%! 지금 갈게.
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;공포
 @KOJO_BATTLE_TERRIFIED1_K15
 SELECTCASE CFLAG:[[시즈카]]:1
@@ -664,13 +718,54 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_TERRIFIED_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_TERRIFIED_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 이제 됐어, 나 집에 갈래!
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_TERRIFIED_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF ISBASUTE([[시즈카]],4)
+    LTEXT = 우와아아앙!
+    FACEV = 3
+ELSE
+    LTEXT = 잠깐, %BUDDY([[시즈카]])%!!
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_TERRIFIED_RES_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 흑...흐끅... 이런거 싫어...
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_TERRIFIED_RES_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF ISBASUTE([[시즈카]],4)
+    LTEXT = 싫어, 싫어어!!
+    FACEV = 3
+ELSE
+    FACEV = 5
+    IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+        LTEXT = %BUDDY([[시즈카]])%, 정신 좀 차리세요!
+    ELSE
+        LTEXT = 정신 좀 차려, %BUDDY([[시즈카]])%!
+    ENDIF
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;격앙
 @KOJO_BATTLE_ENRAGE1_K15
 SELECTCASE CFLAG:[[시즈카]]:1
@@ -701,13 +796,59 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_ENRAGE_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_ENRAGE_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 아 정말, 가만 못 있겠어!
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_ENRAGE_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF ISBASUTE([[시즈카]],5)
+    LTEXT = 아~ 열 받네, 정말!
+    FACEV = 5
+ELSE
+    FACEV = 4
+    IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+        LTEXT = 진정해요!
+    ELSE
+        LTEXT = 진정해!
+    ENDIF
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_ENRAGE_RES_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 말리지 마! 저걸 진짜...
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_ENRAGE_RES_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF ISBASUTE([[시즈카]],5)
+    FACEV = 5
+    IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+        LTEXT = 다 두들겨패버리죠!
+    ELSE
+        LTEXT = 한판 크게 벌여볼까!
+    ENDIF
+ELSE
+    FACEV = 4
+    LTEXT = 우와, 무서워...
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;HP 낮음
 @KOJO_BATTLE_CRITHP1_K15
 SELECTCASE CFLAG:[[시즈카]]:1

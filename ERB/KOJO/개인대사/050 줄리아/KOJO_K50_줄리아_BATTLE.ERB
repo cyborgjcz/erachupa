@@ -28,10 +28,7 @@ IF FLAG:탐색대상던전 == 1 && DUNGEON1_FLAG:3 == 0
     LTEXT = 이건... 츄파카브라?
     CALL TALK_WITH_IMG(FACE([[줄리아]],2),LNAME,LTEXT)
     WAITANYKEY
-    PRINTL ※ 각 캐릭터는 파란 색 게이지가 가득 차면 행동할 수 있습니다.
-    PRINTL 미리 키보드 입력으로 행동을 준비해두고,
-    PRINTL 게이지가 가득 차자 마자 결정 버튼을 눌러보세요. 
-    WAITANYKEY
+    CALL PRINT_BATTLE_TUTORIAL(1)
     DUNGEON1_FLAG:3 += 1
     RETURN 1
 ELSE
@@ -222,7 +219,7 @@ ELSEIF TFLAG:전투경과시간회화 > 1
     TFLAG:전투회화키워드1 = 4
 ELSEIF TFLAG:경과시간 < 60000
     ;1분 컷
-    LTEXT = 간단했는데!
+    LTEXT = 하늘하늘한 의상 입는 스케줄보다도 이쪽이 간단한데?
     FACEV = 5
     TFLAG:전투회화키워드1 = 3
 ELSE
@@ -247,76 +244,42 @@ IF (TFLAG:불리전투회화스위치 & 1) != 0 || (TFLAG:불리전투회화스�
             ;걱정
             LTEXT = 난 괜찮아, %BUDDY([[줄리아]])%
             FACEV = 3
-        CASE 2
-            ;웃음
-        CASE 3
-            ;장난
-        CASE 4
-            ;거만
-        CASE 5
-            ;피로
-        CASE 6
-            ;공복
         CASE 7
             ;분함
             LTEXT = 내 능력은 아직 이 정도인가, 제길!
             FACEV = 5
         CASEELSE
+            LTEXT = %MIXELLIPSIS(BUDDY([[줄리아]]))%...
+            FACEV = 3
             ;기타
     ENDSELECT
 ELSEIF TFLAG:전투경과시간회화 > 1
     ;전투에서 시간을 상당히 오래 끔
     SELECTCASE TFLAG:전투회화키워드1
-        CASE 1
-            ;걱정
-        CASE 2
-            ;웃음
-        CASE 3
-            ;장난
-        CASE 4
-            ;거만
         CASE 5
             ;피로
             LTEXT = 제길, 만만한 녀석이 없네.
             FACEV = 4
-        CASE 6
-            ;공복
         CASEELSE
+            LTEXT = 쫓아오는 게 있을지도 몰라.
+            FACEV = 1
             ;기타
     ENDSELECT
 ELSEIF TFLAG:경과시간 < 60000
     ;1분 컷
     SELECTCASE TFLAG:전투회화키워드1
-        CASE 1
-            ;걱정         
-        CASE 2
-            ;웃음
         CASE 3
             ;장난
             LTEXT = 한 주먹거리도 안 되네!
             FACEV = 2
-        CASE 4
-            ;거만
-        CASE 5
-            ;피로
-        CASE 6
-            ;공복
         CASEELSE
+            LTEXT = 좋아, 다음!
+            FACEV = 2
             ;기타
     ENDSELECT
 ELSE
     ;통상
     SELECTCASE TFLAG:전투회화키워드1
-        CASE 1
-            ;걱정         
-        CASE 2
-            ;웃음
-        CASE 3
-            ;장난
-        CASE 4
-            ;거만
-        CASE 5
-            ;피로
         CASE 6
             ;공복
             FACEV = 2
@@ -326,6 +289,8 @@ ELSE
                 LTEXT = 하하, 그건 어쩔 수 없네.
             ENDIF
         CASEELSE
+            FACEV = 1
+            LTEXT = 또 쓸모없는 살생을 저질러버렸군...
             ;기타
     ENDSELECT
 ENDIF
@@ -361,9 +326,25 @@ ENDSELECT
 CALL TALK_WITH_IMG(FACE([[줄리아]],FACEV),LNAME,LTEXT)
 WAITANYKEY
 RETURN 1
-
 @KOJO_BATTLE_LOSE_RES_K50
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV = 4
+LNAME = %CALLNAME:[[줄리아]]%
+SELECTCASE TFLAG:전투회화키워드1
+    CASE 8
+        LTEXT = 정신 차려, %NAME:(PARTNER([[줄리아]]))%!
+        FACEV = 4
+    CASE 9
+        LTEXT = 아니, %BUDDY([[줄리아]])%! 일어나...!
+        FACEV = 4
+    CASEELSE
+        LTEXT = 큭...!
+        FACEV = 4
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[줄리아]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 
 ;스킬 등 - 변신(츄파카브라)
 
