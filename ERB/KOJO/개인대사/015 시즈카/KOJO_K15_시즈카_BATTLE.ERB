@@ -879,13 +879,67 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_CRITHP_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_CRITHP_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 이대로는 불리한데...
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_CRITHP_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = %BUDDY([[시즈카]])%, 
+IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+    LTEXT += "괜찮아요?"
+ELSE
+    LTEXT += "괜찮아?"
+ENDIF
+TFLAG:전투회화키워드1 = 1
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_CRITHP_RES_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+SELECTCASE TFLAG:전투회화키워드1
+    CASE 1
+        LTEXT += (이건 좀 힘든데...)
+        FACEV = 4
+    CASEELSE
+        LTEXT = 아직... 할 수 있어...
+        FACEV = 3
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_CRITHP_RES_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+SELECTCASE TFLAG:전투회화키워드1
+    CASE 5
+        FACEV = 4
+        IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+            LTEXT = 여기서 주저앉으면 안돼요!
+        ELSE
+            LTEXT = 여기서 질 수 없어!
+        ENDIF
+    CASEELSE
+        FACEV = 5
+        IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+            LTEXT = 지금 회복을 준비할게요!
+        ELSE
+            LTEXT = 지금 회복할게!
+        ENDIF
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;SP 낮음
 @KOJO_BATTLE_CRITSP1_K15
 SELECTCASE CFLAG:[[시즈카]]:1
@@ -916,28 +970,175 @@ SELECTCASE CFLAG:[[시즈카]]:1
         CALL KOJO_BATTLE_CRITSP_RES_SELF_K15
 ENDSELECT
 @KOJO_BATTLE_CRITSP_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+    LTEXT = 스킬을 너무 많이 쓴 것 같아요...
+ELSE
+    LTEXT = 계획없이 스킬을 쓰니까 이런...
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_CRITSP_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF (TFLAG:불리전투회화스위치 & POWER(2,(12 + CFLAG:[[시즈카]]:1))) != 0
+    FACEV = 4
+    LTEXT = (이대로 장기전이 되면 불리해지겠는데)
+ELSE
+    FACEV = 4
+    TFLAG:전투회화키워드1 = 1
+    IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+        LTEXT = %BUDDY([[시즈카]])% 지치지 않았어요?
+    ELSE
+        LTEXT = 괜찮아, %BUDDY([[시즈카]])%?
+    ENDIF
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_CRITSP_RES_SELF_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+SELECTCASE TFLAG:전투회화키워드1
+    CASE 1
+        IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+            LTEXT = 저는 괜찮아요!
+            FACEV = 5
+        ELSE
+            LTEXT = 아직 할 수 있어!
+            FACEV = 5
+        ENDIF
+    CASEELSE
+        LTEXT = 앞으로 조금인데...
+        FACEV = 3
+ENDSELECT
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 @KOJO_BATTLE_CRITSP_RES_PARTNER_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
+LNAME = %CALLNAME:[[시즈카]]%
+IF TFLAG:불리전투회화스위치 & (12 + CFLAG:[[시즈카]]:1)
+    ;자신도 SP 낮을 때
+    SELECTCASE TFLAG:전투회화키워드1
+        CASE 5
+            ;피로
+            FACEV = 3
+            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                LTEXT = 지금은 아직 쉴 때가 아니에요.
+            ELSE
+                LTEXT = 아직은 쉴 수 없어.
+            ENDIF
+        CASEELSE
+            ;그외
+            FACEV = 4
+            LTEXT = (괴로워... 하지만!)
+    ENDSELECT
+ELSE
+    ;그 외
+    SELECTCASE TFLAG:전투회화키워드1
+        CASE 5
+            FACEV = 5
+            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                LTEXT = 지금은 아직 쉴 때가 아니에요.
+            ELSE
+                LTEXT = 아직은 쉴 수 없어.
+            ENDIF
+        CASEELSE
+            IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+                LTEXT = 조금만 더 힘내요!
+            ELSE
+                LTEXT = 앞으로 조금 남았어!
+            ENDIF
+    ENDSELECT
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;시간 경과 (선두)
 @KOJO_BATTLE_TIMEFLIES1_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 아직 정보가 부족해...
+TFLAG:전투회화키워드3 = 2
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;시간 경과 (후발)
 @KOJO_BATTLE_TIMEFLIES1_RES_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
+    LTEXT = 침착하게 적의 움직임을 파악하죠!
+ELSE
+    LTEXT = 침착하게 적의 동태를 분석하자!
+ENDIF
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;시간 경과 상당 (선두)
 @KOJO_BATTLE_TIMEFLIES2_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 좀처럼 쓰러지질 않네!
+CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;시간 경과 상당 (후발)
 @KOJO_BATTLE_TIMEFLIES2_RES_K15
-PRINTW 미실장
-;시간 경과 중도 (선두)
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 이녀석들이 시간을 끌 수록 휴식 시간이 줄어드는데!
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
+
 @KOJO_BATTLE_TIMEFLIES3_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 지친걸까... 적이 우동으로 보이기 시작했어
+TFLAG:전투회화키워드3 = 1
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
 ;시간 경과 중도 (후발)
 @KOJO_BATTLE_TIMEFLIES3_RES_K15
-PRINTW 미실장
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = (집에 가고 싶다...)
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1
+
+@KOJO_BATTLE_ENRAGEATTACK_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 거기 너, 딱 걸렸어!
+CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+WAITANYKEY
+PRINTFORML %CALLNAME:[[시즈카]]%는 분노에 차서 공격했다!
+WAITANYKEY
+RETURN 1
+@KOJO_BATTLE_TERRIFEDCANCEL_K15
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[시즈카]]%
+LTEXT = 싫어, 싫다고!!
+CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+WAITANYKEY
+RETURN 1

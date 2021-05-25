@@ -16,12 +16,16 @@
 IF !ISENEMY
     CFLAG:(FLAG:USERV):전회공격상대 = TARGETV
     CFLAG:(FLAG:USERV):전회보조행동 = 0
-    SIF !WIDE
-        CALL BATTLE_TALK("SKILL",USERV,,SKILLV)
-    IF !RESULT && !WIDE
-        PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% %SKILL_TEXT:SKILLV%
-        PRINT ...
-        WAITANYKEY
+    IF ISBASUTE(FLAG:USERV,5) && SKILLV == 0
+        CALL BATTLE_TALK("ENRAGEATTACK",USERV)
+    ELSE
+        SIF !WIDE
+            CALL BATTLE_TALK("SKILL",USERV,,SKILLV)
+        IF !RESULT && !WIDE
+            PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% %SKILL_TEXT:SKILLV%
+            PRINT ...
+            WAITANYKEY
+        ENDIF
     ENDIF
     ;1~6로 전달되는 TARGETV를 실제 값으로 변환
     TARGETV = TFLAG:TARGETV

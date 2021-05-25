@@ -431,6 +431,10 @@ DO
                 TFLAG:불리전투회화스위치 -= 1
             SIF (((MAXBASE:(FLAG:동료2):희망 * 4) / 5) < BASE:(FLAG:동료2):희망) && ((TFLAG:불리전투회화스위치 & 2) != 0)
                 TFLAG:불리전투회화스위치 -= 2
+            SIF (((MAXBASE:(FLAG:동료1):영혼 * 4) / 5) < BASE:(FLAG:동료1):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,13)) != 0)
+                TFLAG:불리전투회화스위치 -= POWER(2,13);동료1CRITSP
+            SIF (((MAXBASE:(FLAG:동료2):영혼 * 4) / 5) < BASE:(FLAG:동료2):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,14)) != 0)
+                TFLAG:불리전투회화스위치 -= POWER(2,14);동료2CRITSP
             ;자동 전투회화
             TALK_WHAT =
             TALK_WHATV = 0
@@ -498,17 +502,29 @@ DO
                     TFLAG:불리전투회화스위치 += POWER(2,10)
                 ENDIF
             ELSEIF ((BASE:(FLAG:동료1):희망 * 5) < MAXBASE:(FLAG:동료1):희망) && ((TFLAG:불리전투회화스위치 & 1) == 0)
-                ;동료1 체력 낮음 전투회화
+                ;동료1 체HP 낮음 전투회화
                 TALK_WHAT '= "CRITHP"
                 TALK_WHATV = 1
                 TCALLER = (RAND:2)+1
                 TFLAG:불리전투회화스위치 += 1
             ELSEIF ((BASE:(FLAG:동료2):희망 * 5) < MAXBASE:(FLAG:동료2):희망) && ((TFLAG:불리전투회화스위치 & 2) == 0)
-                ;동료2 체력 낮음 전투회화
+                ;동료2 HP 낮음 전투회화
                 TALK_WHAT '= "CRITHP"
                 TALK_WHATV = 2
                 TCALLER = (RAND:2)+1
                 TFLAG:불리전투회화스위치 += 2
+            ELSEIF ((BASE:(FLAG:동료1):영혼 * 5) < MAXBASE:(FLAG:동료1):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,13)) == 0)
+                ;동료1 SP 낮음 전투회화
+                TALK_WHAT '= "CRITSP"
+                TALK_WHATV = 1
+                TCALLER = (RAND:2)+1
+                TFLAG:불리전투회화스위치 += POWER(2,13)
+            ELSEIF ((BASE:(FLAG:동료2):영혼 * 5) < MAXBASE:(FLAG:동료2):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,14)) == 0)
+                ;동료2 SP 낮음 전투회화
+                TALK_WHAT '= "CRITSP"
+                TALK_WHATV = 2
+                TCALLER = (RAND:2)+1
+                TFLAG:불리전투회화스위치 += POWER(2,14)
             ELSE
                 IF TFLAG:경과시간 >= 120000 && TFLAG:전투경과시간회화 == 0
                     TALK_WHAT '= "TIMEFLIES"
@@ -728,6 +744,7 @@ ENDIF
             CFLAG:(TFLAG:USERV):상태이상 -= 8
         ENDIF
     ELSEIF !ISENEMY
+        CALL BATTLE_TALK("TERRIFEDCANCEL",USERV)
         PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% 움직일 수 없다!
         IF 상태이상시간:(FLAG:USERV):3 > 0
             상태이상시간:(FLAG:USERV):3 -= 1
