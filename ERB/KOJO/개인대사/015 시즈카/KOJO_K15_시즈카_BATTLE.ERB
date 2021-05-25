@@ -401,7 +401,7 @@ SELECTCASE TFLAG:전투회화키워드1
         FACEV = 3
         SELECTCASE RAND:2
             CASE 0
-                LTEXT = %MIXELLIPSE(BUDDY([[시즈카]]))%
+                LTEXT = %MIXELLIPSIS(BUDDY([[시즈카]]))%
             CASE 1
                 LTEXT = ......
         ENDSELECT
@@ -411,7 +411,7 @@ SELECTCASE TFLAG:전투회화키워드1
         CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
         WAITANYKEY
         FACEV = 3
-        LTEXT = %MIXELLIPSE(BUDDY([[시즈카]]))%        
+        LTEXT = %MIXELLIPSIS(BUDDY([[시즈카]]))%        
     CASE 8
         ;체념
         FACEV = 3
