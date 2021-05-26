@@ -144,6 +144,8 @@ SELECTCASE KEY
         PRINTBUTTON "[0] 예",0
         PRINTBUTTON "[1] 아니오",1
         INPUT
-        SIF !RESULT
+        IF !RESULT
+            RESETDATA
             BEGIN TITLE
+        ENDIF
 ENDSELECT

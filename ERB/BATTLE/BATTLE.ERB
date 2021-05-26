@@ -620,10 +620,11 @@ IF TFLAG:전투결과 == 2
     PRINTBUTTON "[1] 타이틀로",1
     INPUT
     IF RESULT == 0
+        RESETDATA
         LOADGAME
         GOTO BATTLE_DEFEAT_INPUT_LOOP
     ELSEIF RESULT == 1
-        BEGIN TITLE
+        TFLAG:타이틀이행 = 1
     ELSE
         GOTO BATTLE_DEFEAT_INPUT_LOOP
     ENDIF
