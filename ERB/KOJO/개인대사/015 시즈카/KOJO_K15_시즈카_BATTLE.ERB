@@ -366,14 +366,14 @@ RETURN 1
 #DIMS DYNAMIC LTEXT
 #DIM DYNAMIC FACEV = 3
 LNAME = %CALLNAME:[[시즈카]]%
-SELECTCASE RAND:3
-    CASE 0
+SELECTCASE FACEV
+    CASE 3
         LTEXT = 여기까지인가봐...
         FACEV = 3
         SIF PARTNER([[시즈카]]) != [[미라이]]
-            LTEXT += %BYNAMES([[시즈카]],[[미라이]])% 
+            LTEXT += BYNAMES([[시즈카]],[[미라이]]) + "... "
         SIF PARTNER([[시즈카]]) != [[츠바사]]
-            LTEXT += %MIXELLIPSIS(BYNAMES([[시즈카]],[[츠바사]]))%
+            LTEXT += MIXELLIPSIS(BYNAMES([[시즈카]],[[츠바사]]))
         CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
         WAITANYKEY
         LTEXT = %MIXELLIPSIS(BUDDY([[시즈카]]))%...
@@ -599,6 +599,7 @@ ELSE
     LTEXT = 괜찮아, 
 ENDIF
 LTEXT += @"%BUDDY([[시즈카]])%?!"
+TFLAG:전투회화플래그1 = 1
 CALL TALK_WITH_IMG(FACE([[시즈카]],4),LNAME,LTEXT)
 WAITANYKEY
 RETURN 1
@@ -735,6 +736,7 @@ IF ISBASUTE([[시즈카]],4)
     FACEV = 3
 ELSE
     LTEXT = 잠깐, %BUDDY([[시즈카]])%!!
+    FACEV = 5
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
 WAITANYKEY
@@ -800,6 +802,7 @@ ENDSELECT
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[시즈카]]%
 LTEXT = 아 정말, 가만 못 있겠어!
+TFLAG:전투회화키워드1 = 10
 CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
 WAITANYKEY
 RETURN 1
@@ -811,6 +814,7 @@ LNAME = %CALLNAME:[[시즈카]]%
 IF ISBASUTE([[시즈카]],5)
     LTEXT = 아~ 열 받네, 정말!
     FACEV = 5
+    TFLAG:전투회화키워드1 = 10
 ELSE
     FACEV = 4
     IF JONDAE([[시즈카]],PARTNER([[시즈카]]))
@@ -818,6 +822,7 @@ ELSE
     ELSE
         LTEXT = 진정해!
     ENDIF
+    TFLAG:전투회화플래그1 = 1
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
 WAITANYKEY
@@ -825,10 +830,21 @@ RETURN 1
 @KOJO_BATTLE_ENRAGE_RES_SELF_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+#DIMS DYNAMIC LTEXT3
 LNAME = %CALLNAME:[[시즈카]]%
-LTEXT = 말리지 마! 저걸 진짜...
-CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
-WAITANYKEY
+SELECTCASE TFLAG:전투회화키워드1
+    CASE 10
+        LTEXT = 가만.
+        LTEXT2 = 안.
+        LTEXT3 = 둔다.
+        CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT,LTEXT2,LTEXT3)
+        WAITANYKEY
+    CASEELSE
+        LTEXT = 말리지 마! 저걸 진짜...
+        CALL TALK_WITH_IMG(FACE([[시즈카]],5),LNAME,LTEXT)
+        WAITANYKEY
+ENDSELECT
 RETURN 1
 @KOJO_BATTLE_ENRAGE_RES_PARTNER_K15
 #DIMS DYNAMIC LNAME
@@ -987,6 +1003,7 @@ RETURN 1
 #DIM DYNAMIC FACEV
 LNAME = %CALLNAME:[[시즈카]]%
 IF (TFLAG:불리전투회화스위치 & POWER(2,(12 + CFLAG:[[시즈카]]:1))) != 0
+    ;시즈카도 SP낮음
     FACEV = 4
     LTEXT = (이대로 장기전이 되면 불리해지겠는데)
 ELSE
@@ -996,7 +1013,7 @@ ELSE
         LTEXT = %BUDDY([[시즈카]])% 지치지 않았어요?
     ELSE
         LTEXT = 괜찮아, %BUDDY([[시즈카]])%?
-    ENDIF
+    ENDIF0
 ENDIF
 CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
 WAITANYKEY
@@ -1004,6 +1021,7 @@ RETURN 1
 @KOJO_BATTLE_CRITSP_RES_SELF_K15
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
+#DIM DYNAMIC FACEV
 LNAME = %CALLNAME:[[시즈카]]%
 SELECTCASE TFLAG:전투회화키워드1
     CASE 1
@@ -1018,7 +1036,7 @@ SELECTCASE TFLAG:전투회화키워드1
         LTEXT = 앞으로 조금인데...
         FACEV = 3
 ENDSELECT
-CALL TALK_WITH_IMG(FACE([[시즈카]],3),LNAME,LTEXT)
+CALL TALK_WITH_IMG(FACE([[시즈카]],FACEV),LNAME,LTEXT)
 WAITANYKEY
 RETURN 1
 @KOJO_BATTLE_CRITSP_RES_PARTNER_K15
