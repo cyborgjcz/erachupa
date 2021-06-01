@@ -1,0 +1,452 @@
+﻿@DEBUG_G
+#FUNCTION
+#DIM DYNAMIC LCOUNT
+GIANT_BATTLE = 1
+FOR LCOUNT,0,8
+    CURRENT_GIGANT_DAMAGE:LCOUNT += LCOUNT * 100000
+NEXT
+CURRENT_GIGANT_DAMAGE:0 += 100000
+RETURNF 1
+
+@SHAKE_SCREEN
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT,0,(RAND:2+2)
+    PRINTL
+    TWAIT 5,0
+    CLEARLINE 1
+    REUSELASTLINE
+    TWAIT 2,0
+NEXT
+
+@SHOW_GIANT_BATTLE_INFO(KEYV)
+#DIM DYNAMIC KEYV
+PRINT_SPACE 4000
+
+;3D 지도 출력 화면 상에서 정보 표시 함수
+@SHOW_GIANT_DAMAGE_INFO(KEYV)
+#DIM DYNAMIC KEYV;0 TO 23
+#DIM DYNAMIC NUMTOSHOWV
+;원본 일러스트 작자 = sworc https://www.ac-illust.com/main/profile.php?id=Iq24yifd&area=1
+SELECTCASE KEYV
+    CASE 0
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 1
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_머리)
+        PRINT ￕￋￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 2
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_머리)
+        PRINT ￅￇￇￇￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_등짝)
+        PRINT ￋￋￋￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 3
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￗ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_머리)
+        PRINT ￋￅￇￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￅￋￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￅￋﾨ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 4
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￊ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￅﾰﾧￇￅￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￇￇￋￇￇￋ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        RESETCOLOR
+    CASE 5
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￖￗￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￅￗￕￇￋￇￇ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￇￇￇￋￅￋￅ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚ
+        RESETCOLOR
+    CASE 6
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￇￅￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￇￇￋￇￇￇￋￇￋￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￇￅￋￅￋￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        RESETCOLOR
+    CASE 7
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￋￕￇￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ﾢￅﾨￅￅￅￅￇￋﾧ
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￎￇￇￋￅﾯ
+        RESETCOLOR
+    CASE 8
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￗￅￇￇￇￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￗ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￅￅￋￋ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ﾨￋￅￋￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￗￅￅￇￕ
+        RESETCOLOR
+    CASE 9
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￛￇￋￅﾧ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￋￛￅ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_몸통)
+        PRINT ￋￇￇￋ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ﾲￅￇￇￅ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￋￋￇ
+        RESETCOLOR
+    CASE 10
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￋￇￅﾧￆﾧ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￋￇￇￋￋￋￅￇￋￊ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_왼팔)
+        PRINT ￎﾧￗￇ
+        RESETCOLOR
+    CASE 11
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_오른팔)
+        PRINT ￛￇￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￍￅￇￇￗﾨ
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￇￋￅￅￇￋ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 12
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￕￇￇﾧ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￇￅￅￅￅﾧ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 13
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￆￅￇￇￇￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￇￇￋￋ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        RESETCOLOR
+    CASE 14
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ﾡￋￇￋￋￅￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￇￅￋￅￇﾤ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        RESETCOLOR
+    CASE 15
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￋￇￋￋﾧ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￅￋￋￅ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        RESETCOLOR
+    CASE 16
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ﾡￗￗￅￇￋﾤ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￕￊￗￗￋￗ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        RESETCOLOR
+    CASE 17
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￊￅￇￋﾧ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￅￊￕￅ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        RESETCOLOR
+    CASE 18
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￋￅￅￋￋￅ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￇￅￋￅￇￋ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚ
+        RESETCOLOR
+    CASE 19
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￗￕￋￅￋￋￕ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￅￋￅￅ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚ
+        RESETCOLOR
+    CASE 20
+        SETCOLORBYNAME DimGray
+        PRINT ￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￗￅￅￅￅￋￋￅￋ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￛￋￋￅￅￅￋ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        RESETCOLOR
+    CASE 21
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￅￕￋￗￅￅￇￋￎ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￇￇￋￗￕￋￅￇﾤ
+        RESETCOLOR
+    CASE 22
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￛﾻￛￛ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￋￇￅￅￇￋￅￅￅ
+        RESETCOLOR
+    CASE 23
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ﾻﾩﾩ
+        SETCOLORBYNAME DimGray
+        PRINT ￚￚ
+        CALL SET_GIGANT_DAMAGE_COLOR(GIGANT_다리)
+        PRINT ￇￇￇ
+        RESETCOLOR
+ENDSELECT
+
+[SKIPSTART]
+;표기 숫자가 천만이 넘지 않게끔 줄이는 함수
+@NUMBER_TEN_MILLION_CAP(NUMV)
+#FUNCTION
+#DIM DYNAMIC NUMV
+SIF NUMV >= 10000000
+    NUMV = 9999999
+RETURNF NUMV
+[SKIPEND]
+
+;부위 번호를 받아서 해당 부위의 플로트 UI 컬러를 어떻게 표시할지 판가름하는 함수
+;양호하다면 녹색을, 대미지를 받으면 붉은 색으로
+@SET_GIGANT_DAMAGE_COLOR(KEYV)
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC DAMCAPV
+DAMCAPV = GET_GIGANT_PART_BASE_STAT(CURRENT_GIGANT:KEYV,GIGANT_내구임계)
+SELECTCASE CURRENT_GIGANT_DAMAGE:KEYV
+    CASE 0 TO (DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계) / 4
+        ;내구임계의 4분의 1까지
+        SETCOLORBYNAME Green
+    {
+        CASE ((DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계) / 4) + 1 TO
+        ((DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계) / 2)
+    }
+        ;내구임계의 2분의 1까지
+        SETCOLORBYNAME Yellow
+    {
+        CASE ((DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계) / 2) + 1 TO
+        ((DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계) / 4) * 3
+    }
+        ;내구임계의 3/4까지
+        SETCOLORBYNAME Orange
+    {
+        CASE (((DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계) / 4) * 3) + 1 TO
+        DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계
+    }
+        ;내구임계 직전까지
+        SETCOLORBYNAME OrangeRed
+    {
+        CASE DAMCAPV + MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계 TO
+        GET_GIGANT_PART_BASE_STAT(CURRENT_GIGANT:KEYV,GIGANT_내구) +
+        MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구
+    }
+        ;내구임계 돌파
+        SETCOLORBYNAME Red
+    CASEELSE
+        ;내구치 이상
+        SETCOLORBYNAME DarkRed
+ENDSELECT
+RETURN 1
+
+;통상시 미니맵을 표시한 화면에 거대보스전 정보를 표시하는 함수
+@SHOW_GIANT_BATTLE_SIDE_INFO(KEYV)
+#DIM DYNAMIC KEYV
+CALL SHOW_GIANT_DAMAGE_INFO(KEYV)
+SELECTCASE KEYV
+    CASE 0 TO 2
+        CALL D3D_SHOW_COMPASS(KEYV)
+        SETCOLORBYNAME OrangeRed
+        SELECTCASE KEYV
+            CASE 0
+                PRINT_SPACE 380
+                PRINT __ __ __
+            CASE 1
+                PRINT  /⧵
+                PRINT_SPACE 20
+                PRINT |
+                PRINT_SPACE 95
+                PRINT |_ |_) |
+            CASE 2
+                PRINT /-⧵|__|_
+                PRINT_SPACE 25
+                PRINT | ⧵
+                PRINT_SPACE 55
+                PRINT |
+        ENDSELECT
+        RESETCOLOR
+    CASE 3 TO 11
+        CALL SHOW_GIANT_BATTLE_MAP(KEYV - 3)
+    CASE 13
+        PRINT 내구도 : 
+        PRINT 대충 컬러바
+    CASE 14
+        PRINT 안정도 : 
+        PRINT 대충 컬러바
+    CASE 15
+        PRINT 동력계 : 
+        PRINT 대충 정상
+    CASE 17
+        PRINT 무장 : 
+        PRINT 핫찌미
+ENDSELECT
+
+@SHOW_GIANT_BATTLE_MAP(KEYV)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC T_X,9
+#DIM DYNAMIC T_Y,9
+SELECTCASE D3D_PLAYER_DIRECTION
+    CASE 0
+        FOR LCOUNT,0,9
+            T_X:LCOUNT = D3D_PLAYER_XCOORD + (LCOUNT - 4)
+            T_Y:LCOUNT = D3D_PLAYER_YCOORD + (KEYV - 4)
+        NEXT
+    CASE 1
+        FOR LCOUNT,0,9
+            T_X:LCOUNT = D3D_PLAYER_XCOORD - (KEYV - 4)
+            T_Y:LCOUNT = D3D_PLAYER_YCOORD - 4 + LCOUNT
+        NEXT
+    CASE 2
+        FOR LCOUNT,0,9
+            T_X:LCOUNT = D3D_PLAYER_XCOORD - (LCOUNT - 4)
+            T_Y:LCOUNT = D3D_PLAYER_YCOORD - (KEYV - 4)
+        NEXT
+    CASE 3
+        FOR LCOUNT,0,9
+            T_X:LCOUNT = D3D_PLAYER_XCOORD + (KEYV - 4)
+            T_Y:LCOUNT = D3D_PLAYER_YCOORD + 4 - LCOUNT
+        NEXT
+ENDSELECT
+FOR LCOUNT,0,9
+    IF T_X:LCOUNT < 0 || T_Y:LCOUNT < 0 || T_X:LCOUNT > 18 || T_Y:LCOUNT > 18
+        PRINT 　
+    ELSE
+        SETCOLOR D3D_MINIMAPS_C:(T_X:LCOUNT):(T_Y:LCOUNT)
+        SELECTCASE D3D_MINIMAPS:(T_X:LCOUNT):(T_Y:LCOUNT)
+            CASE "⏶","⏵","⏷","⏴"
+                PRINT ⏶
+            CASEELSE
+                PRINTS D3D_MINIMAPS:(T_X:LCOUNT):(T_Y:LCOUNT)
+        ENDSELECT
+        SELECTCASE D3D_MINIMAPS:(T_X:LCOUNT):(T_Y:LCOUNT)
+            CASE "⏶","⏵","⏷","⏴"
+                PRINT_SPACE 21
+            CASE "□","■"
+                PRINT_SPACE 10
+        ENDSELECT
+    ENDIF
+NEXT
+RESETCOLOR

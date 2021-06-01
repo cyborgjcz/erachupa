@@ -732,29 +732,41 @@ FOR LCOUNT,0,24
                 PRINT_SPACE 300
             ENDIF
             PRINT_SPACE 100
+        CASE 0 TO 10
+            ;거대보스전 (외) 엑스트라 UI
+            CALL PRINT_3D_EXTRA(LCOUNT)
         CASEELSE
             PRINT_SPACE 4000
     ENDSELECT
     RESETCOLOR
-    IF LCOUNT < 3
-        ;나침반 출력
-        CALL D3D_SHOW_COMPASS(LCOUNT)
-    ELSEIF LCOUNT == 4
-        ;발 밑의 오브젝트 여부 출력
-        CALL D3D_SHOW_UNDER_YOU
-    ELSEIF LCOUNT >= 24-((D3D_MINIMAP_RADIUS*2)+1) && LCOUNT < 24
-        ;미니맵 출력
-        FOR LCOUNT2,0,((D3D_MINIMAP_RADIUS*2)+1)
-            ;LCOUNT2를 X좌표, LCOUNT는 Y좌표로 이용
-            SETCOLOR D3D_MINIMAPS_C:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1)))
-            PRINTFORM %D3D_MINIMAPS:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1))),1,LEFT%
-            SELECTCASE D3D_MINIMAPS:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1)))
-                CASE "⏶","⏵","⏷","⏴"
-                    PRINT_SPACE 21
-                CASE "□","■"
-                    PRINT_SPACE 10
-            ENDSELECT
-        NEXT
+    IF GIANT_BATTLE != 0
+        ;거대보스전의 경우 별도의 UI 표기
+        CALL PRINT_3D_EXTRA(LCOUNT,1)
+    ELSE
+        IF LCOUNT < 3
+            ;나침반 출력
+            CALL D3D_SHOW_COMPASS(LCOUNT)
+            IF LCOUNT == 0
+                PRINT_SPACE 200
+                PRINTFORM 탐색중 : %DUNGEONNAME:(FLAG:탐색대상던전)%
+            ENDIF
+        ELSEIF LCOUNT == 4
+            ;발 밑의 오브젝트 여부 출력
+            CALL D3D_SHOW_UNDER_YOU
+        ELSEIF LCOUNT >= 24-((D3D_MINIMAP_RADIUS*2)+1) && LCOUNT < 24
+            ;미니맵 출력
+            FOR LCOUNT2,0,((D3D_MINIMAP_RADIUS*2)+1)
+                ;LCOUNT2를 X좌표, LCOUNT는 Y좌표로 이용
+                SETCOLOR D3D_MINIMAPS_C:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1)))
+                PRINTFORM %D3D_MINIMAPS:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1))),1,LEFT%
+                SELECTCASE D3D_MINIMAPS:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1)))
+                    CASE "⏶","⏵","⏷","⏴"
+                        PRINT_SPACE 21
+                    CASE "□","■"
+                        PRINT_SPACE 10
+                ENDSELECT
+            NEXT
+        ENDIF
     ENDIF
     RESETCOLOR
     SIF LCOUNT < 23
@@ -912,8 +924,6 @@ SELECTCASE LINENUM
             CASE 3
                 PRINT 　Ｗ
         ENDSELECT
-        PRINT_SPACE 200
-        PRINTFORM 탐색중 : %DUNGEONNAME:(FLAG:탐색대상던전)%
     CASE 1
         SELECTCASE D3D_PLAYER_DIRECTION
             CASE 0
@@ -934,15 +944,15 @@ SELECTCASE LINENUM
     CASE 2
         SELECTCASE D3D_PLAYER_DIRECTION
             CASE 0
-                PRINT 　Ｓ
+                PRINT 　Ｓ　
             CASE 1
-                PRINT 　Ｗ
+                PRINT 　Ｗ　
             CASE 2
                 SETCOLORBYNAME Red
-                PRINT 　Ｎ
+                PRINT 　Ｎ　
                 RESETCOLOR
             CASE 3
-                PRINT 　Ｅ
+                PRINT 　Ｅ　
         ENDSELECT
 ENDSELECT
 
@@ -1108,3 +1118,21 @@ SELECTCASE D3D_CURRENT_MAPDATA:(D3D_TEXTBUTTONCOORD:KEYV:0):(D3D_TEXTBUTTONCOORD
         PRINTPLAINFORM %BUTTONS%
         PRINT_SPACE 50
 ENDSELECT
+
+@PRINT_3D_EXTRA(KEYV,SIDEV=0)
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC SIDEV
+IF SIDEV != 0
+    ;HERE
+    IF GIANT_BATTLE != 0
+        CALL SHOW_GIANT_BATTLE_SIDE_INFO(KEYV)
+    ENDIF
+ELSE
+    IF GIANT_BATTLE != 0
+        CALL SHOW_GIANT_BATTLE_INFO(KEYV)
+    ;ELSEIF ...
+    ELSE
+        PRINT_SPACE 4000
+    ENDIF
+ENDIF
+RETURN 1

@@ -1,0 +1,215 @@
+﻿;거대로봇?의 기초 능력을 정의하고 호출함으로써 반환
+;어디까지나 기초능력 반환으로 성장치는 다른 곳 관할
+@GET_GIGANT_PART_BASE_STAT(KEYV,STATV)
+#FUNCTION
+#DIM DYNAMIC KEYV;파츠 종류
+#DIM DYNAMIC STATV;스탯 종류
+;STATV
+;0 = 파츠 위치 (0~7) 1= 코스트 2= 내구력(HP)
+SELECTCASE KEYV
+    CASE 0
+        ;퓨쳐플라이어 헤드
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_머리
+            CASE GIGANT_코스트
+                RETURNF 1
+            CASE GIGANT_내구
+                RETURNF 390000
+            CASE GIGANT_내구임계
+                RETURNF 340000
+            CASE GIGANT_운동성
+                RETURNF 0
+            CASE GIGANT_센서성능
+                RETURNF 650
+            CASE GIGANT_안정성
+                RETURNF 0
+            CASE GIGANT_출력
+                RETURNF 0
+            CASE GIGANT_캐퍼시티
+                RETURNF 15
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    CASE 1
+        ;퓨쳐플라이어 바디
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_몸통
+            CASE GIGANT_코스트
+                RETURNF 3
+            CASE GIGANT_내구
+                RETURNF 765000
+            CASE GIGANT_내구임계
+                RETURNF 715000
+            CASE GIGANT_운동성
+                RETURNF 0
+            CASE GIGANT_센서성능
+                RETURNF 150
+            CASE GIGANT_안정성
+                RETURNF 100
+            CASE GIGANT_출력
+                RETURNF 0
+            CASE GIGANT_캐퍼시티
+                RETURNF 0
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    CASE 2
+        ;퓨쳐플라이어 L암
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_왼팔
+            CASE GIGANT_코스트
+                RETURNF 1
+            CASE GIGANT_내구
+                RETURNF 503000
+            CASE GIGANT_내구임계
+                RETURNF 453000
+            CASE GIGANT_운동성
+                RETURNF 0
+            CASE GIGANT_센서성능
+                RETURNF 0
+            CASE GIGANT_안정성
+                RETURNF 250
+            CASE GIGANT_출력
+                RETURNF 39000
+            CASE GIGANT_캐퍼시티
+                RETURNF 0
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    CASE 3
+        ;퓨쳐플라이어 R암
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_오른팔
+            CASE GIGANT_코스트
+                RETURNF 1
+            CASE GIGANT_내구
+                RETURNF 503000
+            CASE GIGANT_내구임계
+                RETURNF 453000
+            CASE GIGANT_운동성
+                RETURNF 0
+            CASE GIGANT_센서성능
+                RETURNF 0
+            CASE GIGANT_안정성
+                RETURNF 250
+            CASE GIGANT_출력
+                RETURNF 39000
+            CASE GIGANT_캐퍼시티
+                RETURNF 0
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    CASE 4
+        ;퓨쳐플라이어 백팩
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_등짝
+            CASE GIGANT_코스트
+                RETURNF 3
+            CASE GIGANT_내구
+                RETURNF 503000
+            CASE GIGANT_내구임계
+                RETURNF 453000
+            CASE GIGANT_운동성
+                RETURNF 250
+            CASE GIGANT_센서성능
+                RETURNF 0
+            CASE GIGANT_안정성
+                RETURNF 350
+            CASE GIGANT_출력
+                RETURNF 153000
+            CASE GIGANT_캐퍼시티
+                RETURNF 0
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    CASE 5
+        ;퓨쳐플라이어 레그
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_다리
+            CASE GIGANT_코스트
+                RETURNF 2
+            CASE GIGANT_내구
+                RETURNF 765000
+            CASE GIGANT_내구임계
+                RETURNF 715000
+            CASE GIGANT_운동성
+                RETURNF 250
+            CASE GIGANT_센서성능
+                RETURNF 0
+            CASE GIGANT_안정성
+                RETURNF 750
+            CASE GIGANT_출력
+                RETURNF 76500
+            CASE GIGANT_캐퍼시티
+                RETURNF 0
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    CASE 6
+        ;브레이커: 스프링데이
+        SELECTCASE STATV
+            CASE GIGANT_부위
+                RETURNF GIGANT_무기
+            CASE GIGANT_코스트
+                RETURNF 2
+            CASE GIGANT_내구
+                RETURNF 765000
+            CASE GIGANT_내구임계
+                RETURNF 600000
+            CASE GIGANT_운동성
+                RETURNF 0
+            CASE GIGANT_센서성능
+                RETURNF 0
+            CASE GIGANT_안정성
+                RETURNF 0
+            CASE GIGANT_출력
+                RETURNF 140000
+            CASE GIGANT_캐퍼시티
+                RETURNF 0
+            CASE GIGANT_내장무기
+                RETURNF 0
+            CASE GIGANT_내장무기위력
+                RETURNF 0
+            CASEELSE
+                GOTO STATV_ERROR
+        ENDSELECT
+    ;CASE
+        ;사일런스비트 헤드
+    ;CASE 
+        ;윙드지니어스 헤드
+    CASEELSE
+        DEBUGPRINTFORML GET_GIGANT_PART_BASE_STAT에 전달된 제1인수 KEYV({KEYV})가 적절한 값이 아닙니다
+ENDSELECT
+RETURNF -1
+$STATV_ERROR
+DEBUGPRINTFORML GET_GIGANT_PART_BASE_STAT에 전달된 제2인수 STATV({STATV})가 적절한 값이 아닙니다
