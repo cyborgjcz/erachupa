@@ -45,20 +45,18 @@ ELSE
             CALL D3D_MOVE_PLAYER(3)
         CASE "a"
             CALL D3D_CHANGE_DIRECTION(-1)
-            ;mecah 테스트
-            CALL SHAKE_SCREEN
             RETURN 0
         CASE "w"
             CALL D3D_MOVE_PLAYER(0)
         CASE "d"
             CALL D3D_CHANGE_DIRECTION(1)
-            ;mecah 테스트
-            CALL SHAKE_SCREEN
             RETURN 0
         CASE "z"
             CALL DUNGEON_INTERACT
+            RESULT = 0
         CASE "i"
             CALL ITEM_CONSUME_UI
+            RESULT = 0
         CASE ""
             RESTART
         CASEELSE
@@ -70,7 +68,8 @@ ENDIF
 IF !RESULT
     RETURN 0
 ELSE
-    ;mecah 테스트
+    ;mecha 테스트
     CALL SHAKE_SCREEN
+    ;여기까지 테스트
     RETURN 1
 ENDIF

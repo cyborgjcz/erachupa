@@ -32,6 +32,8 @@
 ;내장무기의 위력
 #DEFINE GIGANT_내장무기위력 10
 
+#DIM CONST GIGANT_STAT_NUM = 11
+
 ;보유 파츠 최대수
 #DIM CONST STOCK_MAX = 1000
 #DIM SAVEDATA STOCK_PART,STOCK_MAX = 1,1,1,1,1,1,1
@@ -42,7 +44,7 @@
 
 ;파츠 개조 데이터
 ;각부 스테이터스의 인덱스를 따라감
-#DIM SAVEDATA MOD_DATA,STOCK_MAX,11
+#DIM SAVEDATA MOD_DATA,STOCK_MAX,GIGANT_STAT_NUM
 
 ;현재 기간트의 각 파츠의 스톡 번호(STOCK_PART 참조) 저장 데이터.
 ;이게 현재 플레이어 기간트 상태
