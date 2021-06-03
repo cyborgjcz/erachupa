@@ -31,8 +31,12 @@
 #DEFINE GIGANT_내장무기 9
 ;내장무기의 위력
 #DEFINE GIGANT_내장무기위력 10
+;GIGANT_부위 = GIGANT_무기인 경우에 한해서.
+;bit1 = 무기여부 bit2 = 단,장 bit3 = 무딤,날붙이 1 = 둔기 3 = 봉 5 = 도검 7 = 창
+#DEFINE GIGANT_무기유형 11
 
-#DIM CONST GIGANT_STAT_NUM = 11
+
+#DIM CONST GIGANT_STAT_NUM = 12
 
 ;보유 파츠 최대수
 #DIM CONST STOCK_MAX = 1000
@@ -50,6 +54,11 @@
 ;이게 현재 플레이어 기간트 상태
 #DIM SAVEDATA CURRENT_GIGANT,8 = 0,1,2,3,4,5,6,-1
 ;각부 피해
-#DIM SAVEDATA CURRENT_GIGANT_DAMAGE,8 = 0,0,0,0,0,0,0,0
+#DIM SAVEDATA GIGANT_DAMAGE,8 = 0,0,0,0,0,0,0,0
 
+;자세 불안정(공격 등)
+#DIM GIGANT_UNSTABILITY
+;안정성에 타격을 주는 대미지
+#DIM GIGANT_DOWN_DAMAGE
+;넘어진 상태
 #DIM GIGANT_TUMBLE

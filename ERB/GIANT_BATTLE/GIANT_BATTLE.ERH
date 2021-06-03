@@ -1,2 +1,4 @@
 ﻿;거대화 전투 도중인지 여부 판정
 #DIM GIANT_BATTLE
+;화면 흔들림 여부
+#DIM SAVEDATA SHAKE_SCREEN_OK = 1
