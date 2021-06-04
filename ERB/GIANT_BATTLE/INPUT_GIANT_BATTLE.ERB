@@ -1,0 +1,156 @@
+﻿@COMMAND_GIANT_BATTLE
+CALL SHOW_GIANT_BATTLE_COMMAND
+CALL INPUT_GIANT_BATTLE_COMMAND
+
+@SHOW_GIANT_BATTLE_COMMAND
+IF !GIGANT_TUMBLE
+    PRINTBUTTON "［ｑ］↶","q"
+    PRINTBUTTON "［ｗ］↑","w"
+    PRINTBUTTON "［ｅ］↷","e"
+    PRINT_SPACE 365
+    PRINTBUTTON "［ｒ］무기 교체","r"
+    PRINTBUTTON "［ｉ］작전","i"
+    PRINTL
+    PRINTBUTTON "［ａ］무기 공격","a"
+    PRINTBUTTON "［ｓ］태클 공격","s"
+    PRINTBUTTON "［ｄ］방어 자세","d"
+    PRINTBUTTON "［ｆ］백스텝","f"
+ELSE
+    PRINTBUTTON "［ｗ］자세 회복","w"
+    PRINTBUTTON "［ｄ］방어 자세","d"
+    PRINT_SPACE 3
+    PRINTBUTTON "［ｒ］무기 교체","r"
+    PRINTBUTTON "［ｉ］작전","i"
+ENDIF
+PRINTL
+@INPUT_GIANT_BATTLE_COMMAND
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC GOTKEYS
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC SPENDTURN
+ONEINPUTS
+GOTKEYS = %RESULTS%
+IF !GIGANT_TUMBLE
+    SELECTCASE GOTKEYS
+        CASE "w"
+            PRINTL 입력값 : w (전진)
+        CASE "q","e","r","i"
+            GOTO GIANT_BATTLE_SKIPPERMISSION
+        CASE "a"
+            PRINTL 입력값 : a (무기 공격)
+        CASE "s"
+            PRINTL 입력값 : s (태클 공격)
+        CASE "d"
+            PRINTL 입력값 : d (방어 자세)
+        CASE "f"
+            PRINTL 입력값 : f (백스텝)
+        CASE ""
+            RESTART
+        CASEELSE
+            CLEARLINE 1
+            REUSELASTLINE
+            RESTART
+    ENDSELECT
+ELSE
+    SELECTCASE GOTKEYS
+        CASE "w"
+            PRINTL 입력값 : w (자세 회복)
+        CASE "d"
+            PRINTL 입력값 : d (방어 자세)
+        CASE "r","i"
+            GOTO GIANT_BATTLE_SKIPPERMISSION
+        CASE ""
+            RESTART
+        CASEELSE
+            CLEARLINE 1
+            REUSELASTLINE
+            RESTART
+    ENDSELECT
+ENDIF
+PRINT 이 입력으로 괜찮습니까? 
+PRINTBUTTON "[z] 네","z"
+PRINTBUTTON "[x] 아니오","x"
+ONEINPUTS
+SELECTCASE RESULTS
+    CASE "z"
+    CASEELSE
+        RETURN 1
+ENDSELECT
+$GIANT_BATTLE_SKIPPERMISSION
+KEYV = FINDELEMENT(D3D_TEXTBUTTONSYMBOL,GOTKEYS)
+IF KEYV != -1
+    IF D3D_TEXTBUTTON:KEYV
+        ;TODO: 여기에는 총격 공격 입력 결과를 넣어야한다...
+        ;CALL DUNGEON_FAR_EVENT(D3D_TEXTBUTTONCOORD:KEYV:0,D3D_TEXTBUTTONCOORD:KEYV:1)
+    ENDIF
+ELSE
+    SELECTCASE GOTKEYS
+        CASE "w"
+            ;전방이동
+            GIGANT_GUARD = 0
+            SIF GIGANT_UNSTABILITY > 0
+                GIGANT_UNSTABILITY -= 1
+            CALL D3D_MOVE_PLAYER(0)
+            IF RESULT != 0
+                CALL SHAKE_SCREEN
+                SPENDTURN = 1
+            ENDIF
+        CASE "q"
+            ;좌회전
+            CALL D3D_CHANGE_DIRECTION(-1)
+            SPENDTURN = 0
+        CASE "e"
+            ;우회전
+            CALL D3D_CHANGE_DIRECTION(1)
+            SPENDTURN = 0
+        CASE "r"
+            ;무기 교체
+            SPENDTURN = 0
+        CASE "i"
+            ;작전
+            SPENDTURN = 0
+        CASE "a"
+            ;무기 근접 공격
+            GIGANT_GUARD = 0
+            GIGANT_UNSTABILITY += 1
+            ;CALL
+            SPENDTURN = 1
+        CASE "s"
+            ;태클 공격
+            ;전방 2칸 대쉬 및 이동이 불가능하면 공격 또는 충돌대미지 판정
+            GIGANT_GUARD = 0
+            FOR LCOUNT,0,2
+                GIGANT_UNSTABILITY += 1
+                CALL D3D_MOVE_PLAYER(0)
+                IF !RESULT
+                    CALL SHAKE_SCREEN
+                    ;나아가지 못하는 경우, 충돌 판정
+                    ;CALL
+                    BREAK
+                ENDIF
+                SIF !LCOUNT
+                    CALL D3D_SHOW_GRAPHIC
+                TWAIT 50,1
+            NEXT
+            SPENDTURN = 1
+        CASE "d"
+            ;방어 자세
+            GIGANT_GUARD = 1
+            SIF GIGANT_UNSTABILITY > 0
+                GIGANT_UNSTABILITY -= 1
+            SPENDTURN = 1
+        CASE "f"
+            CALL D3D_MOVE_PLAYER(2)
+            IF RESULT != 0
+                CALL SHAKE_SCREEN
+                GIGANT_GUARD = 0
+                SPENDTURN = 1
+            ENDIF
+        CASE ""
+            RESTART
+        CASEELSE
+            CLEARLINE 1
+            REUSELASTLINE
+            RESTART
+    ENDSELECT
+ENDIF
