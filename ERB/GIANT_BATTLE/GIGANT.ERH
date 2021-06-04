@@ -56,7 +56,7 @@
 ;각부 피해
 #DIM SAVEDATA GIGANT_DAMAGE,8 = 0,0,0,0,0,0,0,0
 
-;자세 불안정(공격 등)
+;자세 불안정(공격 등) 0~3 숫자가 클수록 불안정
 #DIM GIGANT_UNSTABILITY
 ;안정성에 타격을 주는 대미지
 #DIM GIGANT_DOWN_DAMAGE

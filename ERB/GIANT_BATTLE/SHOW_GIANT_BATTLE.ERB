@@ -337,6 +337,9 @@ RETURNF NUMV
 #DIM DYNAMIC DAMAGEV
 SELECTCASE KEYV
     CASE 0 TO 7
+        IF CURRENT_GIGANT:KEYV == -1
+            RETURN 0
+        ENDIF
         {
             DAMCAPV = GET_GIGANT_PART_BASE_STAT(STOCK_PARTD:(CURRENT_GIGANT:KEYV),GIGANT_내구임계) +
             MOD_DATA:(CURRENT_GIGANT:KEYV):GIGANT_내구임계
@@ -408,10 +411,10 @@ SELECTCASE KEYV
     ;지도 표시 영역
     CASE 3 TO 11
         CALL SHOW_GIANT_BATTLE_MAP(KEYV - 3)
-    CASE 13
+    CASE 12
         PRINT 내구도 : 
         CALL GIGANT_HP_COLORBAR
-    CASE 14
+    CASE 13
         PRINT 안정도 : 
         IF GIGANT_TUMBLE != 0
             SETCOLORBYNAME DarkRed
@@ -420,12 +423,50 @@ SELECTCASE KEYV
         ELSE
             CALL GIGANT_STABILITY_COLORBAR
         ENDIF
+    CASE 14
+        PRINT 자세 :
+        SELECTCASE GIGANT_UNSTABILITY
+            CASE 0
+                PRINT 안정
+            CASE 1
+                PRINT 조금 불안정
+            CASE 2
+                PRINT 불안정
+            CASE 3
+                PRINT 몹시 불안정
+            CASEELSE
+                PRINT 위험함
+        ENDSELECT
     CASE 15
-        PRINT 동력계 : 
-        PRINT 대충 정상
-    CASE 17
         PRINT 무장 : 
-        PRINT 핫찌미
+        PRINTS GET_GIGANT_WEAPON_NAME(CURRENT_GIGANT:GIGANT_무기)
+    CASE 16 TO 23
+        SELECTCASE KEYV - 16
+            CASE 0
+                PRINT ＨＤ　: 
+            CASE 1
+                PRINT ＢＤ　: 
+            CASE 2
+                PRINT ＡＭＬ: 
+            CASE 3
+                PRINT ＡＭＲ: 
+            CASE 4
+                PRINT ＢＣ　: 
+            CASE 5
+                PRINT ＬＧ　: 
+            CASE 6
+                PRINT ＷＰ　: 
+            CASE 7
+                PRINT ＳＰ　: 
+        ENDSELECT
+        CALL SET_GIGANT_DAMAGE_COLOR(KEYV - 16)
+        IF IS_GIGANT_PART_DISABLE(KEYV - 16)
+            PRINT ｘ
+        ELSE
+            PRINT ●
+        ENDIF
+        RESETCOLOR
+        PRINTV GET_GIGANT_MODED_STAT(KEYV - 16,GIGANT_내구) - GIGANT_DAMAGE:(KEYV - 16)
 ENDSELECT
 
 ;거대로봇 전투 용 회전하는 4칸 반경 미니맵

@@ -1,4 +1,16 @@
-﻿;거대로봇?의 기초 능력을 정의하고 호출함으로써 반환
+﻿;스탯정보 인덱스를 받아 무기 이름 반환
+@GET_GIGANT_WEAPON_NAME(KEYV)
+#FUNCTIONS
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE 6
+        RETURNF "스프링데이"
+    CASEELSE
+        RETURNF ""
+ENDSELECT
+
+;거대로봇?의 기초 능력을 정의하고 호출함으로써 반환
+;제1인수는 스탯정보 인덱스
 ;어디까지나 기초능력 반환으로 성장치는 다른 곳 관할
 @GET_GIGANT_PART_BASE_STAT(KEYV,STATV)
 #FUNCTION
@@ -188,7 +200,7 @@ SELECTCASE KEYV
                 GOTO STATV_ERROR
         ENDSELECT
     CASE 6
-        ;브레이커: 스프링데이
+        ;스프링데이 메이스
         SELECTCASE STATV
             CASE GIGANT_부위
                 RETURNF GIGANT_무기
