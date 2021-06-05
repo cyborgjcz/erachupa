@@ -3,4 +3,11 @@
 ;화면 흔들림 여부
 #DIM SAVEDATA SHAKE_SCREEN_OK = 1
 
-#DIM GIANT_ENEMY,361,3
+;거대보스전 적, 최대 마리 수는 맵 크기, 제2인수는 0=x좌표,1=y좌표,2=ID,3=내구도
+#DIM GIANT_ENEMY,361,4
+;거대보스전 적 공격 경보 최대 갯수는 맵 크기, 제2인수는 0,1=xy좌표,2=ID,3=남은 시간, 4=중심핵 여부
+#DIM GIANT_ALERT,361,5
+
+;거대보스전 적 정보를 맵 상에 표시했는가?
+#DIM GIANT_SHOWN_TEXTBUTTON,722
+#DIM GIANT_SHOWN_TILEMAP,722
