@@ -90,7 +90,15 @@ ELSE
             GIGANT_GUARD = 0
             SIF GIGANT_UNSTABILITY > 0
                 GIGANT_UNSTABILITY -= 1
-            CALL D3D_MOVE_PLAYER(0)
+            CALL CHECK_RIGHT_THERE_GIANT_ENEMY
+            IF !RESULT
+                CALL D3D_MOVE_PLAYER(0)
+            ELSE
+                CALL SHAKE_SCREEN
+                PRINTL 적이 가로막고 있다!
+                WAITANYKEY
+                RESULT = 0
+            ENDIF
             IF RESULT != 0
                 CALL SHAKE_SCREEN
                 SPENDTURN = 1
@@ -121,7 +129,12 @@ ELSE
             GIGANT_GUARD = 0
             FOR LCOUNT,0,2
                 GIGANT_UNSTABILITY += 1
-                CALL D3D_MOVE_PLAYER(0)
+                CALL CHECK_RIGHT_THERE_GIANT_ENEMY
+                IF !RESULT
+                    CALL D3D_MOVE_PLAYER(0)
+                ELSE
+                    RESULT = 0
+                ENDIF
                 IF !RESULT
                     CALL SHAKE_SCREEN
                     ;나아가지 못하는 경우, 충돌 판정
@@ -140,7 +153,16 @@ ELSE
                 GIGANT_UNSTABILITY -= 1
             SPENDTURN = 1
         CASE "f"
-            CALL D3D_MOVE_PLAYER(2)
+            ;백스텝
+            CALL CHECK_RIGHT_THERE_GIANT_ENEMY
+            IF !RESULT
+                CALL D3D_MOVE_PLAYER(0)
+            ELSE
+                CALL SHAKE_SCREEN
+                PRINTL 적이 가로막고 있다!
+                WAITANYKEY
+                RESULT = 0
+            ENDIF
             IF RESULT != 0
                 CALL SHAKE_SCREEN
                 GIGANT_GUARD = 0
