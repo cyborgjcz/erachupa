@@ -90,7 +90,7 @@ ELSE
             GIGANT_GUARD = 0
             SIF GIGANT_UNSTABILITY > 0
                 GIGANT_UNSTABILITY -= 1
-            CALL CHECK_RIGHT_THERE_GIANT_ENEMY
+            CALL CHECK_RIGHT_THERE_GIANT_ENEMY(0)
             IF !RESULT
                 CALL D3D_MOVE_PLAYER(0)
             ELSE
@@ -129,7 +129,7 @@ ELSE
             GIGANT_GUARD = 0
             FOR LCOUNT,0,2
                 GIGANT_UNSTABILITY += 1
-                CALL CHECK_RIGHT_THERE_GIANT_ENEMY
+                CALL CHECK_RIGHT_THERE_GIANT_ENEMY(0)
                 IF !RESULT
                     CALL D3D_MOVE_PLAYER(0)
                 ELSE
@@ -154,7 +154,7 @@ ELSE
             SPENDTURN = 1
         CASE "f"
             ;백스텝
-            CALL CHECK_RIGHT_THERE_GIANT_ENEMY
+            CALL CHECK_RIGHT_THERE_GIANT_ENEMY(2)
             IF !RESULT
                 CALL D3D_MOVE_PLAYER(2)
             ELSE
