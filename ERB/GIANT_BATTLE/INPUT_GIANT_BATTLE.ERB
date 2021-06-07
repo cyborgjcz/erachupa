@@ -121,7 +121,7 @@ ELSE
             ;무기 근접 공격
             GIGANT_GUARD = 0
             GIGANT_UNSTABILITY += 1
-            ;CALL
+            ;CALL GIGANT_MELEE_ATTACK(1)
             SPENDTURN = 1
         CASE "s"
             ;태클 공격
@@ -138,7 +138,7 @@ ELSE
                 IF !RESULT
                     CALL SHAKE_SCREEN
                     ;나아가지 못하는 경우, 충돌 판정
-                    ;CALL
+                    ;CALL GIGANT_MELEE_ATTACK(0)
                     BREAK
                 ENDIF
                 SIF !LCOUNT
@@ -156,7 +156,7 @@ ELSE
             ;백스텝
             CALL CHECK_RIGHT_THERE_GIANT_ENEMY
             IF !RESULT
-                CALL D3D_MOVE_PLAYER(0)
+                CALL D3D_MOVE_PLAYER(2)
             ELSE
                 CALL SHAKE_SCREEN
                 PRINTL 적이 가로막고 있다!
