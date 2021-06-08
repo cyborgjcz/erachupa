@@ -55,12 +55,12 @@ ENUMV = GET_GIANT_ENEMY_NUM(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
 IF GET_GIANT_ENEMY_ID(ENUMV) == 2
     SETCOLORBYNAME Red
     SELECTCASE KEYV
-        CASE 3 TO 7
+        CASE 0 TO 4
             WV = 25
             SIDEV = 1313
             PRINT_SPACE SIDEV
             SELECTCASE KEYV
-                CASE 3
+                CASE 0
                     PRINT ▍▍
                     PRINT_SPACE WV * 3
                     PRINT ▍▍
@@ -81,7 +81,7 @@ IF GET_GIANT_ENEMY_ID(ENUMV) == 2
                     PRINT_SPACE WV * 3
                     PRINT ▍▍▍▍
                     PRINT_SPACE WV
-                CASE 4
+                CASE 1
                     PRINT ▍▍
                     PRINT_SPACE WV * 3
                     PRINT ▍▍
@@ -106,7 +106,7 @@ IF GET_GIANT_ENEMY_ID(ENUMV) == 2
                     PRINT_SPACE WV * 2
                     PRINT ▍▍
                     PRINT_SPACE WV * 4
-                CASE 5
+                CASE 2
                     PRINT ▍▍
                     PRINT_SPACE WV
                     PRINT ▍
@@ -130,7 +130,7 @@ IF GET_GIANT_ENEMY_ID(ENUMV) == 2
                     PRINT ▍▍
                     PRINT_SPACE WV
                     PRINT ▍▍▍
-                CASE 6
+                CASE 3
                     PRINT ▍▍▍▍▍▍▍
                     PRINT_SPACE WV * 2
                     PRINT ▍▍
@@ -154,7 +154,7 @@ IF GET_GIANT_ENEMY_ID(ENUMV) == 2
                     PRINT ▍▍
                     PRINT_SPACE WV * 2
                     PRINT ▍▍
-                CASE 7
+                CASE 4
                     PRINT_SPACE WV
                     PRINT ▍▍
                     PRINT_SPACE WV
@@ -182,25 +182,43 @@ IF GET_GIANT_ENEMY_ID(ENUMV) == 2
                     PRINT_SPACE WV
             ENDSELECT
             PRINT_SPACE SIDEV
-        CASE 8
+        CASE 5
             PRINT_SPACE 1150
             PRINTS TOFULL(TOSTR(GIANT_ALERT:(ENUMV-361):3))
             PRINT 턴　후에　이　위치에　서　있으면
             PRINT_SPACE 1150
-        CASE 9
+        CASE 6
             PRINT_SPACE 1150
             PRINTFORM %TOFULL(TOSTR(NUMBER_TEN_MILLION_CAP(GIANT_ALERT:(ENUMV-361):4),"D7"))%
             PRINT_SPACE 2150
-        CASE 10
+        CASE 7
             PRINT_SPACE 1150
             PRINT 만큼의　대미지를　받는다！
             PRINT_SPACE 1550
+        CASE 9
         CASEELSE
             PRINT_SPACE 4000
     ENDSELECT
     RESETCOLOR
 ELSE
-    PRINT_SPACE 4000
+    SIF KEYV != 9
+        PRINT_SPACE 4000
+ENDIF
+
+IF KEYV == 9
+    ;전방에 적이 있다면 9행에 적 내구도 표시
+    CALL D3D_GET_FRONT_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
+    ENUMV = GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1)
+    IF ENUMV >= 0 && ENUMV < 361
+        PRINT_SPACE 1150
+        SETCOLOR GET_GIANT_ENEMY_COLOR(ENUMV)
+        PRINT 전방의　적　내구도：
+        PRINTFORM %TOFULL(TOSTR(NUMBER_TEN_MILLION_CAP(GIANT_ENEMY:ENUMV:3),"D7"))%
+        RESETCOLOR
+        PRINT_SPACE 1150
+    ELSE
+        PRINT_SPACE 4000
+    ENDIF
 ENDIF
 ;3D 지도 출력 화면 상에서 정보 표시 함수
 @SHOW_GIANT_DAMAGE_INFO(KEYV)
