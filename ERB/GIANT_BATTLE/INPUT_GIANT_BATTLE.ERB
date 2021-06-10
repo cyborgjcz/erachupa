@@ -28,6 +28,7 @@ PRINTL
 #DIMS DYNAMIC GOTKEYS
 #DIM DYNAMIC KEYV
 #DIM DYNAMIC SPENDTURN
+#DIM DYNAMIC DAMAGEV_TEMP
 ONEINPUTS
 GOTKEYS = %RESULTS%
 IF !GIGANT_TUMBLE
@@ -121,7 +122,8 @@ ELSE
             ;무기 근접 공격
             GIGANT_GUARD = 0
             GIGANT_UNSTABILITY += 1
-            ;CALL GIGANT_MELEE_ATTACK(1)
+            CALL D3D_GET_FRONT_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
+            CALL GIGANT_ATTACK(1,GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1))
             SPENDTURN = 1
         CASE "s"
             ;태클 공격
@@ -138,7 +140,13 @@ ELSE
                 IF !RESULT
                     CALL SHAKE_SCREEN
                     ;나아가지 못하는 경우, 충돌 판정
-                    ;CALL GIGANT_MELEE_ATTACK(0)
+                    CALL D3D_GET_FRONT_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
+                    CALL GIGANT_ATTACK(0,GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1))
+                    DAMAGEV_TEMP = RESULT
+                    SIF !DAMAGEV_TEMP
+                        DAMAGEV_TEMP = 50000
+                    CALL APPLY_DAMAGE_GIGANT(DAMAGEV_TEMP,0)
+                    CALL GET_DOWN_DAMAGE_GIGANT(DAMAGEV_TEMP)
                     BREAK
                 ENDIF
                 SIF !LCOUNT
@@ -175,4 +183,7 @@ ELSE
             REUSELASTLINE
             RESTART
     ENDSELECT
+ENDIF
+IF SPENDTURN != 0
+    CALL PLAY_GIANT_BATTLE_ENEMY_TURN
 ENDIF
