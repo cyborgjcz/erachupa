@@ -6,8 +6,10 @@
 ;적 수(IS_REMAIN_GIANT_ENEMY 판정에 사용)
 #DIM GIANT_ENEMY_ON_BATTLE
 ;거대보스전 적, 최대 마리 수는 맵 크기, 제2인수는 0=x좌표,1=y좌표,2=ID,
-;3=내구도,4=대미지, 5=무적판정(1=무적,2=자해가능)
-#DIM GIANT_ENEMY,361,6
+;3=내구도,4=공격위력, 5=무적판정(1=무적,2=자해가능), 6, 기술 쿨다운
+#DIM GIANT_ENEMY,361,7
+;경고 수(PLAY_GIANT_BATTLE_ENEMY_TURN 계산 등지에서 사용)
+#DIM GIANT_ALERT_ON_BATTLE
 ;거대보스전 적 공격 경보 최대 갯수는 맵 크기, 제2인수는 0,1=xy좌표,2=ID,
-;3=남은 시간, 4=대미지, 5=중심?
+;3=남은 시간, 4=공격위력, 5=중심?
 #DIM GIANT_ALERT,361,6

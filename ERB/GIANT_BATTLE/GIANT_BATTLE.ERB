@@ -69,7 +69,7 @@ ENDSELECT
 @GIGANT_ATTACK(ISWEAPONV,TARGETV,ISENEMY=-1,DIRECTION=-1)
 #DIM DYNAMIC ISWEAPONV;무기 이용 여부, 플레이어 공격일때 반영
 #DIM DYNAMIC TARGETV;대상. 플레이어 공격일 때는 GET_GIANT_ENEMY_NUM을 이용 플레이어일경우 -2
-#DIM DYNAMIC ISENEMY;적 여부 -1이면 플레이어가 공격
+#DIM DYNAMIC ISENEMY;적 여부 -1이면 플레이어가 공격,아닐경우 적 인덱스에서 찾음
 #DIM DYNAMIC DIRECTION;방향 -1이면 판단하지 않음(플레이어 공격일 때)
 #DIM DYNAMIC SRCSTATV
 #DIM DYNAMIC DAMAGEV
@@ -90,13 +90,15 @@ ELSEIF ISENEMY != -1
         SRCSTATV = GIANT_ENEMY:ISENEMY:4
     ELSE
         ;경보 적 ID 영역
-        SRCSTATV = GIANT_ALERT:ISENEMY:4
+        SRCSTATV = GIANT_ALERT:(ISENEMY-360):4
     ENDIF
 ENDIF
+DEBUGPRINTFORML SRCSTATV = {SRCSTATV}
 ;대미지 난수 보정
 DAMAGEV = (SRCSTATV * (90 + RAND:10))/100
 SIF DIRECTION == 2
-    TIMES DAMAGEV 1.2
+    TIMES DAMAGEV, 1.2
+DEBUGPRINTFORML DAMAGEV = {DAMAGEV}
 SELECTCASE TARGETV
     CASE 0 TO 360
         ;무적판정이 걸려있는 적은 대미지 무효화
@@ -193,7 +195,7 @@ SELECTCASE STABILITYV - GIGANT_DOWN_DAMAGE
     CASE NUMV + 1 TO NUMV * 2
         TIMES DAMAGEV, 1.05
     CASE 1 TO NUMV
-        TIMES DAMAGEV 1.15
+        TIMES DAMAGEV, 1.15
 ENDSELECT
 ;자세 불안정 보정
 SELECTCASE GIGANT_UNSTABILITY
@@ -225,16 +227,66 @@ SIF !GIGANT_TUMBLE
     TIMES GIGANT_DOWN_DAMAGE, 0.9
 RETURN 1
 
+;플레이어의 NUMV(0은 바로 앞) 칸 근처에 XV,YV가 위치하는지 체크하는 함수
 @NEAR_PLAYER(XV,YV,NUMV)
 #FUNCTION
 #DIM DYNAMIC XV
 #DIM DYNAMIC YV
 #DIM DYNAMIC NUMV
-{
-    IF XV >= D3D_PLAYER_XCOORD - NUMV && XV <= D3D_PLAYER_XCOORD + NUMV &&
-    YV >= D3D_PLAYER_YCOORD - NUMV && YV <= D3D_PLAYER_YCOORD + NUMV
-}
-    RETURNF 1
-ELSE
-    RETURNF 0
-ENDIF
+SELECTCASE NUMV
+    CASE 0
+        ;바로 붙어있는 경우
+        {
+            IF (XV >= D3D_PLAYER_XCOORD - 1 && XV <= D3D_PLAYER_XCOORD + 1 && YV == D3D_PLAYER_YCOORD) ||
+            (YV >= D3D_PLAYER_YCOORD - 1 && YV <= D3D_PLAYER_YCOORD + 1 && XV == D3D_PLAYER_XCOORD)
+        }
+            RETURNF 1
+        ELSE
+            RETURNF 0
+        ENDIF
+    CASEELSE
+        {
+            IF XV >= D3D_PLAYER_XCOORD - NUMV && XV <= D3D_PLAYER_XCOORD + NUMV &&
+            YV >= D3D_PLAYER_YCOORD - NUMV && YV <= D3D_PLAYER_YCOORD + NUMV
+        }
+            RETURNF 1
+        ELSE
+            RETURNF 0
+        ENDIF
+ENDSELECT
+
+;플레이어 바로 근처 칸에 있는 대상이 D3D_PLAYER_DIRECTION 기준 어느 방향인지 확인
+@NEAR_PLAYER_DIRECTION(XV,YV)
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC XV
+#DIM DYNAMIC YV
+#DIM DYNAMIC TEMPV
+FOR LCOUNT,0,4
+    SELECTCASE LCOUNT
+        CASE 0
+            CALL D3D_GET_FRONT
+            IF XV == RESULT:0 && YV == RESULT:1
+                TEMPV = 0
+                BREAK
+            ENDIF
+        CASE 1
+            CALL D3D_GET_RIGHT
+            IF XV == RESULT:0 && YV == RESULT:1
+                TEMPV = 1
+                BREAK
+            ENDIF
+        CASE 2
+            CALL D3D_GET_BEHIND
+            IF XV == RESULT:0 && YV == RESULT:1
+                TEMPV = 2
+                BREAK
+            ENDIF
+        CASE 3
+            CALL D3D_GET_LEFT
+            IF XV == RESULT:0 && YV == RESULT:1
+                TEMPV = 3
+                BREAK
+            ENDIF
+    ENDSELECT
+NEXT
+RETURN TEMPV

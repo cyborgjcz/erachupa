@@ -87,22 +87,27 @@ IF KEYV != -1
 ELSE
     SELECTCASE GOTKEYS
         CASE "w"
-            ;전방이동
-            GIGANT_GUARD = 0
-            SIF GIGANT_UNSTABILITY > 0
-                GIGANT_UNSTABILITY -= 1
-            CALL CHECK_RIGHT_THERE_GIANT_ENEMY(0)
-            IF !RESULT
-                CALL D3D_MOVE_PLAYER(0)
+            IF !GIGANT_TUMBLE
+                ;전방이동
+                GIGANT_GUARD = 0
+                SIF GIGANT_UNSTABILITY > 0
+                    GIGANT_UNSTABILITY -= 1
+                CALL CHECK_RIGHT_THERE_GIANT_ENEMY(0)
+                IF !RESULT
+                    CALL D3D_MOVE_PLAYER(0)
+                ELSE
+                    CALL SHAKE_SCREEN
+                    PRINTL 적이 가로막고 있다!
+                    WAITANYKEY
+                    RESULT = 0
+                ENDIF
+                IF RESULT != 0
+                    CALL SHAKE_SCREEN
+                    SPENDTURN = 1
+                ENDIF
             ELSE
-                CALL SHAKE_SCREEN
-                PRINTL 적이 가로막고 있다!
-                WAITANYKEY
-                RESULT = 0
-            ENDIF
-            IF RESULT != 0
-                CALL SHAKE_SCREEN
-                SPENDTURN = 1
+                ;전도 대미지 회복 및 넘어짐 상태 회복
+                ;HERE
             ENDIF
         CASE "q"
             ;좌회전
@@ -123,7 +128,8 @@ ELSE
             GIGANT_GUARD = 0
             GIGANT_UNSTABILITY += 1
             CALL D3D_GET_FRONT_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
-            CALL GIGANT_ATTACK(1,GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1))
+            SIF GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1) > -1 && GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1) < 361
+                CALL GIGANT_ATTACK(1,GET_GIANT_ENEMY_NUM(RESULT:0,RESULT:1))
             SPENDTURN = 1
         CASE "s"
             ;태클 공격
@@ -146,7 +152,7 @@ ELSE
                     SIF !DAMAGEV_TEMP
                         DAMAGEV_TEMP = 50000
                     CALL APPLY_DAMAGE_GIGANT(DAMAGEV_TEMP,0)
-                    CALL GET_DOWN_DAMAGE_GIGANT(DAMAGEV_TEMP)
+                    CALL GET_DOWN_DAMAGE_GIGANT(DAMAGEV_TEMP/1000)
                     BREAK
                 ENDIF
                 SIF !LCOUNT
