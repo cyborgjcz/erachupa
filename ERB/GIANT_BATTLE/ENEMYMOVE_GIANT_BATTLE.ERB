@@ -1,0 +1,130 @@
+﻿;적 턴 실행 총괄 함수.
+@PLAY_GIANT_BATTLE_ENEMY_TURN
+#DIM DYNAMIC LCOUNT,2
+#DIM DYNAMIC TEMPV,2
+
+CALL GIANT_BATTLE_PROGRESS_ALERT
+FOR LCOUNT,0,GIANT_ENEMY_ON_BATTLE
+    SELECTCASE GET_GIANT_ENEMY_ID(LCOUNT)
+        CASE 1
+            SIF GIANT_ENEMY:LCOUNT:3 <= 0
+                CONTINUE
+            SIF !IS_REMAIN_GIANT_ENEMY(3)
+                GIANT_ENEMY:LCOUNT:5 = 0
+            IF NEAR_PLAYER(GIANT_ENEMY:LCOUNT:0,GIANT_ENEMY:LCOUNT:1,0)
+                ;초근접 시 근접 공격
+                CALL NEAR_PLAYER_DIRECTION(GIANT_ENEMY:LCOUNT:0,GIANT_ENEMY:LCOUNT:1)
+                CALL GIGANT_ATTACK(0,-2,LCOUNT,RESULT)
+            ELSEIF NEAR_PLAYER(GIANT_ENEMY:LCOUNT:0,GIANT_ENEMY:LCOUNT:1,4) && !GIANT_ENEMY:LCOUNT:5
+                ;4칸 이내 인접, 또한 
+                {
+                    CALL PATHFINDER_BFS(GIANT_ENEMY:LCOUNT:0,GIANT_ENEMY:LCOUNT:1,
+                    D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD)
+                }
+                CALL PATHFINDER_KEY_TO_XY(RESULT:1)
+                SIF !(D3D_PLAYER_XCOORD == RESULT:0 && D3D_PLAYER_YCOORD == RESULT:1)
+                    GIANT_ENEMY:LCOUNT:0 = RESULT:0,RESULT:1
+            ELSE
+                IF !(GIANT_ENEMY:LCOUNT:6 > 0);그 외의 경우 포격
+                    FOR LCOUNT:1,0,5
+                        ;GIANT_ALERT 데이터 생성 과정 진행
+                        {
+                            IF LCOUNT:1 > 0 && GET_CROSS_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD,LCOUNT:1,0) == GET_CROSS_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD,0,0) &&
+                            GET_CROSS_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD,LCOUNT:1,1) == GET_CROSS_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD,0,1)
+                        }
+                            TEMPV = -1
+                            CONTINUE
+                        ENDIF
+                        GIANT_ALERT:((LCOUNT:1)+GIANT_ALERT_ON_BATTLE+TEMPV):0 = GET_CROSS_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD,LCOUNT:1,0)
+                        GIANT_ALERT:((LCOUNT:1)+GIANT_ALERT_ON_BATTLE+TEMPV):1 = GET_CROSS_COORD(D3D_PLAYER_XCOORD,D3D_PLAYER_YCOORD,LCOUNT:1,1)
+                        GIANT_ALERT:((LCOUNT:1)+GIANT_ALERT_ON_BATTLE+TEMPV):2 = 2
+                        GIANT_ALERT:((LCOUNT:1)+GIANT_ALERT_ON_BATTLE+TEMPV):3 = 3
+                        GIANT_ALERT:((LCOUNT:1)+GIANT_ALERT_ON_BATTLE+TEMPV):4 = GIANT_ENEMY:LCOUNT:4
+                        SIF LCOUNT:1 == 0
+                            GIANT_ALERT:((LCOUNT:1)+GIANT_ALERT_ON_BATTLE+TEMPV):5 = 1
+                        TEMPV:1 += 1
+                    NEXT
+                    GIANT_ALERT_ON_BATTLE += TEMPV:1
+                    GIANT_ENEMY:LCOUNT:6 = 4
+                    TEMPV = 0
+                ELSE
+                    ;쿨다운 감소
+                    GIANT_ENEMY:LCOUNT:6 -= 1
+                ENDIF
+            ENDIF
+        CASE 3
+    ENDSELECT
+NEXT
+
+;적 공격 경보진행
+@GIANT_BATTLE_PROGRESS_ALERT
+#DIM DYNAMIC LCOUNT,2
+#DIM DYNAMIC NUMV
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC TEMPV
+FOR LCOUNT,0,GIANT_ALERT_ON_BATTLE
+    GIANT_ALERT:LCOUNT:3 += -1
+    IF GIANT_ALERT:LCOUNT:3 <= 0
+        ;적 공격 경보의 카운트다운이 0일 때 발동 후 소거 처리
+        ;적 또는 아군에게 히트한다
+        IF (GIANT_ALERT:LCOUNT:0 == D3D_PLAYER_XCOORD) && (GIANT_ALERT:LCOUNT:1 == D3D_PLAYER_YCOORD)
+            CALL GIGANT_ATTACK(0,-2,361+LCOUNT,0)
+        ELSEIF GET_GIANT_ENEMY_NUM(GIANT_ALERT:LCOUNT:0,GIANT_ALERT:LCOUNT:1) != -1 && GET_GIANT_ENEMY_NUM(GIANT_ALERT:LCOUNT:0,GIANT_ALERT:LCOUNT:1) < 361
+            CALL GIGANT_ATTACK(0,GET_GIANT_ENEMY_NUM(GIANT_ALERT:LCOUNT:0,GIANT_ALERT:LCOUNT:1),361+LCOUNT,1)
+        ENDIF
+        FOR LCOUNT:1,0,6
+            GIANT_ALERT:LCOUNT:(LCOUNT:1) = 0
+        NEXT
+        NUMV += 1
+        SIF NUMV == 1
+            KEYV = LCOUNT
+    ENDIF
+NEXT
+;당기기 처리
+IF NUMV > 0
+    FOR LCOUNT,0,NUMV
+        FOR LCOUNT:1,0,6
+            GIANT_ALERT:(KEYV+LCOUNT):(LCOUNT:1) = GIANT_ALERT:(KEYV+LCOUNT+NUMV):(LCOUNT:1)
+            GIANT_ALERT:(KEYV+LCOUNT+NUMV):(LCOUNT:1) = 0
+        NEXT
+    NEXT
+    ;추가 당기기 - 테스트 여건이 충분치 않아 오류가 있을 수 있음
+    IF GIANT_ALERT_ON_BATTLE > (KEYV+(NUMV*2))
+        TEMPV = GIANT_ALERT_ON_BATTLE - (KEYV+(NUMV*2))
+        FOR LCOUNT,(KEYV+(NUMV*2)),GIANT_ALERT_ON_BATTLE
+            FOR LCOUNT:1,0,6
+                GIANT_ALERT:LCOUNT:(LCOUNT:1) = GIANT_ALERT:(TEMPV+LCOUNT):(LCOUNT:1)
+                GIANT_ALERT:(TEMPV+LCOUNT):(LCOUNT:1) = 0
+            NEXT
+        NEXT
+    ENDIF
+ENDIF
+GIANT_ALERT_ON_BATTLE -= (NUMV + TEMPV)
+
+@GET_CROSS_COORD(XV,YV,KEYV,NUMV)
+#FUNCTION
+#DIM DYNAMIC XV
+#DIM DYNAMIC YV
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC NUMV
+
+SELECTCASE KEYV
+    CASE 1
+        SIF XV - 1 >= 0
+            XV += -1
+    CASE 2
+        SIF XV + 1 < D3D_CURRENT_MAPXSIZE
+            XV += 1
+    CASE 3
+        SIF YV - 1 >= 0
+            YV += -1
+    CASE 4
+        SIF YV + 1 < D3D_CURRENT_MAPYSIZE
+            YV += 1
+ENDSELECT
+SELECTCASE NUMV
+    CASE 0
+        RETURNF XV
+    CASE 1
+        RETURNF YV
+ENDSELECT
