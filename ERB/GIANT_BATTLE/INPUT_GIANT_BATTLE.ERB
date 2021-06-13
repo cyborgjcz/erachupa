@@ -107,7 +107,8 @@ ELSE
                 ENDIF
             ELSE
                 ;전도 대미지 회복 및 넘어짐 상태 회복
-                ;HERE
+                CALL DOWN_DAMAGE_RECOVER(1)
+                SPENDTURN = 1
             ENDIF
         CASE "q"
             ;좌회전
@@ -191,5 +192,6 @@ ELSE
     ENDSELECT
 ENDIF
 IF SPENDTURN != 0
+    CALL DOWN_DAMAGE_RECOVER
     CALL PLAY_GIANT_BATTLE_ENEMY_TURN
 ENDIF
