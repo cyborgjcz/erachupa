@@ -628,10 +628,10 @@ TRYCCALLFORM KOJO_EVENT_COMMON_CHAPTER0_MAIN3_8_K{FLAG:1}
 CATCH
     DEBUGPRINTFORML KOJO_EVENT_COMMON_CHAPTER0_MAIN3_8_K{FLAG:1} 호출실패
 ENDCATCH
-IF (FLAG:1 == [[타카네]] && FLAG:2 == [[리츠코]]) || (FLAG:1 == [[리츠코]] && FLAG:2 == [[타카네]])
+IF (FLAG:1 == [[타카네]] && FLAG:2 == [[마코토]]) || (FLAG:1 == [[마코토]] && FLAG:2 == [[타카네]])
     TFLAG:회화키워드5 = [[아즈사]]
 ELSEIF FLAG:1 == [[타카네]] || FLAG:2 == [[타카네]]
-    TFLAG:회화키워드5 = [[리츠코]]
+    TFLAG:회화키워드5 = [[마코토]]
 ELSE
     TFLAG:회화키워드5 = [[타카네]]
 ENDIF
@@ -675,6 +675,17 @@ PRINTL ※ 던전으로 갈 수 있게 되었습니다.
 WAITANYKEY
 PRINTL
 DUNGEON1_FLAG:0 = TFLAG:회화키워드5
+SELECTCASE DUNGEON1_FLAG:0
+    CASE [[타카네]]
+        DUNGEON1_ALLSTARS_TEAM:0:0 = [[타카네]],[[이오리]],[[유키호]],[[마미]],[[미키]],[[히비키]]
+        DUNGEON1_ALLSTARS_TEAM:1:0 = [[마코토]],[[리츠코]],[[하루카]],[[아미]],[[야요이]],[[아즈사]],[[치하야]]
+    CASE [[마코토]]
+        DUNGEON1_ALLSTARS_TEAM:0:0 = [[마코토]],[[리츠코]],[[하루카]],[[아미]],[[야요이]],[[아즈사]],[[치하야]]
+        DUNGEON1_ALLSTARS_TEAM:1:0 = [[히비키]],[[이오리]],[[유키호]],[[마미]],[[미키]]
+    CASE [[아즈사]]
+        DUNGEON1_ALLSTARS_TEAM:0:0 = [[아즈사]],[[리츠코]],[[하루카]],[[아미]],[[야요이]],[[치하야]]
+        DUNGEON1_ALLSTARS_TEAM:1:0 = [[히비키]],[[이오리]],[[유키호]],[[마미]],[[미키]]
+ENDSELECT
 FOR LCOUNT,34,41
     TFLAG:LCOUNT = 0;회화키워드2부터 순차 초기화
 NEXT

@@ -1014,7 +1014,13 @@ SELECTCASE TFLAG:동료1ATB커서상태
             CASE "d";방어
                 TFLAG:동료1ATB커서상태 = 6
             CASE "e";도주
-                TFLAG:동료1ATB커서상태 = 8
+                IF !TFLAG:도주방지
+                    TFLAG:동료1ATB커서상태 = 8
+                ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 싸움에서는 도망칠 수 없다!
+                    WAITANYKEY
+                ENDIF
         ENDSELECT
     CASE 1;공격타게팅
         SELECTCASE RESULTS
@@ -1152,7 +1158,13 @@ SELECTCASE TFLAG:동료2ATB커서상태
             CASE "l";방어
                 TFLAG:동료2ATB커서상태 = 6
             CASE "o";도주
-                TFLAG:동료2ATB커서상태 = 8
+                IF !TFLAG:도주방지
+                    TFLAG:동료2ATB커서상태 = 8
+                ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 싸움에서는 도망칠 수 없다!
+                    WAITANYKEY
+                ENDIF
         ENDSELECT
     CASE 1;공격타게팅
         SELECTCASE RESULTS

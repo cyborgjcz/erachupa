@@ -8,7 +8,7 @@ D3D_PLAYER_YCOORD = 17
 
 MAPDATAS:0  '= "       009000000000"
 MAPDATAS:1  '= "       011121101110"
-MAPDATAS:2  '= "       011101451^30"
+MAPDATAS:2  '= "       011101151^30"
 MAPDATAS:3  '= "       011100000000"
 MAPDATAS:4  '= "       014101111110"
 MAPDATAS:5  '= "       011101020010"
@@ -101,47 +101,74 @@ ELSEIF XCOORD == 11 && YCOORD == 10
 ELSEIF XCOORD == 11 && YCOORD == 14
     ;남동쪽 잠긴 작은 방문
     IF DUNGEON1_SWITCH:2
-        PRINTL 문이 열릴 때 이벤트 미실장
+        TRYCALL DUNGEON1_DOOR3_OPEN_EVENT
         RETURN XCOORD,YCOORD,1
     ELSE
-        PRINTL 문이 잠겨있을 때 이벤트 미실장
+        TRYCALL DUNGEON1_DOOR3_CLOSED_EVENT
         RETURN XCOORD,YCOORD,0
     ENDIF
 ELSEIF XCOORD == 8 && YCOORD == 7
     ;잠긴 문 앞 왼쪽에 위치한 상호작용
-    TRYCALL DUNGEON1_INTERACT_EVENT1
-    RETURN XCOORD,YCOORD,0
-ELSEIF XCOORD == 18 && YCOORD == 8
+    TRYCALL DUNGEON1_INTERACT1_EVENT
+    RETURN XCOORD,YCOORD,1
+ELSEIF XCOORD == 17 && YCOORD == 8
     ;북쪽 작은 방의 첫 상호작용
-    TRYCALL DUNGEON1_INTERACT_EVENT2
+    TRYCALL DUNGEON1_INTERACT2_EVENT
+    TFLAG:적위치1 = 100
+    TFLAG:적레벨1 = 3
+    TFLAG:적위치2 = 100
+    TFLAG:적레벨2 = 3
+    TFLAG:적위치3 = 100
+    TFLAG:적레벨3 = 3
+    TFLAG:도주방지 = 1
+    TFLAG:배틀BGM번호 = 1
+    CALL BATTLE_START
+    TRYCALL DUNGEON1_INTERACT2_EVENT_AFTER
     RETURN XCOORD,YCOORD,0
 ELSEIF XCOORD == 12 && YCOORD == 6
     ;북쪽 작은 방의 두번째 상호작용
-    PRINTL 상호작용3 이벤트 미실장
+    TRYCALL DUNGEON1_INTERACT3_EVENT
     RETURN XCOORD,YCOORD,0
 ELSEIF XCOORD == 16 && YCOORD == 16
     ;남쪽 작은 방 상호작용
-    PRINTL 상호작용4 이벤트 미실장
+    TRYCALL DUNGEON1_INTERACT4_EVENT
     RETURN XCOORD,YCOORD,0
 ELSEIF XCOORD == 13 && YCOORD == 2
     ;중앙 잠긴 문 너머 작은 방 상호작용
-    PRINTL 상호작용5 이벤트 미실장
+    TRYCALL DUNGEON1_INTERACT5_EVENT
     RETURN XCOORD,YCOORD,0
 ELSEIF XCOORD == 12 && YCOORD == 8
     ;북동쪽 작은방 첫 보물상자
+    ITEM:한결같이내일을향해 += 1
+    PRINTL 장비 아이템 한결같이 내일을 향해를 1개 얻었다.
+    WAITANYKEY
+    TRYCALL DUNGEON1_TREASURE1_EVENT
     RETURN XCOORD,YCOORD,1
 ELSEIF XCOORD == 17 && YCOORD == 6
     ;북동쪽 작은방 두번째 보물상자
+    ITEM:스파크드링크20 += 3
+    PRINTL 스파크 드링크 20을 3개 얻었다.
+    WAITANYKEY
+    TRYCALL DUNGEON1_TREASURE2_EVENT
     RETURN XCOORD,YCOORD,1
 ELSEIF XCOORD == 17 && YCOORD == 13
     ;남동쪽 작은방 보물상자
+    ITEM:감응형스마트섬유 += 4
+    PRINTL 감응형스마트섬유를 4개 얻었다.
+    WAITANYKEY
+    TRYCALL DUNGEON1_TREASURE3_EVENT
     RETURN XCOORD,YCOORD,1
 ELSEIF XCOORD == 17 && YCOORD == 2
     ;중앙 잠긴 문 너머 퍼즐 뒤쪽 보물상자
+    ITEM:붉은체크무늬원단 += 1
+    PRINTL 붉은체크무늬원단을 1개 얻었다.
+    TRYCALL DUNGEON1_TREASURE4_EVENT
     RETURN XCOORD,YCOORD,1
 ELSEIF XCOORD == 16 && YCOORD == 2
     ;원거리 상호작용 튜토리얼 용 표적
-    PRINTL 원거리 상호작용 이벤트 미실장
+    TRYCALL DUNGEON1_RANGE1_EVENT
+    ;맵 열림 처리
+    TRYCALL DUNGEON1_RANGE1_EVENT_AFTER
     RETURN XCOORD,YCOORD,1
-    ;반환 결과로 0으로 바꿔야한다. (현재 미작성)
+    ;반환 결과로 0으로 바꿔야한다.
 ENDIF
