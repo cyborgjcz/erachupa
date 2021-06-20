@@ -19,7 +19,16 @@ WAITANYKEY
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[타카네]]%
-LTEXT = %BYNAMES([[타카네]],FLAG:2)%, %BYNAMES([[타카네]],FLAG:1)%!
+IF FLAG:2 == [[로코]]
+    LTEXT = 한다 로코, 
+ELSE
+    LTEXT = %BYNAMES([[타카네]],FLAG:2)%, 
+ENDIF
+IF FLAG:1 == [[로코]]
+    LTEXT += "한다 로코!"
+ELSE
+    LTEXT += @"%BYNAMES([[타카네]],FLAG:1)%!"
+ENDIF
 CALL TALK_WITH_IMG(FACE([[타카네]],2),LNAME,LTEXT,"","",1)
 WAITANYKEY
 
