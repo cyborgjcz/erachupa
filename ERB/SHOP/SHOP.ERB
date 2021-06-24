@@ -4,8 +4,25 @@
 ;-----------------------------------------------------------
 @SHOW_SHOP
 CALL REAL_DAILY
-STOPBGM
-;PLAYBGM "s1.mp3"
+SELECTCASE BGM_BEFORE_BATTLE
+    CASE "s1.mp3"
+        IF FLAG:탐색대상던전 != 0
+            STOPBGM
+            PLAYBGM "s2.mp3"
+            BGM_BEFORE_BATTLE '= "s2.mp3"
+        ENDIF
+    CASE "s2.mp3"
+        ;.
+    CASEELSE
+            STOPBGM
+        IF FLAG:탐색대상던전 != 0
+            PLAYBGM "s2.mp3"
+            BGM_BEFORE_BATTLE '= "s2.mp3"
+        ELSE
+            PLAYBGM "s1.mp3"
+            BGM_BEFORE_BATTLE '= "s1.mp3"
+        ENDIF
+ENDSELECT
 ;200 ~ 299 일상 관련
 SETCOLOR 0xfee12b
 PRINT 【
