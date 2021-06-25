@@ -3,15 +3,15 @@
 #DIMS DYNAMIC LTEXT
 LNAME = %CALLNAME:[[유키호]]%
 IF DUNGEON1_TEMPV
-    LTEXT = 미키쨩?! 
+    LTEXT = 미키쨩?!
 ELSE
     LTEXT =
 ENDIF
-LTEXT += @"어, %STUTTERKR(BYNAMES([[유키호]],FLAG:2))%. 그리고 %BYNAMES([[유키호]],FLAG:1)%"
+LTEXT += @" 어, %STUTTERKR(BYNAMES([[유키호]],FLAG:2))%. 그리고 %BYNAMES([[유키호]],FLAG:1)%"
 IF KR_NAME(BYNAMES([[유키호]],FLAG:1)) == 1
-    LTEXT += "이구나." 
+    LTEXT += "이구나. " 
 ELSEIF KR_NAME(BYNAMES([[유키호]],FLAG:1)) == 2
-    LTEXT += "구나."
+    LTEXT += "구나. "
 ENDIF
 LTEXT += "안녕..."
 CALL TALK_WITH_IMG(FACE([[유키호]],1),LNAME,LTEXT,"","",1)
