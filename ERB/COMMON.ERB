@@ -122,3 +122,79 @@ TRYCCALLFORM %VALUES%
 CATCH
     DEBUGPRINTFORML 구상 오류 %VALUES% 호출실패
 ENDCATCH
+
+@CHUPA_TONE(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE [[하루카]],[[야요이]],[[리츠코]],[[아즈사]],[[미라이]],[[미나코]],[[세리카]],[[카오리]],[[치즈루]],[[아리사]],[[미야]]
+        RETURNF 츄파말투_친절존대
+    CASE [[치하야]],[[시즈카]],[[토모카]],[[츠무기]]
+        RETURNF 츄파말투_냉랭존대
+    CASE [[미키]],[[히비키]],[[츠바사]],[[엘레나]],[[메구미]],[[아카네]],[[사요코]],[[우미]],[[이쿠]],[[코노미]],[[타마키]],[[후우카]],[[노리코]],[[줄리아]]
+        RETURNF 츄파말투_친절반말
+    CASE [[토모카]],[[모모코]],[[이오리]]
+        RETURNF 츄파말투_냉랭반말
+    CASE [[미즈키]],[[안나]]
+        RETURNF 츄파말투_조용함
+    CASE [[마코토]],[[아유무]],[[스바루]]
+        RETURNF 츄파말투_보이쉬
+    CASE [[아미]],[[마미]]
+        RETURNF 츄파말투_장난
+    CASE [[유키호]],[[카렌]]
+        RETURNF 츄파말투_겁쟁이
+    CASE [[코토하]],[[유리코]],[[시호]]
+        RETURNF 츄파말투_연기
+    CASE [[타카네]]
+        RETURNF 츄파말투_기묘한
+    CASE [[마츠리]]
+        RETURNF 츄파말투_마시멜로
+    CASE [[로코]]
+        RETURNF 츄파말투_마벨러스
+    CASE [[에밀리]]
+        RETURNF 츄파말투_요조숙녀
+    CASE [[히나타]]
+        RETURNF 츄파말투_홋카이도
+    CASE [[나오]]
+        RETURNF 츄파말투_오사카
+    CASE [[레이카]]
+        RETURNF 츄파말투_뿌뿌
+ENDSELECT
+
+[SKIPSTART]
+예문:
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대
+        LTEXT = 
+    CASE 츄파말투_냉랭존대
+        LTEXT = 
+    CASE 츄파말투_친절반말
+        LTEXT = 
+    CASE 츄파말투_냉랭반말
+        LTEXT = 
+    CASE 츄파말투_조용함
+        LTEXT = 
+    CASE 츄파말투_보이쉬
+        LTEXT = 
+    CASE 츄파말투_장난
+        LTEXT = 
+    CASE 츄파말투_겁쟁이
+        LTEXT = 
+    CASE 츄파말투_연기
+        LTEXT = 
+    CASE 츄파말투_기묘한
+        LTEXT = 
+    CASE 츄파말투_마시멜로
+        LTEXT = 
+    CASE 츄파말투_마벨러스
+        LTEXT = 
+    CASE 츄파말투_요조숙녀
+        LTEXT = 
+    CASE 츄파말투_홋카이도
+        LTEXT = 
+    CASE 츄파말투_오사카
+        LTEXT = 
+    CASE 츄파말투_뿌뿌
+        LTEXT = 
+ENDSELECT
+[SKIPEND]

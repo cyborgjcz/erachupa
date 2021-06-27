@@ -1,0 +1,354 @@
+﻿@KOJO_DUNGEON1_INTERACT4_EVENT_EX3_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 수수께끼의 소녀
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대
+        LTEXT = 어, 누구세요?
+    CASE 츄파말투_냉랭존대
+        LTEXT = 거기 누구죠?!
+    CASE 츄파말투_친절반말
+        LTEXT = 누가 있어?
+    CASE 츄파말투_냉랭반말
+        LTEXT = 누구야?!
+    CASE 츄파말투_조용함
+        LTEXT = ......인간?
+    CASE 츄파말투_보이쉬
+        LTEXT = 오, 안녕~!
+    CASE 츄파말투_장난
+        LTEXT = 크크크, 너희들은 너무 많은 걸 알았어...
+    CASE 츄파말투_겁쟁이
+        LTEXT = 꺄악! 누 누구세요?
+    CASE 츄파말투_연기
+        LTEXT = 거기 누구지? 이름과 소속을 밝혀라!
+    CASE 츄파말투_기묘한
+        LTEXT = 당신은 누구신가요?
+    CASE 츄파말투_마시멜로
+        LTEXT = 호? 무얼 뒤에서 쑥덕거리는건가요?
+    CASE 츄파말투_마벨러스
+        LTEXT = 여기에요! 여기 스트레인저가 있어요!
+    CASE 츄파말투_요조숙녀
+        LTEXT = 어머나, 차를 준비해야겠네요.
+    CASE 츄파말투_홋카이도
+        LTEXT = 나이트~ 친구가 왔어~
+    CASE 츄파말투_오사카
+        LTEXT = 어라 저게 누꼬.
+    CASE 츄파말투_뿌뿌
+        LTEXT = 안녕하세요! 같이 플랭크하실래요?
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX8_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 수수께끼의 소녀
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대
+        LTEXT = 안돼, 나이트! 잠시 얘기 좀.
+    CASE 츄파말투_냉랭존대,츄파말투_친절반말,츄파말투_냉랭반말,츄파말투_보이쉬
+        LTEXT = 잠깐, 나이트!
+    CASE 츄파말투_조용함
+        LTEXT = ......
+    CASE 츄파말투_장난
+        LTEXT = 어~허~ 그럼 못 쓰지! 일루와봐 언니.
+    CASE 츄파말투_겁쟁이
+        LTEXT = 자, 잠깐만요!
+    CASE 츄파말투_연기
+        LTEXT = 이쪽으로 와라.
+    CASE 츄파말투_기묘한
+        LTEXT = 나이트, 잠시 이쪽으로.
+    CASE 츄파말투_마시멜로
+        LTEXT = 나이트, 이리 와서 공주랑 이야기 좀 하는 거에요.
+    CASE 츄파말투_마벨러스
+        LTEXT = 노노에요, 여기선 케어풀리잖아요!
+    CASE 츄파말투_요조숙녀
+        LTEXT = 앗, 잠시만요, 나이트...
+    CASE 츄파말투_홋카이도
+        LTEXT = 잠깐잠깐.
+    CASE 츄파말투_오사카
+        LTEXT = 나이트, 쫌!
+    CASE 츄파말투_뿌뿌
+        PRINTL 다른 아이가 소녀를 끌고 간다......
+        WAITANYKEY
+        LTEXT = 부부~ 잠깐 귀 좀 빌려쓸게요!
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX10_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+#DIMS DYNAMIC LTEXT3
+LNAME = 수수께끼의 소녀
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대
+        LTEXT = 자기소개가 늦었네요.
+        LTEXT2 = 제 이름은 츄파 매지션이에요.
+        LTEXT3 = 이쪽은......
+    CASE 츄파말투_냉랭존대
+        LTEXT = 초면에 실례했어요.
+        LTEXT2 = 제 이름은 츄파 매지션.
+        LTEXT3 = 그리고......
+    CASE 츄파말투_친절반말
+        LTEXT = 미안, ;작성일시중단
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_냉랭반말
+        LTEXT = (한숨)
+        LTEXT2 = 나는 츄파 매지션이야.
+        LTEXT3 = 그리고 이쪽이,
+    CASE 츄파말투_조용함
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_보이쉬
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_장난
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_겁쟁이
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_연기
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_기묘한
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_마시멜로
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_마벨러스
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_요조숙녀
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_홋카이도
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_오사카
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_뿌뿌
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT)
+WAITANYKEY
+LNAME = 츄파 매지션
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT2,LTEXT3)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX16_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = 츄파 매지션
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_냉랭존대
+        LTEXT = 어... 그렇지. %NAME:(FLAG:1)%.
+        LTEXT2 = 혹시 이 기계에 볼일이 있나요?
+    CASE 츄파말투_친절반말
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_냉랭반말
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_조용함
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_보이쉬
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_장난
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_겁쟁이
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_연기
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_기묘한
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_마시멜로
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_마벨러스
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_요조숙녀
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_홋카이도
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_오사카
+        LTEXT = 
+        LTEXT2 = 
+    CASE 츄파말투_뿌뿌
+        LTEXT = 
+        LTEXT2 = 
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX19_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+#DIMS DYNAMIC LTEXT3
+LNAME = 츄파 매지션
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_냉랭존대
+        LTEXT = 거래를 하는 건 어떤가요?
+        LTEXT2 = 이곳에서 서쪽에 있는 문을 여는 걸 도와주신다면
+        LTEXT3 = 이 기계를 마음대로 사용해도 좋습니다.
+    CASE 츄파말투_친절반말
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_냉랭반말
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_조용함
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_보이쉬
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_장난
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_겁쟁이
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_연기
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_기묘한
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_마시멜로
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_마벨러스
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_요조숙녀
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_홋카이도
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_오사카
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+    CASE 츄파말투_뿌뿌
+        LTEXT = 
+        LTEXT2 = 
+        LTEXT3 = 
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT,LTEXT2,LTEXT3)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX21_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 츄파 매지션
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대,츄파말투_냉랭존대
+        LTEXT = 뭐라고요~?!
+    CASE 츄파말투_친절반말,츄파말투_장난,츄파말투_겁쟁이
+        LTEXT = 에에에엑?
+    CASE 츄파말투_냉랭반말
+        LTEXT = 뭐라~?!
+    CASE 츄파말투_조용함
+        LTEXT = 엑.
+    CASE 츄파말투_보이쉬
+        LTEXT = 진짜로?!
+    CASE 츄파말투_연기,츄파말투_홋카이도
+        LTEXT = 뭐라고~?!
+    CASE 츄파말투_기묘한
+        LTEXT = 정말입니까?
+    CASE 츄파말투_마시멜로
+        LTEXT = 호?
+    CASE 츄파말투_마벨러스
+        LTEXT = 리얼리인가요?!
+    CASE 츄파말투_요조숙녀
+        LTEXT = 그게 정말 사실인가요?
+    CASE 츄파말투_오사카
+        LTEXT = 진짜? 뻥은 아이제?
+    CASE 츄파말투_뿌뿌
+        LTEXT = 와~ 그거 잘됐네요!
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX23_K101
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 츄파 매지션
+SELECTCASE CHUPA_TONE(FLAG:1)
+    CASE 츄파말투_친절존대
+        LTEXT = 
+    CASE 츄파말투_냉랭존대,츄파말투_장난
+        LTEXT = 예썰!
+    CASE 츄파말투_친절반말
+        LTEXT = 
+    CASE 츄파말투_냉랭반말
+        LTEXT = 라져!
+    CASE 츄파말투_조용함
+        LTEXT = 
+    CASE 츄파말투_보이쉬
+        LTEXT = 
+    CASE 츄파말투_겁쟁이
+        LTEXT = 
+    CASE 츄파말투_연기
+        LTEXT = 
+    CASE 츄파말투_기묘한
+        LTEXT = 
+    CASE 츄파말투_마시멜로
+        LTEXT = 
+    CASE 츄파말투_마벨러스
+        LTEXT = 
+    CASE 츄파말투_요조숙녀
+        LTEXT = 
+    CASE 츄파말투_홋카이도
+        LTEXT = 
+    CASE 츄파말투_오사카
+        LTEXT = 
+    CASE 츄파말투_뿌뿌
+        LTEXT = 
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAMAGICIAN_1",LNAME,LTEXT)
+WAITANYKEY
