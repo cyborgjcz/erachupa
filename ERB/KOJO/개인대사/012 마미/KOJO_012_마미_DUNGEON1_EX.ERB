@@ -1,0 +1,30 @@
+﻿@KOJO_DUNGEON1_INTERACT5_EVENT_T_EX2_K12
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[마미]]%
+SELECTCASE FLAG:2
+    CASE [[리츠코]],[[줄리아]]
+        DUNGEON1_TEMPV = [[마미]]
+        DUNGEON1_TEMPS '= "싫은별명"
+    CASE [[안나]],[[유리코]],[[에밀리]],[[아유무]],[[히나타]],[[타마키]],[[모모코]],[[츠무기]]
+        DUNGEON1_TEMPV = [[마미]]
+        DUNGEON1_TEMPS '= "낯선별명"
+ENDSELECT
+LTEXT = 좀 하잖아, %BYNAMES([[마미]],FLAG:2)%!
+CALL TALK_WITH_IMG(FACE([[마미]],2),LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT5_EVENT_T_EX10_K12
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = %CALLNAME:[[마미]]%
+SELECTCASE FLAG:2
+    CASE [[리츠코]],[[줄리아]]
+        DUNGEON1_TEMPV = [[마미]]
+        DUNGEON1_TEMPS '= "싫은별명"
+    CASE [[안나]],[[유리코]],[[에밀리]],[[아유무]],[[히나타]],[[타마키]],[[모모코]],[[츠무기]]
+        DUNGEON1_TEMPV = [[마미]]
+        DUNGEON1_TEMPS '= "낯선별명"
+ENDSELECT
+LTEXT = 엑. %조사처리(BYNAMES([[마미]],FLAG:2),"이")% 그런 말을 하다니 의외인데?
+CALL TALK_WITH_IMG(FACE([[마미]],3),LNAME,LTEXT)
+WAITANYKEY
