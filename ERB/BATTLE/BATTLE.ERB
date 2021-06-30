@@ -111,6 +111,8 @@ RETURN 1
 
 #DIMS DYNAMIC BATTLEBGMS
 
+#DIM DYNAMIC MONEYCOUNT
+
 IF TFLAG:0 < 1 ;첫턴처리
     {
         PRINTFORML ＿人人人人人人人人人人人人人人人人人＿
@@ -576,8 +578,11 @@ IF TFLAG:전투결과 == 1
                 PRINTFORML 전리품으로 %조사처리(ITEMNAME:RESULT,"을")% 얻었다!
                 WAITANYKEY
             ENDIF
+            MONEYCOUNT += CFLAG:(TFLAG:LCOUNT2):제공머니
         ENDIF
     NEXT
+    MONEY += MONEYCOUNT
+    PRINTFORML {MONEYCOUNT}머니 얻었다. (소지금 : {MONEY}머니) 
     FOR LCOUNT,1,3
         FOR LCOUNT2,1,7
             IF TFLAG:LCOUNT2 && !ENEMY_GONE:(TFLAG:LCOUNT2):0
@@ -587,6 +592,7 @@ IF TFLAG:전투결과 == 1
         NEXT
     NEXT
     FOR LCOUNT,1,3
+        WAITANYKEY
         CALL LEVELUP(FLAG:LCOUNT)
         IF RESULT != 0
             PRINTFORML %조사처리(CALLNAME:(FLAG:LCOUNT),"은")% 레벨이 {RESULT} 올라 레벨 {BASE:(FLAG:LCOUNT):레벨}이 되었다!
