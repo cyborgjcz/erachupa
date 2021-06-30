@@ -82,17 +82,6 @@ IF CFLAG:USERV:변신 == 0
             SIF NUMV <= 0
                 BREAK
         LOOP 1
-        [SKIPSTART]
-        IF NUMV > 0
-            FOR LCOUNT,0,NUMV
-                PLUSV:(RAND:3) += 1
-            NEXT
-        ELSEIF NUMV < 0
-            FOR LCOUNT,0,NUMV,-1
-                PLUSV:(RAND:3) -= 1
-            NEXT
-        ENDIF
-        [SKIPEND]
     ENDIF
     CALLNAME:USERV = %TRANSFORM_CALLNAME:USERV:0%
     CFLAG:USERV:변신 = 1

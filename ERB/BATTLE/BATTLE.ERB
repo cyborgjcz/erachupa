@@ -5,9 +5,12 @@
 ;---------------------------------------------------
 @BATTLE_START
 
+STOPBGM
 CALL LOAD_ENEMY
 CALL INIT_BATTLE
 CALL BATTLE_MAIN
+SIF EXISTSOUND(BGM_BEFORE_BATTLE)
+    PLAYBGM BGM_BEFORE_BATTLE
 
 RETURN 1
 ;---------------------------------------------------
@@ -64,18 +67,18 @@ RETURNF TFLAG:WHERE
 TFLAG:경과시간 = 0
 ;전투결과 초기화
 TFLAG:전투결과 = 0
-;장비에 의한 스탯 증감 초기화
 FOR LCOUNT,1,3
     IF CFLAG:(FLAG:LCOUNT):변신 != 0
+    ;변신중이라면 변신 상태 재돌입
         CALL GO_TRANSFORM(FLAG:LCOUNT)
     ELSE
+    ;장비에 의한 스탯 증감 초기화
         CALL EQ_APPLY_STAT(FLAG:LCOUNT)
     ENDIF
-NEXT
-
-FOR LCOUNT,0,2
+    ;ATB카운터 초기화
     CFLAG:(FLAG:LCOUNT):ATB카운터 = 0
 NEXT
+
 RETURN 1
 ;---------------------------------------------------
 ;BATTLE_MAIN
@@ -104,6 +107,12 @@ RETURN 1
 #DIMS DYNAMIC TALK_WHAT
 #DIM DYNAMIC TALK_WHATV
 
+#DIM DYNAMIC LINETOCLEARV
+
+#DIMS DYNAMIC BATTLEBGMS
+
+#DIM DYNAMIC MONEYCOUNT
+
 IF TFLAG:0 < 1 ;첫턴처리
     {
         PRINTFORML ＿人人人人人人人人人人人人人人人人人＿
@@ -119,8 +128,12 @@ ENDIF
 REMAINTIME = ATB_TIME
 POISONTIMER = POISONTIME
 CALL RESET_BATTLE_CURSOR
+BATTLEBGMS '= @"b{TFLAG:배틀BGM번호}.mp3"
+SIF EXISTSOUND(BATTLEBGMS)
+    PLAYBGM BATTLEBGMS
 
 DO
+    LINETOCLEARV = 6+1+2+2
     ;전열이 비었다면, 후열을 전열로 땡긴다
     LCOUNT2 = 1
     FOR LCOUNT,1,4
@@ -149,7 +162,7 @@ DO
     ;적 전멸 판정
     LCOUNT2 = 0
     FOR LCOUNT,1,7
-        SIF TFLAG:LCOUNT == 0 || ISDYING(TFLAG:LCOUNT)
+        SIF TFLAG:LCOUNT == 0 || BATTLE_CANNOTTARGET(TFLAG:LCOUNT)
             LCOUNT2 += 1
     NEXT
     IF LCOUNT2 >= 6
@@ -157,11 +170,16 @@ DO
         BATTLE_LOOP = 0
         GOTO BATTLE_END
     ENDIF
+    IF TFLAG:전투결과 == 3
+        ;아군 도주 또는 적 전체 도주 판정은 SKILL.ERB에서 결정함
+        BATTLE_LOOP = 0
+        GOTO BATTLE_END
+    ENDIF
     ;공격 스킬 커서 초기화
     FOR LCOUNT2,9,11
-        IF !TFLAG:(TFLAG:LCOUNT2) || ISDYING(TFLAG:(TFLAG:LCOUNT2))
+        IF !TFLAG:(TFLAG:LCOUNT2) || BATTLE_CANNOTTARGET(TFLAG:(TFLAG:LCOUNT2))
             FOR LCOUNT,1,7
-                IF TFLAG:LCOUNT && !ISDYING(TFLAG:LCOUNT)
+                IF TFLAG:LCOUNT && !ISDYING(TFLAG:LCOUNT) && !ENEMY_GONE:(TFLAG:LCOUNT2):0
                     TFLAG:LCOUNT2 = LCOUNT
                     BREAK
                 ENDIF
@@ -180,7 +198,7 @@ DO
                 SIF !LENEMY_NUM
                     SETCOLORBYNAME DimGray
                 CALL SETCOLOR_BATTLE_ENEMY(LCOUNT)
-                SIF ISDYING(LENEMY_NUM) != 0
+                SIF BATTLE_CANNOTTARGET(LENEMY_NUM) != 0
                     SETCOLORBYNAME DimGray
                 PRINTFORM ［%TOFULL(TOSTR(LCOUNT))%］
                 IF LENEMY_NUM > 0
@@ -292,7 +310,7 @@ DO
     TIMECOUNT = RESULT
     TONEINPUTS REMAINTIME,"탌",0,""
     ;입력처리
-    CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER)
+    CALL BATTLE_INPUT(RESULTS,COMMANDS,COM_TARGETV,COM_USER,LINETOCLEARV)
     GETMILLISECOND
     REMAINTIME -= (RESULT - TIMECOUNT)
     POISONTIMER -= (RESULT - TIMECOUNT)
@@ -314,7 +332,7 @@ DO
         FOR LCOUNT,1,7
             SIF !TFLAG:LCOUNT
                 CONTINUE
-            SIF ISDYING(TFLAG:LCOUNT)
+            SIF BATTLE_CANNOTTARGET(TFLAG:LCOUNT)
                 CONTINUE
             SIF CFLAG:(TFLAG:LCOUNT):ATB카운터 < MAX_ATB
                 CFLAG:(TFLAG:LCOUNT):ATB카운터 += BASE:(TFLAG:LCOUNT):행동력
@@ -384,9 +402,10 @@ DO
             CALL RUN_BATTLE_COMMAND(COMMANDS,COM_TARGETV,COM_USER,COM_SKILLNUM)
         ELSE
             IF RESULTS == ""
-                CLEARLINE 6+1+2+2
+                CLEARLINE LINETOCLEARV
             ELSE 
-                CLEARLINE 6+1+2+2+1
+                LINETOCLEARV += 1
+                CLEARLINE LINETOCLEARV
             ENDIF
             REUSELASTLINE
             ;전투회화 TFLAG 복구
@@ -414,6 +433,10 @@ DO
                 TFLAG:불리전투회화스위치 -= 1
             SIF (((MAXBASE:(FLAG:동료2):희망 * 4) / 5) < BASE:(FLAG:동료2):희망) && ((TFLAG:불리전투회화스위치 & 2) != 0)
                 TFLAG:불리전투회화스위치 -= 2
+            SIF (((MAXBASE:(FLAG:동료1):영혼 * 4) / 5) < BASE:(FLAG:동료1):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,13)) != 0)
+                TFLAG:불리전투회화스위치 -= POWER(2,13);동료1CRITSP
+            SIF (((MAXBASE:(FLAG:동료2):영혼 * 4) / 5) < BASE:(FLAG:동료2):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,14)) != 0)
+                TFLAG:불리전투회화스위치 -= POWER(2,14);동료2CRITSP
             ;자동 전투회화
             TALK_WHAT =
             TALK_WHATV = 0
@@ -423,13 +446,13 @@ DO
                     ; 동료1 전투불능
                     TALK_WHAT '= "DYING"
                     TALK_WHATV = 1
-                    TCALLER = 2
+                    TCALLER = (RAND:2)+1
                     TFLAG:불리전투회화스위치 += POWER(2,11)
                 ELSEIF ISDYING(FLAG:동료2) && !(TFLAG:불리전투회화스위치 & POWER(2,12))
                     ; 동료2 전투불능
                     TALK_WHAT '= "DYING"
                     TALK_WHATV = 2
-                    TCALLER = 1
+                    TCALLER = (RAND:2)+1
                     TFLAG:불리전투회화스위치 += POWER(2,12)
                 ELSEIF ISBASUTE(FLAG:동료1,2) && !(TFLAG:불리전투회화스위치 & POWER(2,3))
                     ; 동료1 독
@@ -481,17 +504,29 @@ DO
                     TFLAG:불리전투회화스위치 += POWER(2,10)
                 ENDIF
             ELSEIF ((BASE:(FLAG:동료1):희망 * 5) < MAXBASE:(FLAG:동료1):희망) && ((TFLAG:불리전투회화스위치 & 1) == 0)
-                ;동료1 체력 낮음 전투회화
+                ;동료1 체HP 낮음 전투회화
                 TALK_WHAT '= "CRITHP"
                 TALK_WHATV = 1
                 TCALLER = (RAND:2)+1
                 TFLAG:불리전투회화스위치 += 1
             ELSEIF ((BASE:(FLAG:동료2):희망 * 5) < MAXBASE:(FLAG:동료2):희망) && ((TFLAG:불리전투회화스위치 & 2) == 0)
-                ;동료2 체력 낮음 전투회화
+                ;동료2 HP 낮음 전투회화
                 TALK_WHAT '= "CRITHP"
                 TALK_WHATV = 2
                 TCALLER = (RAND:2)+1
                 TFLAG:불리전투회화스위치 += 2
+            ELSEIF ((BASE:(FLAG:동료1):영혼 * 5) < MAXBASE:(FLAG:동료1):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,13)) == 0)
+                ;동료1 SP 낮음 전투회화
+                TALK_WHAT '= "CRITSP"
+                TALK_WHATV = 1
+                TCALLER = (RAND:2)+1
+                TFLAG:불리전투회화스위치 += POWER(2,13)
+            ELSEIF ((BASE:(FLAG:동료2):영혼 * 5) < MAXBASE:(FLAG:동료2):영혼) && ((TFLAG:불리전투회화스위치 & POWER(2,14)) == 0)
+                ;동료2 SP 낮음 전투회화
+                TALK_WHAT '= "CRITSP"
+                TALK_WHATV = 2
+                TCALLER = (RAND:2)+1
+                TFLAG:불리전투회화스위치 += POWER(2,14)
             ELSE
                 IF TFLAG:경과시간 >= 120000 && TFLAG:전투경과시간회화 == 0
                     TALK_WHAT '= "TIMEFLIES"
@@ -519,30 +554,45 @@ DO
     $BATTLE_END
 LOOP BATTLE_LOOP
 
+STOPBGM
+
+FOR LCOUNT,1,3
+    CFLAG:(FLAG:LCOUNT):상태이상 = 0
+NEXT
+
 IF TFLAG:전투결과 == 1
     ;승리
     PRINTFORML 승리했다!
     PRINTL ...
     WAITANYKEY
+    ;승리 전투회화
+    TCALLER = (RAND:2)+1
+    ;과정에 따라 TALK_WHATV 반영?
+    CALL BATTLE_TALK("WIN",TCALLER)
+    CALL BATTLE_TALK("WIN",TCALLER^3,1)
     FOR LCOUNT2,1,7
-        IF TFLAG:LCOUNT2
+        IF TFLAG:LCOUNT2 && !ENEMY_GONE:(TFLAG:LCOUNT2):0
             CALL DROP_ITEM(NO:(TFLAG:LCOUNT2))
             IF RESULT > -1
                 ITEM:RESULT += 1
                 PRINTFORML 전리품으로 %조사처리(ITEMNAME:RESULT,"을")% 얻었다!
                 WAITANYKEY
             ENDIF
+            MONEYCOUNT += CFLAG:(TFLAG:LCOUNT2):제공머니
         ENDIF
     NEXT
+    MONEY += MONEYCOUNT
+    PRINTFORML {MONEYCOUNT}머니 얻었다. (소지금 : {MONEY}머니) 
     FOR LCOUNT,1,3
         FOR LCOUNT2,1,7
-            IF TFLAG:LCOUNT2
+            IF TFLAG:LCOUNT2 && !ENEMY_GONE:(TFLAG:LCOUNT2):0
                 RPG_EXP:(FLAG:LCOUNT):0 += AUTOMATED_EXP(TFLAG:LCOUNT2)
                 TOTAL_RPG_EXP:(FLAG:LCOUNT):0 += AUTOMATED_EXP(TFLAG:LCOUNT2)
             ENDIF
         NEXT
     NEXT
     FOR LCOUNT,1,3
+        WAITANYKEY
         CALL LEVELUP(FLAG:LCOUNT)
         IF RESULT != 0
             PRINTFORML %조사처리(CALLNAME:(FLAG:LCOUNT),"은")% 레벨이 {RESULT} 올라 레벨 {BASE:(FLAG:LCOUNT):레벨}이 되었다!
@@ -556,6 +606,17 @@ ELSEIF TFLAG:전투결과 == 2
     PRINTFORML 패배했다...
     PRINTL ...
     WAITANYKEY
+    ;패배 전투회화
+    TCALLER = (RAND:2)+1
+    ;과정에 따라 TALK_WHATV 반영?
+    CALL BATTLE_TALK("LOSE",TCALLER)
+    CALL BATTLE_TALK("LOSE",TCALLER^3,1)
+ELSEIF TFLAG:전투결과 == 3
+    ;아군 도주
+    PRINTFORML %조사처리(CALLNAME:(FLAG:1),"와")% %조사처리(CALLNAME:(FLAG:2),"은")% 도망쳤다!
+    PRINTL ...
+    WAITANYKEY
+    ;전투회화는 스킬 부분에서 호출
 ENDIF
 
 ;임시 등록한 적 캐릭터 삭제
@@ -569,10 +630,11 @@ IF TFLAG:전투결과 == 2
     PRINTBUTTON "[1] 타이틀로",1
     INPUT
     IF RESULT == 0
+        RESETDATA
         LOADGAME
         GOTO BATTLE_DEFEAT_INPUT_LOOP
     ELSEIF RESULT == 1
-        BEGIN TITLE
+        TFLAG:타이틀이행 = 1
     ELSE
         GOTO BATTLE_DEFEAT_INPUT_LOOP
     ENDIF
@@ -595,7 +657,9 @@ SELECTCASE COMMANDS
     CASE "GUARD"
         SKILLV = 1
     CASE "TRANS"
-        SKILLV = 1
+        SKILLV = 3
+    CASE "ESCAPE"
+        SKILLV = 11
 ENDSELECT
 
 ;격앙 처리
@@ -629,7 +693,7 @@ ENDSELECT
 ENDIF
 
 ;전투불능의 적을 공격할 수는 없다
-SIF !ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(TFLAG:TARGETV)
+SIF !ISENEMY && SKILL_DATA:SKILLV:0 == 0 && BATTLE_CANNOTTARGET(TFLAG:TARGETV)
     RETURN 0
 SIF ISENEMY && SKILL_DATA:SKILLV:0 == 0 && ISDYING(FLAG:TARGETV)
     RETURN 0
@@ -691,6 +755,7 @@ ENDIF
             CFLAG:(TFLAG:USERV):상태이상 -= 8
         ENDIF
     ELSEIF !ISENEMY
+        CALL BATTLE_TALK("TERRIFEDCANCEL",USERV)
         PRINTFORML %조사처리(CALLNAME:(FLAG:USERV),"은")% 움직일 수 없다!
         IF 상태이상시간:(FLAG:USERV):3 > 0
             상태이상시간:(FLAG:USERV):3 -= 1
@@ -703,18 +768,23 @@ ENDIF
 ENDIF
 
 ;여기서 실제 스킬 내용 실행
-;스킬 유형은 공격, 범위 유형은 단일일때
+;변신
 IF COMMANDS == "TRANS"
-    CALL GO_TRANSFORM(USERV,ISENEMY)
-    IF !ISENEMY
+    IF !ISENEMY && CFLAG:(FLAG:USERV):변신 == 0
         CALL BATTLE_TALK("TRANSFORM",USERV,,CFLAG:(FLAG:USERV):변신가능)
         CALL BATTLE_TALK("TRANSFORM",USERV^3,1,CFLAG:(FLAG:USERV):변신가능)
     ENDIF
+    CALL GO_TRANSFORM(USERV,ISENEMY)
+;도주
+ELSEIF COMMANDS == "ESCAPE" || SKILL_DATA:SKILLV:0 == 4
+    CALL SKILL_ESCAPE(USERV,SKILLV,ISENEMY)
+;단일 공격
 ELSEIF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 0
     CALL SKILL_SINGLE_ATTACK(TARGETV,USERV,SKILLV,ISENEMY)
-;자가 힐/버프일때
+;전체공격
 ELSEIF SKILL_DATA:SKILLV:0 == 0 && SKILL_DATA:SKILLV:5 == 3
     CALL SKILL_ALL_ATTACK(USERV,SKILLV,ISENEMY)
+;자가 힐/버프일때
 ELSEIF SKILL_DATA:SKILLV:0 == 1 && SKILL_DATA:SKILLV:5 == 1
     CALL SKILL_HEAL_SELF(USERV,SKILLV,ISENEMY)
 ;방어 스킬(카운터 등 포함 예정)
@@ -825,7 +895,7 @@ SELECTCASE TFLAG:동료1ATB커서상태
         ELSE
             LBUTTONS:1 = 
         ENDIF
-        LBUTTONS:2 = 
+        LBUTTONS:2 = 도주
         LBUTTONS:6 = 공격
         LBUTTONS:7 = 스킬
         LBUTTONS:8 = 방어
@@ -836,7 +906,7 @@ SELECTCASE TFLAG:동료1ATB커서상태
         LBUTTONS:6 = ≪　
         LBUTTONS:7 = ▽　
         LBUTTONS:8 = ≫　
-    CASE 2,5,6,7
+    CASE 2,5,6,7,8
         LBUTTONS:0 = 확인
         LBUTTONS:1 = 
         LBUTTONS:2 = 취소
@@ -856,7 +926,7 @@ SELECTCASE TFLAG:동료2ATB커서상태
         ELSE
             LBUTTONS:4 = 
         ENDIF
-        LBUTTONS:5 = 
+        LBUTTONS:5 = 도주
         LBUTTONS:9 = 공격
         LBUTTONS:10 = 스킬
         LBUTTONS:11 = 방어
@@ -867,7 +937,7 @@ SELECTCASE TFLAG:동료2ATB커서상태
         LBUTTONS:9 = ≪　
         LBUTTONS:10 = ▽　
         LBUTTONS:11 = ≫　
-    CASE 2,5,6,7
+    CASE 2,5,6,7,8
         LBUTTONS:3 = 확인
         LBUTTONS:4 = 
         LBUTTONS:5 = 취소
@@ -916,15 +986,18 @@ SELECTCASE TFLAG:(7+LNUM)
         ELSE
             COMMESSAGES:LNUM = 변신해제
         ENDIF
+    CASE 8
+        COMMESSAGES:LNUM = 도주확인
 ENDSELECT
 
 ;입력값 처리
 ;ATB를 소모하는 경우 RETURN 1
-@BATTLE_INPUT(KEYS,R_COMMANDS,R_TARGETV,R_USERV)
+@BATTLE_INPUT(KEYS,R_COMMANDS,R_TARGETV,R_USERV,LINETOCLEARV)
 #DIMS DYNAMIC KEYS
 #DIMS REF R_COMMANDS
 #DIM REF R_TARGETV
 #DIM REF R_USERV
+#DIM REF LINETOCLEARV
 
 #DIM DYNAMIC SKILLV
 
@@ -950,6 +1023,14 @@ SELECTCASE TFLAG:동료1ATB커서상태
                 TFLAG:동료1ATB커서상태 = 3
             CASE "d";방어
                 TFLAG:동료1ATB커서상태 = 6
+            CASE "e";도주
+                IF !TFLAG:도주방지
+                    TFLAG:동료1ATB커서상태 = 8
+                ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 싸움에서는 도망칠 수 없다!
+                    WAITANYKEY
+                ENDIF
         ENDSELECT
     CASE 1;공격타게팅
         SELECTCASE RESULTS
@@ -998,6 +1079,9 @@ SELECTCASE TFLAG:동료1ATB커서상태
                         TFLAG:동료1ATB커서상태 = 5
                     ENDIF
                 ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 스킬을 사용하기엔 능력이 부족하다!
+                    WAITANYKEY
                     TFLAG:동료1ATB커서상태 = 3
                 ENDIF
             CASE "e"
@@ -1057,6 +1141,19 @@ SELECTCASE TFLAG:동료1ATB커서상태
             CASE "e"
                 TFLAG:동료1ATB커서상태 = 0
         ENDSELECT
+    CASE 8;도주확인
+        SELECTCASE RESULTS
+            CASE "q"
+                IF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
+                    TFLAG:동료1ATB커서상태 = 0
+                    R_COMMANDS '= "ESCAPE"
+                    R_TARGETV = 1
+                    R_USERV = 1
+                    RETURN 1
+                ENDIF
+            CASE "e"
+                TFLAG:동료1ATB커서상태 = 0
+        ENDSELECT
 ENDSELECT
 SELECTCASE TFLAG:동료2ATB커서상태
     CASE 0;초기
@@ -1070,6 +1167,14 @@ SELECTCASE TFLAG:동료2ATB커서상태
                 TFLAG:동료2ATB커서상태 = 3
             CASE "l";방어
                 TFLAG:동료2ATB커서상태 = 6
+            CASE "o";도주
+                IF !TFLAG:도주방지
+                    TFLAG:동료2ATB커서상태 = 8
+                ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 싸움에서는 도망칠 수 없다!
+                    WAITANYKEY
+                ENDIF
         ENDSELECT
     CASE 1;공격타게팅
         SELECTCASE RESULTS
@@ -1118,6 +1223,9 @@ SELECTCASE TFLAG:동료2ATB커서상태
                         TFLAG:동료2ATB커서상태 = 5
                     ENDIF
                 ELSE
+                    LINETOCLEARV += 1
+                    PRINTL 이 스킬을 사용하기엔 능력이 부족하다!
+                    WAITANYKEY
                     TFLAG:동료2ATB커서상태 = 3
                 ENDIF
             CASE "o"
@@ -1170,6 +1278,19 @@ SELECTCASE TFLAG:동료2ATB커서상태
                 IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
                     TFLAG:동료2ATB커서상태 = 0
                     R_COMMANDS '= "TRANS"
+                    R_TARGETV = 2
+                    R_USERV = 2
+                    RETURN 1
+                ENDIF
+            CASE "o"
+                TFLAG:동료2ATB커서상태 = 0
+        ENDSELECT
+    CASE 8;도주확인
+        SELECTCASE RESULTS
+            CASE "u"
+                IF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
+                    TFLAG:동료2ATB커서상태 = 0
+                    R_COMMANDS '= "ESCAPE"
                     R_TARGETV = 2
                     R_USERV = 2
                     RETURN 1
@@ -1239,45 +1360,45 @@ IF LNUM == 9 || LNUM == 10
     LNUM = TFLAG:LNUM
     SELECTCASE LKEY
         CASE "w","i"
-            IF TFLAG:(TARGET_FORM:LNUM:0) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:0))
+            IF TFLAG:(TARGET_FORM:LNUM:0) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:LNUM:0)) 
                 RETURNF TARGET_FORM:LNUM:0
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):1
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):3
             ELSE
                 RETURNF LNUM
             ENDIF
         CASE "d","l"
-            IF TFLAG:(TARGET_FORM:LNUM:1) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:1))
+            IF TFLAG:(TARGET_FORM:LNUM:1) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:LNUM:1))
                 RETURNF TARGET_FORM:LNUM:1
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:1):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:1):1))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:1):1) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:1):1))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:1):1
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):1
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):3
             ELSE
                 RETURNF LNUM
             ENDIF
         CASE "s","k"
-            IF TFLAG:(TARGET_FORM:LNUM:2) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:2))
+            IF TFLAG:(TARGET_FORM:LNUM:2) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:LNUM:2))
                 RETURNF TARGET_FORM:LNUM:2
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):1))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):1) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):1))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:2):1
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):3))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):3) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:2):3))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:2):3
             ELSE
                 RETURNF LNUM
             ENDIF
         CASE "a","j"
-            IF TFLAG:(TARGET_FORM:LNUM:3) && !ISDYING(TFLAG:(TARGET_FORM:LNUM:3))
+            IF TFLAG:(TARGET_FORM:LNUM:3) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:LNUM:3))
                 RETURNF TARGET_FORM:LNUM:3
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:3):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:3):3))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:3):3) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:3):3))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:3):3
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):3))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):3
-            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !ISDYING(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
+            ELSEIF TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1) && !BATTLE_CANNOTTARGET(TFLAG:(TARGET_FORM:(TARGET_FORM:LNUM:0):1))
                 RETURNF TARGET_FORM:(TARGET_FORM:LNUM:0):1
             ELSE
                 RETURNF LNUM
@@ -1329,4 +1450,13 @@ IF (CFLAG:USERV:버프적용중 & BITV) != 0
         버프지속시간:USERV:KEYV -= 1
     SIF 버프지속시간:USERV:KEYV <= 0
         CFLAG:USERV:버프적용중 -= BITV
+ENDIF
+
+@BATTLE_CANNOTTARGET(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+IF ISDYING(KEYV) || ENEMY_GONE:KEYV:0 != 0
+    RETURNF 1
+ELSE
+    RETURNF 0
 ENDIF

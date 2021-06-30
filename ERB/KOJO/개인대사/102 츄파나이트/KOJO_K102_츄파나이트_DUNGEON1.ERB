@@ -1,0 +1,253 @@
+﻿@KOJO_DUNGEON1_INTERACT4_EVENT_EX5_K102
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 수수께끼의 소녀 2
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대
+        LTEXT = 어, 거기 있는 사람은......
+    CASE 츄파말투_냉랭존대
+        LTEXT = 거기 있는 사람은......?
+    CASE 츄파말투_친절반말,츄파말투_냉랭반말,츄파말투_보이쉬
+        LTEXT = 잠깐, 너는...
+    CASE 츄파말투_조용함
+        LTEXT = ...... 아...... 당신......
+    CASE 츄파말투_장난
+        LTEXT = 어? 언니는...
+    CASE 츄파말투_겁쟁이
+        LTEXT = 히익?! 당신은?
+    CASE 츄파말투_연기
+        LTEXT = 아니, 그대는......?
+    CASE 츄파말투_기묘한
+        LTEXT = 참으로 기묘한 일이군요. 당신은......
+    CASE 츄파말투_마시멜로
+        LTEXT = 호? 프리티한 공주님이 있네요.
+    CASE 츄파말투_마벨러스
+        LTEXT = 당신은...... 엑? 웨잇이에요! 이런 건 언빌리버블해요!
+    CASE 츄파말투_요조숙녀
+        LTEXT = 믿을 수 없네요. 당신은......
+    CASE 츄파말투_홋카이도
+        LTEXT = 이건 또 무슨 일일까...? 당신은 아무래도...
+    CASE 츄파말투_오사카
+        LTEXT = 어어? 점마...
+    CASE 츄파말투_뿌뿌
+        LTEXT = 어어? 안녕하세요! 와!
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX7_K102
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 수수께끼의 소녀 2
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대,츄파말투_냉랭존대,츄파말투_기묘한,츄파말투_요조숙녀
+        LTEXT = 아뇨, 그게......
+    CASE 츄파말투_친절반말,츄파말투_냉랭반말,츄파말투_보이쉬,츄파말투_겁쟁이,츄파말투_연기
+        LTEXT = 아니, 그건...
+    CASE 츄파말투_냉랭반말
+        LTEXT = 어, 그게...
+    CASE 츄파말투_조용함
+        LTEXT = ......
+    CASE 츄파말투_장난
+        LTEXT = 언니, 그건 이쪽이 할 대사 같은데?
+    CASE 츄파말투_마시멜로
+        LTEXT = 호? 그런 말은 한마디도 하지 않은거에요.
+    CASE 츄파말투_마벨러스
+        LTEXT = 아무것도 아니에요! 나이트의 스피치는 못 들은 걸로 해주세요!
+    CASE 츄파말투_홋카이도
+        LTEXT = 아차, 못 들은 척 해줘...
+    CASE 츄파말투_오사카
+        LTEXT = 아, 이게 아닌데.
+    CASE 츄파말투_뿌뿌
+        LTEXT = 그건 비밀이에요!
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX9_K102
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+LNAME = 수수께끼의 소녀 2
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대,츄파말투_보이쉬,츄파말투_장난,츄파말투_연기,츄파말투_마벨러스,츄파말투_요조숙녀,츄파말투_오사카,츄파말투_뿌뿌
+        LTEXT = 엣헴!
+    CASE 츄파말투_냉랭존대,츄파말투_조용함,츄파말투_기묘한,츄파말투_마시멜로,츄파말투_홋카이도
+        LTEXT = 흠흠.
+    CASE 츄파말투_친절반말
+        LTEXT = 어흠!
+    CASE 츄파말투_냉랭반말
+        LTEXT = 에헴.
+    CASE 츄파말투_조용함
+        LTEXT = ......엣헴.
+    CASE 츄파말투_겁쟁이
+        LTEXT = 으...으음......
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX12_K102
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = 츄파 나이트
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대
+        LTEXT = 제 이름은 츄파 나이트.
+        LTEXT2 = 기사도를 좇는 츄파카브라에요.
+    CASE 츄파말투_냉랭존대
+        LTEXT = 제 이름은 츄파 나이트.
+        LTEXT2 = 츄파카브라지만 사연이 있어 기사를 하고 있습니다.
+    CASE 츄파말투_친절반말
+        LTEXT = 내 이름은 츄파 나이트.
+        LTEXT2 = 보다시피 선량한 츄파카브라다.
+    CASE 츄파말투_냉랭반말
+        LTEXT = 츄파 나이트.
+        LTEXT2 = 츄파카브라다.
+    CASE 츄파말투_조용함
+        LTEXT = ......츄파 나이트.
+        LTEXT2 = 츄파츄파.
+    CASE 츄파말투_보이쉬
+        LTEXT = 나로 말할 것 같으면 츄파카브라의 일원 츄파 나이트!
+        LTEXT2 = 헤헷, 멋있지!
+    CASE 츄파말투_장난
+        LTEXT = 츄파츄파한 카브라에 나이트야!
+        LTEXT2 = 말 그대로 밤을 좋아하지.
+    CASE 츄파말투_겁쟁이
+        LTEXT = 저, 저기. 아, 저는...... 츄파나이트.
+        LTEXT2 = 츄, 츄파카브라......입니다.
+    CASE 츄파말투_연기
+        LTEXT = 나는 일생 선을 추구하기를 발톱에 맹세한 기사, 츄파 나이트.
+        LTEXT2 = 보다시피 자랑스러운 츄파카브라다.
+    CASE 츄파말투_기묘한
+        LTEXT = 저는 츄파츄파의 기사, 츄파 나이트.
+        LTEXT2 = 그렇게 불러주세요. 츄파츄파.
+    CASE 츄파말투_마시멜로
+        LTEXT = 공주는 츄파카브라족 공주 츄파 프린세스인거에요.
+        LTEXT2 = 공주기사도 겸임하기 때문에 츄파 나이트라고 불러도 좋아요.
+    CASE 츄파말투_마벨러스
+        LTEXT = 나이트는 츄파카브라 트라이브의 듀티를 지키기 위한 퀘스트 중인 나이트에요!
+        LTEXT2 = 츄파 나이트라는 콜네임으로 불러도 좋아요.
+    CASE 츄파말투_요조숙녀
+        LTEXT = 저는 츄파족의 무사도를 걷는 자. 츄파 나이트.
+        LTEXT2 = 잠시 기다리세요. 차 한 잔 내어드리죠.
+    CASE 츄파말투_홋카이도
+        LTEXT = 나는 츄파 나이트야~ 기사 일을 하고 있는데,
+        LTEXT2 = 가사 일도 잘해! 츄파카브라니까 좀 이상한가?
+    CASE 츄파말투_오사카
+        LTEXT = 내는 츄파카브라인 츄파 나이트라 카는데.
+        LTEXT2 = 또 볼 일은 없겠지만 마, 인사는 해두꾸마.
+    CASE 츄파말투_뿌뿌
+        LTEXT = 츄~파 츄파~! 제 이름은 츄파 나아~이트!
+        LTEXT2 = 뒤집어서 부르면... 토이나파츄? 어느쪽이 좋으세요?
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX15_K102
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = 츄파 나이트
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대
+        LTEXT = 저희들도 스스로 몸을 지킬 수 있으니까요.
+        LTEXT2 = 걱정하지 마세요!
+    CASE 츄파말투_냉랭존대
+        LTEXT = 아뇨, 신경 써주실 것 없는데요.
+        LTEXT2 = 도움도 필요 없어요.
+    CASE 츄파말투_친절반말
+        LTEXT = 이쪽은 이쪽 나름 목적이 있어 탐색 중이다.
+        LTEXT2 = 별로 걱정할 필요는 없어.
+    CASE 츄파말투_냉랭반말
+        LTEXT = 너희들이 걱정하지 않아도
+        LTEXT2 = 알아서 잘해.
+    CASE 츄파말투_조용함
+        LTEXT = ......츄파 나이트......
+        LTEXT2 = 보기보다...... 강해요......
+    CASE 츄파말투_보이쉬
+        LTEXT = 걱정해주는 건 고마운데.
+        LTEXT2 = 괜찮아, 나 엄청 세거든!
+    CASE 츄파말투_장난
+        LTEXT = 후훗, 잘 알려지지 않은 사실이지만
+        LTEXT2 = 나이트는 무력을 상징하거든? 몰랐어?
+    CASE 츄파말투_겁쟁이
+        LTEXT = 주 주 주제넘는 말일지도 모르지만
+        LTEXT2 = 저 그래도 힘만큼은 센 편이라서......
+    CASE 츄파말투_연기
+        LTEXT = 훗, 걱정 마라. 비록 수행이 부족한 몸이기는 하나,
+        LTEXT2 = 정의를 관철하기 위한 발톱은 항상 날카롭게 닦고 있다.
+    CASE 츄파말투_기묘한
+        LTEXT = 그건 분명 곤란한 문제긴 하지만,
+        LTEXT2 = 어떻게든 제 선에서 해결할 수 있으니 걱정 않으셔도 됩니다.
+    CASE 츄파말투_마시멜로
+        LTEXT = 공주는 연약하지만 츄파카브라들은 모두
+        LTEXT2 = 공주의 신하들이니까 괜찮은거에요.
+    CASE 츄파말투_마벨러스
+        LTEXT = 후후~ 돈 워리에요! 나이트의 마샬 아츠는 하이 클래스니까요!
+        LTEXT2 = 이 클로에 당해낼 어포넨츠는 없어요!
+    CASE 츄파말투_요조숙녀
+        LTEXT = 이곳은 위험하지요. 허나 곁에 둔 이를 지킬 수 있는 무술 또한
+        LTEXT2 = 요조숙녀의 미덕. 저도 나날이 정진 중이랍니다.
+    CASE 츄파말투_홋카이도
+        LTEXT = 괜찮아~ 츄파카브라들은 모두 친절해서
+        LTEXT2 = 기사검을 보여주면 금방 비켜준다구.
+    CASE 츄파말투_오사카
+        LTEXT = 가스나, 내 그맨치 힘아리가 없어 보이나.
+        LTEXT2 = 근력 운동도 똑띠 하는데 동네 머슴아한데 질까봐?
+    CASE 츄파말투_뿌뿌
+        LTEXT = 그럼 같이 다니실래요? 와~!
+        LTEXT2 = 역시 파티는 4명이 정석이죠!
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT,LTEXT2)
+WAITANYKEY
+@KOJO_DUNGEON1_INTERACT4_EVENT_EX23_K102
+#DIMS DYNAMIC LNAME
+#DIMS DYNAMIC LTEXT
+#DIMS DYNAMIC LTEXT2
+LNAME = 츄파 나이트
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대
+        LTEXT = 진짜로요?
+        LTEXT2 = 여기선 철수하죠, 매지션!
+    CASE 츄파말투_냉랭존대
+        LTEXT = 이, 이런.
+        LTEXT2 = 철수합니다, 매지션.
+    CASE 츄파말투_친절반말,츄파말투_보이쉬,츄파말투_장난
+        LTEXT = 정말이야?
+        LTEXT2 = 철수다, 매지션!
+    CASE 츄파말투_냉랭반말
+        LTEXT = 뭐, 뭐?
+        LTEXT2 = 가자, 매지션!
+    CASE 츄파말투_조용함
+        LTEXT = 아......
+        LTEXT2 = 이건 가야되겠네요......
+    CASE 츄파말투_겁쟁이
+        LTEXT = 아니, 지 진짜로?
+        LTEXT2 = 가 가야겠어요 매지션!
+    CASE 츄파말투_연기
+        LTEXT = 뭐라고! 으으음, 여기선 일단 물러나주지.
+        LTEXT2 = 가자!
+    CASE 츄파말투_기묘한
+        LTEXT = 그것은 정말입니까......
+        LTEXT2 = 가시죠, 매지션.
+    CASE 츄파말투_마시멜로
+        LTEXT = 호? 어쩔 수 없는거에요.
+        LTEXT2 = 일단 물러나죠, 매지션.
+    CASE 츄파말투_마벨러스
+        LTEXT = 엑?! 씨 유 레이터에요!
+        LTEXT2 = 가죠, 매지션!
+    CASE 츄파말투_요조숙녀
+        LTEXT = 어머, 즐거운 시간도 금방 지나가버리는군요.
+        LTEXT2 = 가시죠, 매지션.
+    CASE 츄파말투_홋카이도
+        LTEXT = 아~ 여기선 빠지는 게 낫겠네~ 
+        LTEXT2 = 다들 안녕~ 또 보자!
+        CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT,LTEXT2)
+        WAITANYKEY
+        LTEXT = 가자, 매지션.
+        LTEXT2 =
+    CASE 츄파말투_오사카
+        LTEXT = 이, 이카믄...
+        LTEXT2 = 짼데이, 매지션!
+    CASE 츄파말투_뿌뿌
+        LTEXT = 여러분, 약속이에요! 꼭 4인 파티를 결성하는거에요!
+        LTEXT2 = 그때까지 안녕~ 가요, 매지션!
+ENDSELECT
+CALL TALK_WITH_IMG("CHUPAKNIGHT_1",LNAME,LTEXT,LTEXT2)
+WAITANYKEY

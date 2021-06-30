@@ -29,6 +29,26 @@ ELSE
     RETURNF 0
 ENDIF
 
+;등록번호로부터 동료의 주인공번호를 반환하는 식중함수
+@BUDDYWHERE(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+IF CFLAG:KEY:동료
+    RETURNF CFLAG:PARTNER(KEY):동료
+ELSE
+    DEBUGPRINTFORML 동료로 설정되지 않은 캐릭터({KEY}, %CALLNAME:KEY%)의 파트너의 주인공 번호를 확인하려 시도했습니다
+    RETURNF 0
+ENDIF
+
+@ISHERO(KEY)
+#FUNCTION
+#DIM DYNAMIC KEY
+IF KEY == FLAG:1 || KEY == FLAG:2
+    RETURNF 1
+ELSE
+    RETURNF 0
+ENDIF
+
 ;전투불능 확인
 @ISDYING(KEY)
 #FUNCTION
@@ -40,8 +60,141 @@ RETURNF CFLAG:KEY:상태이상 & 1
 #FUNCTION
 #DIM DYNAMIC KEY
 #DIM DYNAMIC KEY2
+;KEY2 2=독 3=출혈 4=공포 5=격앙
 IF CFLAG:KEY:상태이상 & (POWER(2,KEY2-1))
     RETURNF 1
 ELSE
     RETURNF 0
 ENDIF
+
+@MIXELLIPSIS(VALUES,MIXS="...",KEYV=2)
+#FUNCTIONS
+#DIM DYNAMIC LOOPCOUNT
+#DIMS DYNAMIC VALUES;원본문자열
+#DIMS DYNAMIC MIXS;섞을 문자열. 기본은 말줄임표(...)
+#DIM DYNAMIC KEYV;빈도,많을수록 드물게
+#DIM DYNAMIC ELLIPSISNUM;갯수 체크
+#DIMS DYNAMIC FINALSTRINGS
+
+DO
+    ;최종 문자열 초기화
+    FINALSTRINGS '= ""
+    LOOPCOUNT = 0
+    DO
+        CHARATU VALUES,LOOPCOUNT
+        ;CHARATU 결과가 빈 문자열이라면 문자열 끝이므로 반복 중단
+        SIF RESULTS:0 == ""
+            BREAK
+        FINALSTRINGS += RESULTS:0
+        IF RESULTS:0 != " "
+            IF RAND:KEYV == 0
+                FINALSTRINGS += MIXS
+                ELLIPSISNUM += 1
+            ENDIF
+        ENDIF
+        LOOPCOUNT += 1
+    LOOP 1
+    ;단 한번도 MIXS를 추가하여 문자열을 만들지 않았다면 다시.
+    SIF ELLIPSISNUM > 0
+        BREAK
+LOOP 1
+RETURNF FINALSTRINGS
+
+;입력받은 문자열의 첫 문자의 종성을 제거하고 반환. 
+;ex) 중생이라는 값을 받으면 주 를 반환한다
+@STUTTERKR(VALUES)
+#FUNCTIONS
+#DIMS DYNAMIC VALUES
+#DIM DYNAMIC TCODE;타겟코드
+#DIM DYNAMIC JONG;종성
+
+CHARATU VALUES, 0
+ENCODETOUNI %RESULTS%
+TCODE = RESULT:1
+JONG = ((TCODE - 44032) % 588)%28
+RETURNF UNICODE(TCODE - JONG) + ", " + VALUES
+
+;TRYCCALLFORM ~CATCH 및 오류 메시지 디버그출력만 하는 함수
+;코드를 보기 편하게 만들기 위한 목적
+@KOJO_CATCH(VALUES)
+#DIMS DYNAMIC VALUES
+TRYCCALLFORM %VALUES%
+CATCH
+    DEBUGPRINTFORML 구상 오류 %VALUES% 호출실패
+ENDCATCH
+
+@CHUPA_TONE(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE [[하루카]],[[야요이]],[[리츠코]],[[아즈사]],[[미라이]],[[미나코]],[[세리카]],[[카오리]],[[치즈루]],[[아리사]],[[미야]]
+        RETURNF 츄파말투_친절존대
+    CASE [[치하야]],[[시즈카]],[[토모카]],[[츠무기]]
+        RETURNF 츄파말투_냉랭존대
+    CASE [[미키]],[[히비키]],[[츠바사]],[[엘레나]],[[메구미]],[[아카네]],[[사요코]],[[우미]],[[이쿠]],[[코노미]],[[타마키]],[[후우카]],[[노리코]],[[줄리아]]
+        RETURNF 츄파말투_친절반말
+    CASE [[토모카]],[[모모코]],[[이오리]]
+        RETURNF 츄파말투_냉랭반말
+    CASE [[미즈키]],[[안나]]
+        RETURNF 츄파말투_조용함
+    CASE [[마코토]],[[아유무]],[[스바루]]
+        RETURNF 츄파말투_보이쉬
+    CASE [[아미]],[[마미]]
+        RETURNF 츄파말투_장난
+    CASE [[유키호]],[[카렌]]
+        RETURNF 츄파말투_겁쟁이
+    CASE [[코토하]],[[유리코]],[[시호]]
+        RETURNF 츄파말투_연기
+    CASE [[타카네]]
+        RETURNF 츄파말투_기묘한
+    CASE [[마츠리]]
+        RETURNF 츄파말투_마시멜로
+    CASE [[로코]]
+        RETURNF 츄파말투_마벨러스
+    CASE [[에밀리]]
+        RETURNF 츄파말투_요조숙녀
+    CASE [[히나타]]
+        RETURNF 츄파말투_홋카이도
+    CASE [[나오]]
+        RETURNF 츄파말투_오사카
+    CASE [[레이카]]
+        RETURNF 츄파말투_뿌뿌
+ENDSELECT
+
+[SKIPSTART]
+예문:
+SELECTCASE CHUPA_TONE(FLAG:2)
+    CASE 츄파말투_친절존대
+        LTEXT = 
+    CASE 츄파말투_냉랭존대
+        LTEXT = 
+    CASE 츄파말투_친절반말
+        LTEXT = 
+    CASE 츄파말투_냉랭반말
+        LTEXT = 
+    CASE 츄파말투_조용함
+        LTEXT = 
+    CASE 츄파말투_보이쉬
+        LTEXT = 
+    CASE 츄파말투_장난
+        LTEXT = 
+    CASE 츄파말투_겁쟁이
+        LTEXT = 
+    CASE 츄파말투_연기
+        LTEXT = 
+    CASE 츄파말투_기묘한
+        LTEXT = 
+    CASE 츄파말투_마시멜로
+        LTEXT = 
+    CASE 츄파말투_마벨러스
+        LTEXT = 
+    CASE 츄파말투_요조숙녀
+        LTEXT = 
+    CASE 츄파말투_홋카이도
+        LTEXT = 
+    CASE 츄파말투_오사카
+        LTEXT = 
+    CASE 츄파말투_뿌뿌
+        LTEXT = 
+ENDSELECT
+[SKIPEND]

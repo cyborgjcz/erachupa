@@ -1,4 +1,5 @@
 ﻿@BATTLE_TALK(TYPE,CALLER,RESPONDING=0,KNUM=0)
+#DIM DYNAMIC LCOUNT
 #DIMS DYNAMIC TYPE;구상 종류
 #DIM DYNAMIC CALLER;말한애 (주의:1또는2) 비트XOR연산(^3)으로 뒤집는다
 #DIM DYNAMIC RESPONDING;응답중인가?
@@ -40,6 +41,9 @@ ELSEIF RESPONDING
     ;응답하는 경우, 전용회화 플래그가 서있지 않다면 RESSTR을 작성한 뒤 메인콜로 이행
     IF TFLAG:전용회화플래그
         TFLAG:전용회화플래그 = 0
+        FOR LCOUNT,44,51
+            TFLAG:LCOUNT = 0
+        NEXT
         RETURN 1
     ENDIF
     RESSTR = RES_
@@ -47,13 +51,21 @@ ENDIF
 
 ;메인콜
 TRYCCALLFORM KOJO_BATTLE_%TYPE%{KNUM}_%RESSTR%K{C_ID}%TRANSSTR%
-    SIF RESPONDING
+    IF RESPONDING
         TFLAG:전용회화플래그 = 0
+        FOR LCOUNT,44,51
+            TFLAG:LCOUNT = 0
+        NEXT
+    ENDIF
     RETURN 1
 CATCH
     TRYCCALLFORM KOJO_BATTLE_%TYPE%_%RESSTR%K{C_ID}%TRANSSTR%
-        SIF RESPONDING
+        IF RESPONDING
             TFLAG:전용회화플래그 = 0
+            FOR LCOUNT,44,51
+                TFLAG:LCOUNT = 0
+            NEXT
+        ENDIF
         RETURN 1
     CATCH
         DEBUGPRINTFORML KOJO_BATTLE_%TYPE%_%RESSTR%K{C_ID}%TRANSSTR% 출력 실패

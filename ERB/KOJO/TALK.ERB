@@ -2,16 +2,17 @@
 ;KOJO 계열 ERB에서 호출하는 함수
 ;FLAG:3 (이미지출력여부)에 따라 이미지 출력(유사HTML서식)
 ;---------------------------------
-@TALK_WITH_IMG(IMG_NAME,LNAME,LTEXT,LTEXT2="",LTEXT3="")
+@TALK_WITH_IMG(IMG_NAME,LNAME,LTEXT,LTEXT2="",LTEXT3="",EFFECT=0)
 #DIM DYNAMIC LCOUNT
 #DIMS DYNAMIC IMG_NAME
 #DIMS DYNAMIC LNAME
 #DIMS DYNAMIC LTEXT
 #DIMS DYNAMIC LTEXT2
 #DIMS DYNAMIC LTEXT3
+#DIM DYNAMIC EFFECT
 #DIMS DYNAMIC HTMLTEXT
 
-IF FLAG:3 != 1
+IF FLAG:3 != 1 || (FLAG:3 == 1 && !SPRITECREATED(IMG_NAME))
     STRLENS LNAME
     PRINTFORML %LNAME% %LTEXT%
     FOR LCOUNT,2,4
@@ -36,7 +37,7 @@ IF FLAG:3 != 1
         PRINTFORML %LTEXT%
     NEXT
 ELSEIF FLAG:3 == 1
-    HTMLTEXT '= @"<p align='left'><shape type='space' param='{IMAGE_MAG * 100}'>%LNAME%<br>"
+    HTMLTEXT '= @"<p align='left'><nobr><shape type='space' param='{IMAGE_MAG * 100}'>%LNAME%<br>"
     FOR LCOUNT,1,4
         SELECTCASE LCOUNT
             CASE 1
@@ -59,6 +60,8 @@ ELSEIF FLAG:3 == 1
         HTMLTEXT += @"<shape type='space' param='{(IMAGE_MAG + 1) * 100}'>%LTEXT%<br>"
     NEXT
     HTMLTEXT += @"<img src='%IMG_NAME%' height='{IMAGE_MAG * 100}' width='{IMAGE_MAG * 100}' ypos='-{(IMAGE_MAG * 100) - 100}'>"
+    SIF EFFECT != 0
+        HTMLTEXT += @"<nonbutton pos='0'><img src='EFFECT_{EFFECT}' height='{IMAGE_MAG * 100}' width='{IMAGE_MAG * 100}' ypos='-{(IMAGE_MAG * 100) - 100}'></nonbutton>"
     HTML_PRINT @"%HTMLTEXT%"
 ENDIF
 RETURN 1

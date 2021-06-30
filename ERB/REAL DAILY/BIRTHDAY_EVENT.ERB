@@ -1,0 +1,32 @@
+﻿@BIRTHDAY_EVENT(KEYV)
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE [[미라이]]
+        TODAY_BIRTHDAY = [[미라이]]
+        PRINTL 오늘은 미라이의 생일이다!
+        WAITANYKEY
+        PRINTL 극장에서 일하는 아이돌들이 직접 주도하는 생일 파티가 열렸고
+        PRINTFORML 물론 %조사처리(CALLNAME:(FLAG:1),"와")% %CALLNAME:(FLAG:2)%도 참여했다.
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_BIRTHDAY_CELEBRATION_K{FLAG:1}")
+        CALL KOJO_CATCH(@"KOJO_BIRTHDAY_CELEBRATION_K{FLAG:2}")
+        CALL KOJO_CATCH(@"KOJO_BIRTHDAY_THANKS_K{[[미라이]]}")
+        PRINTL 보답으로 감사의 마카롱 1개를 받았다! (미실장)
+        WAITANYKEY
+        PRINTL ......
+        WAITANYKEY
+        PRINTL ...
+        WAITANYKEY
+        PRINTL 생일 파티가 끝난 후 노래방에서 실컷 놀았다......
+        PRINTL 미라이가 진심으로 즐거워하는 모습을 볼 수 있었다!
+        WAITANYKEY
+        ;BIRTHDAY_CARD_UNLOCK:[[미라이]] = 1
+        PRINTL
+        PRINTL 촬영 【웃는 얼굴 충전하자SP】 개방! (미실장)
+        PRINTL
+        WAITANYKEY
+        RETURN 1
+    CASEELSE
+        DEBUGPRINTFORML %NAME:KEYV% 생일 이벤트 미실장
+ENDSELECT
+RETURN 0

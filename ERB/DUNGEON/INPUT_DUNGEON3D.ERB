@@ -3,12 +3,6 @@
 ;유사3D 화면 밑에 커맨드 표시
 ;
 @D3D_SHOW_COMMAND
-#DIM DYNAMIC LCOUNT
-#DIM DYNAMIC LCOUNT2
-#DIM DYNAMIC LCOUNT3
-#DIM DYNAMIC TOGREEN,3,2
-#DIM DYNAMIC CURRENTCOLOR
-
 PRINTBUTTON "［ｑ］←","q"
 PRINTBUTTON "［ｗ］↑","w"
 PRINTBUTTON "［ｅ］→","e"
@@ -53,8 +47,10 @@ ELSE
             RETURN 0
         CASE "z"
             CALL DUNGEON_INTERACT
+            RESULT = 0
         CASE "i"
             CALL ITEM_CONSUME_UI
+            RESULT = 0
         CASE ""
             RESTART
         CASEELSE

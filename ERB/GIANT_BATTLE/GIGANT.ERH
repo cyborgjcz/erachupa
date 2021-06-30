@@ -1,0 +1,66 @@
+﻿;기간트 파츠 부위
+#DEFINE GIGANT_머리 0
+#DEFINE GIGANT_몸통 1
+#DEFINE GIGANT_왼팔 2
+#DEFINE GIGANT_오른팔 3
+#DEFINE GIGANT_등짝 4
+#DEFINE GIGANT_다리 5
+#DEFINE GIGANT_무기 6
+#DEFINE GIGANT_기타 7
+
+;(파츠 각부) 스테이터스
+;(기간트 파츠 스탯)파츠 부위
+#DEFINE GIGANT_부위 0
+;소모 코스트
+#DEFINE GIGANT_코스트 1
+;내구치, 파츠별로 계산
+#DEFINE GIGANT_내구 2
+;사용불능에 달하는 손상 허용치
+#DEFINE GIGANT_내구임계 3
+;속도, 총합으로 계산
+#DEFINE GIGANT_운동성 4
+;센서성능, 총합으로 계산
+#DEFINE GIGANT_센서성능 5
+;안정성, (전도 내성) 총합으로 계산
+#DEFINE GIGANT_안정성 6
+;출력, (격투전) 머리, 몸통의 경우 (무기 제외) 나머지 총합으로 계산
+#DEFINE GIGANT_출력 7
+;캐퍼시티, 코스트의 수용 한계 총합으로 계산
+#DEFINE GIGANT_캐퍼시티 8
+;내장무기, 부품에 기본탑재되는 추가무장 1= 근거리 2= 원거리
+#DEFINE GIGANT_내장무기 9
+;내장무기의 위력
+#DEFINE GIGANT_내장무기위력 10
+;GIGANT_부위 = GIGANT_무기인 경우에 한해서.
+;bit1 = 무기여부 bit2 = 단,장 bit3 = 무딤,날붙이 1 = 둔기 3 = 봉 5 = 도검 7 = 창
+#DEFINE GIGANT_무기유형 11
+
+
+#DIM CONST GIGANT_STAT_NUM = 12
+
+;보유 파츠 최대수
+#DIM CONST STOCK_MAX = 1000
+#DIM SAVEDATA STOCK_PART,STOCK_MAX = 1,1,1,1,1,1,1
+;파츠 기초 스탯 정보의 인덱스를 저장
+#DIM SAVEDATA STOCK_PARTD,STOCK_MAX = 0,1,2,3,4,5,6
+;파츠 메모 저장
+#DIMS SAVEDATA STOCK_PARTS,STOCK_MAX
+
+;파츠 개조 데이터
+;각부 스테이터스의 인덱스를 따라감
+#DIM SAVEDATA MOD_DATA,STOCK_MAX,GIGANT_STAT_NUM
+
+;현재 기간트의 각 파츠의 스톡 번호(STOCK_PART 참조) 저장 데이터.
+;이게 현재 플레이어 기간트 상태
+#DIM SAVEDATA CURRENT_GIGANT,8 = 0,1,2,3,4,5,6,-1
+;각부 피해
+#DIM SAVEDATA GIGANT_DAMAGE,8 = 0,0,0,0,0,0,0,0
+
+;자세 불안정(공격 등) 0~3 숫자가 클수록 불안정
+#DIM GIGANT_UNSTABILITY
+;안정성에 타격을 주는 대미지
+#DIM GIGANT_DOWN_DAMAGE
+;넘어진 상태
+#DIM GIGANT_TUMBLE
+;방어 상태
+#DIM GIGANT_GUARD

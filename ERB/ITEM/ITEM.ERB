@@ -18,6 +18,7 @@ ENDCATCH
 #DIM DYNAMIC PAGEMAX;소지 장비 선택 중 페이지 최대수
 #DIM DYNAMIC ITEMUSE,2;0= HPorSP(0,1) or-1(부정) 1= 회복량
 ;TARGETCHARA를 현재 HP를 참고하여 자동초기화. (체력 낮은 캐릭 우선)
+#DIM DYNAMIC ERASELESS
 {
     IF BASE:(FLAG:1):희망 <= (MAXBASE:(FLAG:1):희망 / 2) &&
     BASE:(FLAG:1):희망 <= BASE:(FLAG:2):희망
@@ -34,6 +35,7 @@ ENDIF
 
 PAGEV = 0
 DO
+    ERASELESS = 0
     PRINTFORML %CALLNAME:(FLAG:TARGETCHARA)%(HP: {BASE:(FLAG:TARGETCHARA):희망} SP: {BASE:(FLAG:TARGETCHARA):영혼})에게 사용할 아이템을 선택해주세요.
     ITEMUSE:0 = -1
     VARSET ITEMLISTA,0
@@ -127,6 +129,8 @@ DO
             ENDIF
         CASE "x"
             BREAK
+        CASE ""
+            ERASELESS = -1
     ENDSELECT
     ;실제 아이템 사용
     IF ITEMUSE != -1
@@ -146,7 +150,7 @@ DO
         PAGEV = 0
         CURSORV = 0
     ELSE
-        CLEARLINE 16
+        CLEARLINE 16+ERASELESS
         REUSELASTLINE
     ENDIF
 LOOP 1

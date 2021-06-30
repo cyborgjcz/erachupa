@@ -31,6 +31,16 @@ IF RESULT == 0
     CALL TALK_WITH_IMG(FACE([[치하야]],2),CALLNAME:2,DEBUGS:0)
     ;테스트
     WAITANYKEY
+    DEBUGS:0 = %CALLNAME:[[엘레나]]%야~! 
+    DEBUGS:1 = %조사처리(BYNAMES([[엘레나]],[[카렌]]),"과")% 함께 테스트 문자열을 말할거야!
+    CALL TALK_WITH_IMG(FACE([[엘레나]],1),CALLNAME:[[엘레나]],DEBUGS:0,DEBUGS:1)
+    DEBUGS:0 = %STUTTERKR(BYNAMES([[카렌]],[[엘레나]]))%...?
+    DEBUGS:1 = 그, 그런 중요한 일을 저한테 마, %MIXELLIPSIS("맡겨도 되나요")%?
+    CALL TALK_WITH_IMG(FACE([[카렌]],3),CALLNAME:[[카렌]],DEBUGS:0,DEBUGS:1)
+    DEBUGS:0 = %BYNAMES([[스바루]],[[엘레나]])%, 야구하자! 
+    CALL TALK_WITH_IMG(FACE([[스바루]],2),CALLNAME:[[스바루]],DEBUGS:0,"","",1)
+    DEBUGS:0 = ......
+    CALL TALK_WITH_IMG(FACE([[코토하]],5),CALLNAME:[[코토하]],DEBUGS:0,"","",1)    
 ELSE
     FLAG:이미지출력여부 = 0
     PRINTL 이미지를 출력하지 않습니다.
@@ -58,15 +68,20 @@ IF RESULT == 0
     CALL SET_FIRSTBATTLE
     CALL BATTLE_START
     ;이상
+    ;디버그용 퍼스트배틀의 동료 정보 초기화
+    CFLAG:15:1 = 0
+    CFLAG:50:1 = 0
+    SIF TFLAG:타이틀이행 != 0
+        GOTO NEWGAME_GOTITLE
 ENDIF
-
-;디버그용 퍼스트배틀의 동료 정보 초기화
-CFLAG:37:1 = 0
-CFLAG:55:1 = 0
 
 CALL EVENT_COMMON_NEWGAME
 
 BEGIN SHOP
+
+$NEWGAME_GOTITLE
+RESETDATA
+BEGIN TITLE
 
 @ADD_ALL_CHARACTERS ;모든 캐릭터를 일거 추가하는 함수
 #DIM DYNAMIC LCOUNT
@@ -102,8 +117,8 @@ RETURN 1
 #DIMS DYNAMIC LFILENAME
 #DIMS DYNAMIC LSPRITENAME,5
 
-CALL SET_NAKAMA(37,1)
-CALL SET_NAKAMA(55,2)
+CALL SET_NAKAMA(15,1)
+CALL SET_NAKAMA(50,2)
 
 TFLAG:적위치1 = 100
 TFLAG:적레벨1 = 50

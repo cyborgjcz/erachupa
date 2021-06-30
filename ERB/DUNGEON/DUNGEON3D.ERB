@@ -69,7 +69,11 @@ IF !JUDGEBYCOVER
                     RESULTVALUE:LCOUNT = 0
                 ENDIF
             CASE 5
-                RESULTVALUE:LCOUNT = 1
+                IF D3D_CURRENT_MAPDATA:(XCOORD+CARDINAL:(T_CARDINAL:LCOUNT):0):(YCOORD+CARDINAL:(T_CARDINAL:LCOUNT):1) == 15
+                    RESULTVALUE:LCOUNT = 0
+                ELSE
+                    RESULTVALUE:LCOUNT = 1
+                ENDIF
             CASE 8;출구;테스트
                 RESULTVALUE:LCOUNT = 0
             CASEELSE
@@ -361,11 +365,19 @@ SELECTCASE D3D_CURRENT_MAPDATA:XCOORD:YCOORD % 10
             SETCOLOR D3D_TREASURE_COLOR
         ENDIF
     CASE 4
-        RESULTS '= "！"
-        SETCOLOR D3D_EVENT_COLOR
+        IF D3D_CURRENT_MAPDATA:XCOORD:YCOORD == 14
+            RESULTS '= "□"
+        ELSE
+            RESULTS '= "！"
+            SETCOLOR D3D_EVENT_COLOR
+        ENDIF
     CASE 5
-        RESULTS '= "Ｘ"
-        SETCOLOR D3D_FLOOR_COLOR
+        IF D3D_CURRENT_MAPDATA:XCOORD:YCOORD == 15
+            RESULTS '= "□"
+        ELSE
+            RESULTS '= "Ｘ"
+            SETCOLOR D3D_FLOOR_COLOR
+        ENDIF
     CASE 6
         RESULTS '= "승"
         SETCOLOR D3D_STAIR_COLOR
