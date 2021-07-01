@@ -262,9 +262,14 @@ DO
                     ENDIF
                 CASE "u"
                     IF ITEMLISTA:CURSOR2 != 0
-                        ITEM:(EQUIP:KEYV:CURSOR1) += 1
-                        EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
-                        ITEM:(ITEMLISTA:CURSOR2) -= 1
+                        CALLFORM EQ_위치_{ITEMLISTA:CURSOR2}
+                        IF CHUPA_EQUIP_PLACE:(ITEMLISTA:CURSOR2) != 1
+                            ITEM:(EQUIP:KEYV:CURSOR1) += 1
+                            EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
+                            ITEM:(ITEMLISTA:CURSOR2) -= 1
+                        ELSE
+                            EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
+                        ENDIF
                         CALL EQ_APPLY_STAT(KEYV)
                         SCENEV = 0
                         PAGEV = 0

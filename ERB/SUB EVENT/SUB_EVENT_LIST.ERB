@@ -1,0 +1,22 @@
+﻿[SKIPSTART]
+테스트용 서브이벤트
+@SUB_EVENT1(TARGETV)
+#DIM DYNAMIC TARGETV
+SELECTCASE TARGETV
+    CASE 서브_플레이
+        PRINTL 하찌미, 하찌미 하찌미~ 하찌미를 핥으면
+        PRINTL 다리가 다리가 다리가~ 빨라진다네~
+        WAITANYKEY
+        서브_실행플래그:1 = 2
+    CASE 서브_이름
+        RESULTS = 테스트 서브 이벤트
+        RETURN 1
+    CASE 서브_등장인물        
+        RESULTS = %CALLNAME:(FLAG:1)%, %CALLNAME:(FLAG:2)%
+        RETURN 1
+    CASE 서브_조건
+        RETURN 1
+    CASE 서브_장소
+        RETURN 서브_극장조사
+ENDSELECT
+[SKIPEND]

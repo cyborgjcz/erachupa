@@ -1,0 +1,12 @@
+﻿#DEFINE 서브_극장조사 1
+#DEFINE 서브_거리조사 2
+
+#DEFINE 서브_플레이 0
+#DEFINE 서브_이름 1
+#DEFINE 서브_등장인물 2
+#DEFINE 서브_조건 3
+#DEFINE 서브_장소 4;SUB_EVENT_SCENE에서 극장 또는 거리 판정
+#DIM CONST 서브_이벤트_최대 = 1000
+;                                            ▽@SUB_EVENT_SCENE에서 처리함
+;각 서브이벤트가 실행되었는지 보존하는 변수, 1=통지됨  2-=실행됨
+#DIM SAVEDATA 서브_실행플래그,서브_이벤트_최대

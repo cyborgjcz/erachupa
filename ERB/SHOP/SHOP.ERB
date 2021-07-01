@@ -65,6 +65,12 @@ RESETCOLOR
 RESETCOLOR
 PRINTLC [400] 미사키를 찾아간다
 PRINTLC [401] 소라를 찾아간다
+IF FLAG:탐색대상던전 == 0
+    SETCOLORBYNAME DimGray
+    PRINTLC [???] ???
+ELSEIF FLAG:탐색대상던전 != 0
+    PRINTLC [402] 화이트보드를 본다
+ENDIF
 PRINTL
 IF FLAG:탐색대상던전 == 0
     SETCOLORBYNAME DimGray
@@ -107,14 +113,17 @@ SELECTCASE KEY
     CASE 200
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(200)
+        RESULT = 1
         IF RESULT == 1
             ;통상 극장 살펴보기 이벤트
+            CALL SUB_EVENT_SCENE(서브_극장조사)
         ENDIF
     CASE 201
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(201)
         IF RESULT == 1
             ;통상 거리 살펴보기 이벤트
+            CALL SUB_EVENT_SCENE(서브_거리조사)
         ENDIF
     CASE 202
         SIF !FLAG:스토리1진행도
