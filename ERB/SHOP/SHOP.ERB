@@ -121,6 +121,7 @@ SELECTCASE KEY
     CASE 201
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(201)
+        RESULT = 1
         IF RESULT == 1
             ;통상 거리 살펴보기 이벤트
             CALL SUB_EVENT_SCENE(서브_거리조사)
