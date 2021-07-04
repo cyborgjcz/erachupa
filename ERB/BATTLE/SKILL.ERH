@@ -1,10 +1,33 @@
-﻿#DIM CONST SKILL_DATANUM = 12
-;SET_ALL_SKILL에서 정의함
-#DIM SAVEDATA SKILL_DATA,SKILL_DATANUM,19
+﻿#DEFINE 스킬_유형 0
+;0=공격 1=회복버프 2=방어 3=변신 4=도주
+#DEFINE 스킬_조건스탯 1
+;0=없음 1=패기 2=예리 3=자비
+#DEFINE 스킬_스탯수치 2
+#DEFINE 스킬_약화사용 3
+;스탯미달이어도 약화된 스킬을 사용할 수 있는가?
+#DEFINE 스킬_베이스값 4
+#DEFINE 스킬_범위유형 5
+;0=단일적 1=자신 2=단일아군 3=적전체 4=아군전체
+#DEFINE 스킬_의존값 6
+;0=공격력 1=패기 2=예리 3=자비 4=고정값
+#DEFINE 스킬_방어값 7
+;0=방어무시 1=방어력 2=방어력반감 3=전체HP비례
+#DEFINE 스킬_명중율 8
+#DEFINE 스킬_회피율역보정 9
+#DEFINE 스킬_소모값 10
+#DEFINE 스킬_소모BASE 11
+;0=HP 1=SP
+#DEFINE 스킬_부가효과 12
+;1=즉사 2=독 3=출혈 4=공포 5=격앙 6=카운터
+#DEFINE 스킬_부가효과값 13
+#DEFINE 스킬_부가효과2 14
+#DEFINE 스킬_부가효과값2 15
+#DEFINE 스킬_오버힐 16
+#DEFINE 스킬_페널티 17
+;0 = 없음 1 = 둔화
+#DEFINE 스킬_페널티베이스 18
 
-#DIMS SAVEDATA SKILL_NAME,SKILL_DATANUM
-#DIMS SAVEDATA SKILL_HELP,SKILL_DATANUM
-#DIMS SAVEDATA SKILL_TEXT,SKILL_DATANUM
+#DIM CONST SKILL_DATA_LEN = 19
 ;AVAILABLE_SKILL은 각 캐릭터마다 갖고있는 스킬데이터
 #DIM CHARADATA SAVEDATA AVAILABLE_SKILL,8
 ;카운터 공격 위력 배수
