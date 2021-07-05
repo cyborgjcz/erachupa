@@ -11,6 +11,9 @@
 ;1=독 2=출혈 3=공포 4=격앙
 #DIM CHARADATA 버프지속시간,1
 ;0 = 카운터
+#DIM CHARADATA ATB가감속지속시간,2
+;0=가속 1=감속
+#DIM CHARADATA ATB조정필
 
 ;전투스탯BASE를 최대값을 기록하는 상수
 #DIM CONST STATBASENUM = 14

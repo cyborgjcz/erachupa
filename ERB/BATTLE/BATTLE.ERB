@@ -316,18 +316,17 @@ DO
     POISONTIMER -= (RESULT - TIMECOUNT)
     ;ATB처리
     IF REMAINTIME < 0
-        IF !ISDYING(FLAG:동료1)
-            SIF CFLAG:(FLAG:동료1):ATB카운터 < MAX_ATB
-                CFLAG:(FLAG:동료1):ATB카운터 += BASE:(FLAG:동료1):행동력
-            SIF CFLAG:(FLAG:동료1):ATB카운터 >= MAX_ATB
-                CFLAG:(FLAG:동료1):ATB카운터 = MAX_ATB
-        ENDIF
-        IF !ISDYING(FLAG:동료2)
-            SIF CFLAG:(FLAG:동료2):ATB카운터 < MAX_ATB
-                CFLAG:(FLAG:동료2):ATB카운터 += BASE:(FLAG:동료2):행동력
-            SIF CFLAG:(FLAG:동료2):ATB카운터 >= MAX_ATB
-                CFLAG:(FLAG:동료2):ATB카운터 = MAX_ATB
-        ENDIF
+        FOR LCOUNT,1,3
+            IF !ISDYING(FLAG:LCOUNT)
+                SIF CFLAG:(FLAG:LCOUNT):ATB카운터 < MAX_ATB
+                    CFLAG:(FLAG:LCOUNT):ATB카운터 += (BASE:(FLAG:LCOUNT):행동력 + CFLAG:(FLAG:LCOUNT):ATB가속 - CFLAG:(FLAG:LCOUNT):ATB감속)
+                IF CFLAG:(FLAG:LCOUNT):ATB카운터 >= MAX_ATB
+                    CFLAG:(FLAG:LCOUNT):ATB카운터 = MAX_ATB
+                    SIF ATB조정필:(FLAG:LCOUNT):0 == 0
+                        CALL REDUCE_ATB_BUFF(FLAG:LCOUNT)
+                ENDIF
+            ENDIF
+        NEXT
         ;적ATB 처리
         FOR LCOUNT,1,7
             SIF !TFLAG:LCOUNT
@@ -335,7 +334,7 @@ DO
             SIF BATTLE_CANNOTTARGET(TFLAG:LCOUNT)
                 CONTINUE
             SIF CFLAG:(TFLAG:LCOUNT):ATB카운터 < MAX_ATB
-                CFLAG:(TFLAG:LCOUNT):ATB카운터 += BASE:(TFLAG:LCOUNT):행동력
+                CFLAG:(TFLAG:LCOUNT):ATB카운터 += (BASE:(TFLAG:LCOUNT):행동력 + CFLAG:(TFLAG:LCOUNT):ATB가속 - CFLAG:(TFLAG:LCOUNT):ATB감속)
             IF CFLAG:(TFLAG:LCOUNT):ATB카운터 >= MAX_ATB
                 CFLAG:(TFLAG:LCOUNT):ATB카운터 = MAX_ATB
                 ENEMY_MOVE = LCOUNT;적행동트리거
@@ -393,12 +392,14 @@ DO
         COM_USER = ENEMY_MOVE
         COM_SKILLNUM = RESULT:2
         CFLAG:(TFLAG:ENEMY_MOVE):방어 = 0
+        CALL REDUCE_ATB_BUFF(TFLAG:ENEMY_MOVE)
         CALL RUN_BATTLE_COMMAND(COMMANDS,COM_TARGETV,COM_USER,COM_SKILLNUM,1)
         ENEMY_MOVE = 0
     ELSE
         ;적 행동이 아닐 때 아군 행동 실행
         IF COMMANDS != ""
             CFLAG:(FLAG:COM_USER):방어 = 0
+            ATB조정필:(FLAG:COM_USER):0 = 0
             CALL RUN_BATTLE_COMMAND(COMMANDS,COM_TARGETV,COM_USER,COM_SKILLNUM)
         ELSE
             IF RESULTS == ""
@@ -1500,3 +1501,20 @@ IF ISDYING(KEYV) || ENEMY_GONE:KEYV:0 != 0
 ELSE
     RETURNF 0
 ENDIF
+
+@REDUCE_ATB_BUFF(KEYV)
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT,0,2
+    SIF ATB가감속지속시간:KEYV:LCOUNT > 0
+        ATB가감속지속시간:KEYV:LCOUNT -= 1
+    IF ATB가감속지속시간:KEYV:LCOUNT == 0
+        SELECTCASE LCOUNT
+            CASE 0
+                CFLAG:KEYV:ATB가속 = 0
+            CASE 1
+                CFLAG:KEYV:ATB감속 = 0
+        ENDSELECT
+    ENDIF
+NEXT
+ATB조정필:KEYV:0 = 1
