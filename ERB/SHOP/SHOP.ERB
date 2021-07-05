@@ -154,14 +154,27 @@ SELECTCASE KEY
         SIF FLAG:탐색대상던전 != 0
             CALL SHOW_CHARA_INFO(FLAG:1)
     CASE 501
-        PRINTL 누구의 장비를 설정합니까?
-        PRINTBUTTON @"[1] %CALLNAME:(FLAG:1)%",1
-        PRINTBUTTON @"[2] %CALLNAME:(FLAG:2)%",2
-        INPUT
-        SELECTCASE RESULT
-            CASE 1 TO 2
-                CALL SHOW_SET_EQUIP(FLAG:RESULT)
-        ENDSELECT
+        IF FLAG:탐색대상던전 != 0
+            PRINTL 누구의 장비를 설정합니까?
+            PRINTBUTTON @"[1] %CALLNAME:(FLAG:1)%",1
+            PRINTBUTTON @"[2] %CALLNAME:(FLAG:2)%",2
+            INPUT
+            SELECTCASE RESULT
+                CASE 1 TO 2
+                    CALL SHOW_SET_EQUIP(FLAG:RESULT)
+            ENDSELECT
+        ENDIF
+    CASE 502
+        IF FLAG:탐색대상던전 != 0
+            PRINTL 누구의 스킬 정보를 봅니까?
+            PRINTBUTTON @"[1] %CALLNAME:(FLAG:1)%",1
+            PRINTBUTTON @"[2] %CALLNAME:(FLAG:2)%",2
+            INPUT
+            SELECTCASE RESULT
+                CASE 1 TO 2
+                    CALL SHOW_SKILL_INFO(FLAG:RESULT)
+            ENDSELECT
+        ENDIF
     CASE 600
         SAVEGAME
     CASE 700
