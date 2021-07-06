@@ -199,6 +199,9 @@ DO
                 CASE "x"
                     ASK_DECIDE = 0
                     ERASEMORE = 1
+                CASE ""
+                CASEELSE
+                    ERASEMORE = 1
             ENDSELECT
         ELSE
             SELECTCASE RESULTS
