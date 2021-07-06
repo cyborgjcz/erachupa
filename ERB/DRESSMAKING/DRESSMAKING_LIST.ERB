@@ -1,0 +1,35 @@
+﻿@DRESSMAKING_DATA(ITEMV,KEYV)
+#FUNCTION
+#DIM DYNAMIC ITEMV
+#DIM DYNAMIC KEYV
+SELECTCASE ITEMV
+    CASE [[프롤로그루주]]
+        SELECTCASE KEYV
+            CASE DRESSMAKING_MAT_LEN
+                RETURNF 2
+            CASE 1
+                RETURNF [[붉은체크무늬원단]]
+            CASE DRESSMAKING_MAT1_NUM
+                RETURNF 1
+            CASE 2
+                RETURNF [[감응형스마트섬유]]
+            CASE DRESSMAKING_MAT2_NUM
+                RETURNF 2
+        ENDSELECT
+    CASE [[츄파카브라TFSize]]
+        ;더미
+        SELECTCASE KEYV
+            CASE DRESSMAKING_MAT_LEN
+                RETURNF 2
+            CASE 1
+                RETURNF [[츄파에센스]]
+            CASE DRESSMAKING_MAT1_NUM
+                RETURNF 1
+            CASE 2
+                RETURNF [[감응형스마트섬유]]
+            CASE DRESSMAKING_MAT2_NUM
+                RETURNF 1
+        ENDSELECT
+    CASEELSE
+        RETURNF -1
+ENDSELECT
