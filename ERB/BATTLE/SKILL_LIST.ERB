@@ -266,7 +266,6 @@ SKILL_DATA:스킬_스탯수치 = 7
 SKILL_DATA:스킬_베이스값 = 0
 SKILL_DATA:스킬_범위유형 = 4;아군전체
 SKILL_DATA:스킬_의존값 = 4
-
 SKILL_DATA:스킬_소모값 = 4
 SKILL_DATA:스킬_소모BASE = 1
 IF TALENT:USERV:성별 == 2 || BASE:USERV:가슴둘레 < 78
@@ -275,6 +274,202 @@ ELSE
     SKILL_DATA:스킬_부가효과 = 7;공격력버프 소
 ENDIF
 SKILL_DATA:스킬_부가효과값 = 6
+
+@SKILL_DATA_13(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "빛망울"
+SKILL_HELP '= "아군　전체　ＨＰ　회복"
+SKILL_TEXT '= "아른거리는 빛을 뿜어내며 동료를 회복시켰다"
+SKILL_DESCRIPTION '= "은은한 불빛으로 자비 스탯을 바탕으로 자신과 동료의 HP를 회복시킨다."
+SKILL_DATA:스킬_유형 = 1;회복
+SKILL_DATA:스킬_조건스탯 = 3;자비
+SKILL_DATA:스킬_스탯수치 = 5
+SKILL_DATA:스킬_베이스값 = 28
+SKILL_DATA:스킬_범위유형 = 4;아군전체
+SKILL_DATA:스킬_의존값 = 3;자비
+SKILL_DATA:스킬_소모값 = 4
+SKILL_DATA:스킬_소모BASE = 1
+
+@SKILL_DATA_14(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "셋업드링크"
+SKILL_HELP '= "아이템　소모　ＳＰ　회복"
+SKILL_TEXT '= "스파크드링크를 소모해서 SP를 회복했다!"
+SKILL_DESCRIPTION '= "소지하고 있는 적절한 스파크드링크를 두 명이 나눠 마셔 SP를 회복한다"
+SKILL_DATA:스킬_유형 = 1;회복
+SKILL_DATA:스킬_조건스탯 = 3;자비
+SKILL_DATA:스킬_스탯수치 = 1
+SKILL_DATA:스킬_베이스값 = 0
+SKILL_DATA:스킬_범위유형 = 4;아군전체
+SKILL_DATA:스킬_의존값 = 4;고정수치
+SKILL_DATA:스킬_소모값 = 0
+SKILL_DATA:스킬_소모BASE = 1
+SKILL_DATA:스킬_부가효과 = 13;아이템 소모
+SKILL_DATA:스킬_부가효과2 = 14;SP회복
+SELECTCASE MAX(MAXBASE:(FLAG:1):영혼 - BASE:(FLAG:1):영혼,MAXBASE:(FLAG:2):영혼 - BASE:(FLAG:2):영혼)
+    CASE 0 TO 5
+        IF ITEM:[[스파크드링크10]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크10]];아이템종류
+        ELSEIF ITEM:[[스파크드링크20]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크20]];아이템종류
+        ELSEIF ITEM:[[스파크드링크30]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크30]];아이템종류
+        ENDIF
+    CASE 6 TO 10
+        IF ITEM:[[스파크드링크20]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크20]];아이템종류
+        ELSEIF ITEM:[[스파크드링크30]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크30]];아이템종류
+        ELSEIF ITEM:[[스파크드링크10]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크10]];아이템종류
+        ENDIF
+    CASEELSE
+        IF ITEM:[[스파크드링크30]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크30]];아이템종류
+        ELSEIF ITEM:[[스파크드링크20]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크20]];아이템종류
+        ELSEIF ITEM:[[스파크드링크10]]
+            SKILL_DATA:스킬_부가효과값 = [[스파크드링크10]];아이템종류
+        ENDIF
+ENDSELECT
+SELECTCASE ITEM_CONSUMED_ONCE
+    CASE [[스파크드링크10]]
+        SKILL_DATA:스킬_부가효과값2 = 5
+    CASE [[스파크드링크20]]
+        SKILL_DATA:스킬_부가효과값2 = 10
+    CASE [[스파크드링크30]]
+        SKILL_DATA:스킬_부가효과값2 = 15
+ENDSELECT
+
+@SKILL_DATA_15(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "스파크"
+SKILL_HELP '= "전광과　같이　재빠른　일격"
+SKILL_TEXT '= "전광석화와 같은 움직임으로 공격했다"
+SKILL_DESCRIPTION '= "적을 공격하고 스스로에게 행동속도 버프를 부여한다"
+SKILL_DATA:스킬_유형 = 0;공격
+SKILL_DATA:스킬_조건스탯 = 1;패기
+SKILL_DATA:스킬_스탯수치 = 8
+SKILL_DATA:스킬_베이스값 = 46
+SKILL_DATA:스킬_범위유형 = 0;단일적
+SKILL_DATA:스킬_의존값 = 1;패기
+SKILL_DATA:스킬_방어값 = 1;방어력
+SKILL_DATA:스킬_명중율 = 99
+SKILL_DATA:스킬_소모값 = 3
+SKILL_DATA:스킬_소모BASE = 1;SP
+SKILL_DATA:스킬_페널티 = 2;가속
+SKILL_DATA:스킬_페널티베이스 = 3
+
+@SKILL_DATA_16(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "쿠키몬스터"
+SKILL_HELP '= "달콤한　거상의　짓밟기"
+SKILL_TEXT '= "거대한 쿠키 골렘을 소환해 공격했다"
+SKILL_DESCRIPTION '= "쿠키 생명체를 소환해 적 전체에게 중간 대미지를 주고 낮은 확률로 즉사시킨다."
+SKILL_DATA:스킬_유형 = 0;공격
+SKILL_DATA:스킬_조건스탯 = 1;패기
+SKILL_DATA:스킬_스탯수치 = 13
+SKILL_DATA:스킬_베이스값 = 62
+SKILL_DATA:스킬_범위유형 = 3;적전체
+SKILL_DATA:스킬_의존값 = 1;패기
+SKILL_DATA:스킬_방어값 = 1;방어력
+SKILL_DATA:스킬_명중율 = 92
+SKILL_DATA:스킬_소모값 = 8
+SKILL_DATA:스킬_소모BASE = 1
+SKILL_DATA:스킬_부가효과 = 1;즉사
+SKILL_DATA:스킬_부가효과값 = 15
+
+
+@SKILL_DATA_17(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "웃음기차지"
+SKILL_HELP '= "사기를　높이는　한　발　물러남"
+SKILL_TEXT '= "뒤로 물러나 다음 공격의 위력을 상승시켰다"
+SKILL_DESCRIPTION '= "방어하는 자세를 취하며 힘을 모아 일시적으로 자신의 공격력을 중간 정도 상승시킨다"
+SKILL_DATA:스킬_유형 = 2;방어
+SKILL_DATA:스킬_조건스탯 = 2;예리
+SKILL_DATA:스킬_스탯수치 = 11
+SKILL_DATA:스킬_범위유형 = 1;자신
+SKILL_DATA:스킬_소모값 = 5
+SKILL_DATA:스킬_소모BASE = 1;SP
+SKILL_DATA:스킬_부가효과 = 9;공격력버프-중
+SKILL_DATA:스킬_부가효과값 = 2
+
+@SKILL_DATA_18(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "피날레"
+SKILL_HELP '= "아군　공격력　크게　상승"
+SKILL_TEXT '= "이 싸움을 마무리할 일격에 대비했다"
+SKILL_DESCRIPTION '= "3턴 동안 아군 전체의 공격력을 크게 상승시킨다"
+SKILL_DATA:스킬_유형 = 1;회복
+SKILL_DATA:스킬_조건스탯 = 3;자비
+SKILL_DATA:스킬_스탯수치 = 20
+SKILL_DATA:스킬_범위유형 = 4;자신
+SKILL_DATA:스킬_명중율 = 100
+SKILL_DATA:스킬_소모값 = 16
+SKILL_DATA:스킬_소모BASE = 1;SP
+SKILL_DATA:스킬_부가효과 = 11;공격력버프-대
+SKILL_DATA:스킬_부가효과값 = 3
+
+
+@SKILL_DATA_19(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "파란만장"
+SKILL_HELP '= "격렬한　고난의　큰　파도"
+SKILL_TEXT '= "무시무시한 에너지의 파도를 불러내 적을 휩쓸었다"
+SKILL_DESCRIPTION '= "거대한 파도 형태의 에너지에 적을 휘말리게 해 큰 대미지를 준다."
+SKILL_DATA:스킬_유형 = 0;공격
+SKILL_DATA:스킬_조건스탯 = 1;패기
+SKILL_DATA:스킬_스탯수치 = 25
+SKILL_DATA:스킬_베이스값 = 97
+SKILL_DATA:스킬_범위유형 = 3;적전체
+SKILL_DATA:스킬_의존값 = 1;패기
+SKILL_DATA:스킬_방어값 = 1;방어력
+SKILL_DATA:스킬_명중율 = 94
+SKILL_DATA:스킬_소모값 = 30
+SKILL_DATA:스킬_소모BASE = 1
 
 [SKIPSTART]
 ;이하 수정 후 파기하는 예정의 데이터

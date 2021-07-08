@@ -282,7 +282,7 @@ IF !ISENEMY
         WAITANYKEY
     ENDIF
     TARGETV = FLAG:TARGETV
-    SIF BASE:(FLAG:USERV):희망 >= MAXBASE:(FLAG:USERV):희망
+    SIF BASE:(FLAG:TARGETV):희망 > MAXBASE:(FLAG:TARGETV):희망
         ISOVERHEALED = 1
 ELSEIF ISENEMY
     IF !WIDE
@@ -292,7 +292,7 @@ ELSEIF ISENEMY
         PRINT ...
         WAITANYKEY
     ENDIF
-    SIF BASE:(TFLAG:USERV):희망 >= MAXBASE:(TFLAG:USERV):희망
+    SIF BASE:(TFLAG:TARGETV):희망 > MAXBASE:(TFLAG:TARGETV):희망
         ISOVERHEALED = 1
     NUMV = TARGETV
     TARGETV = TFLAG:TARGETV
@@ -326,17 +326,17 @@ ELSE
             ;고정값
             DAMAGEV = SKILL_DATA:4
     ENDSELECT
-    BASE:USERV:희망 += DAMAGEV
+    BASE:TARGETV:희망 += DAMAGEV
     ;오버힐 스킬이 아닌 경우 체력을 최대치 이하로 한다
     ;이미 오버힐 받아 체력이 높은 상태였던 경우 줄이지 않는다
-    IF (BASE:USERV:희망 > MAXBASE:USERV:희망) && (SKILL_DATA:16 == 0) && !ISOVERHEALED
-        BASE:USERV:희망 = MAXBASE:USERV:희망
+    IF (BASE:TARGETV:희망 > MAXBASE:TARGETV:희망) && (SKILL_DATA:16 == 0) && !ISOVERHEALED
+        BASE:TARGETV:희망 = MAXBASE:TARGETV:희망
     ENDIF
     
-    CALL SKILL_MAKE_EFFECT(SKILLV,USERV,TARGETV)
+    CALL SKILL_MAKE_EFFECT(SKILLV,TARGETV,TARGETV)
 
-    IF DAMAGEV != 0 && !WIDE
-        PRINTFORML %조사처리(CALLNAME:USERV,"은")% {DAMAGEV} 만큼 회복했다!
+    IF DAMAGEV != 0
+        PRINTFORML %조사처리(CALLNAME:TARGETV,"은")% {DAMAGEV} 만큼 회복했다!
         WAITANYKEY
     ENDIF
     SIF !WIDE
@@ -383,7 +383,7 @@ IF !ISENEMY
 ELSEIF ISENEMY
     FOR LCOUNT,1,7
         SIF TFLAG:LCOUNT != 0 && !BATTLE_CANNOTTARGET(TFLAG:LCOUNT)
-            CALL SKILL_HEAL_OTHER(LCOUNT,USERV,SKILLV,0,1)
+            CALL SKILL_HEAL_OTHER(LCOUNT,USERV,SKILLV,1,1)
     NEXT
 ENDIF
 ;페널티 부여
@@ -600,6 +600,10 @@ SELECTCASE PENALTYV
         ;둔화 - 일정 턴 동안 속도를 느리게 한다. ATB가감속에 음수 가산
         CFLAG:USERV:ATB감속 += (BASE:USERV:행동력 / 2)
         ATB가감속지속시간:USERV:1 += BASEV
+    CASE 2
+        ;가속 - 둔화의 반대. 페널티랄까 사용자 버프 정도.
+        CFLAG:USERV:ATB가속 += (BASE:USERV:행동력 / 2)
+        ATB가감속지속시간:USERV:0 += BASEV
 ENDSELECT
 
 @SKILL_MAKE_EFFECT(SKILLV,USERV,TARGETV)
@@ -665,6 +669,42 @@ FOR LCOUNT,스킬_부가효과,스킬_부가효과2+2,2
                     CFLAG:TARGETV:버프적용중 += 4
                 버프지속시간:TARGETV:2 == SKILL_DATA:(LCOUNT+1)
                 버프위력:TARGETV:2 = 50
+            CASE 9;공격력버프 중
+                SIF (CFLAG:TARGETV:버프적용중 & 2) == 0
+                    CFLAG:TARGETV:버프적용중 += 2
+                버프지속시간:TARGETV:1 == SKILL_DATA:(LCOUNT+1)
+                버프위력:TARGETV:1 = 80
+            CASE 10;방어력버프 중
+                SIF (CFLAG:TARGETV:버프적용중 & 4) == 0
+                    CFLAG:TARGETV:버프적용중 += 4
+                버프지속시간:TARGETV:2 == SKILL_DATA:(LCOUNT+1)
+                버프위력:TARGETV:2 = 80
+            CASE 11;공격력버프 대
+                SIF (CFLAG:TARGETV:버프적용중 & 2) == 0
+                    CFLAG:TARGETV:버프적용중 += 2
+                버프지속시간:TARGETV:1 == SKILL_DATA:(LCOUNT+1)
+                버프위력:TARGETV:1 = 110
+            CASE 12;방어력버프 대
+                SIF (CFLAG:TARGETV:버프적용중 & 4) == 0
+                    CFLAG:TARGETV:버프적용중 += 4
+                버프지속시간:TARGETV:2 == SKILL_DATA:(LCOUNT+1)
+                버프위력:TARGETV:2 = 110
+            CASE 13;아이템 소모
+                IF !ITEM_CONSUMED_ONCE && SKILL_DATA:(LCOUNT+1) != 0
+                    ITEM:(SKILL_DATA:(LCOUNT+1)) --
+                    PRINTFORML %ITEMNAME:(SKILL_DATA:(LCOUNT+1))% 1개를 나눠 마셨다.
+                    WAITANYKEY
+                    ITEM_CONSUMED_ONCE = SKILL_DATA:(LCOUNT+1)
+                ENDIF
+            CASE 14;SP 회복
+                CALLFORM SKILL_DATA_{SKILLV},SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV
+                IF SKILL_DATA:(LCOUNT+1) != 0
+                    BASE:TARGETV:영혼 += SKILL_DATA:(LCOUNT+1)
+                    SIF BASE:TARGETV:영혼 > MAXBASE:TARGETV:영혼
+                        BASE:TARGETV:영혼 = MAXBASE:TARGETV:영혼
+                    PRINTFORML %CALLNAME:TARGETV%의 SP가 {SKILL_DATA:(LCOUNT+1)} 만큼 회복했다!
+                    WAITANYKEY
+                ENDIF
         ENDSELECT
     ENDIF
 NEXT
@@ -679,7 +719,9 @@ FOR LCOUNT,0,5
     IF (BASUTECHECK & NUMV) != 0
         ;상태이상판정
         RESISTV = 0
-        IF LCOUNT == 1
+        IF LCOUNT == 0
+            RESISTV = 50 * BASE:TARGETV:즉사내성
+        ELSEIF LCOUNT == 1
             RESISTV = 20 * BASE:TARGETV:독내성
         ELSEIF LCOUNT == 2
             RESISTV = 20 * BASE:TARGETV:출혈내성
