@@ -608,6 +608,7 @@ ENDSELECT
 
 @SKILL_MAKE_EFFECT(SKILLV,USERV,TARGETV)
 #DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
 #DIM DYNAMIC SKILLV
 #DIM DYNAMIC USERV
 #DIM DYNAMIC TARGETV
@@ -705,6 +706,22 @@ FOR LCOUNT,스킬_부가효과,스킬_부가효과2+2,2
                     PRINTFORML %CALLNAME:TARGETV%의 SP가 {SKILL_DATA:(LCOUNT+1)} 만큼 회복했다!
                     WAITANYKEY
                 ENDIF
+            CASE 15;상태이상 치유
+                SELECTCASE SKILL_DATA:(LCOUNT+1)
+                    CASE 0;즉사 제외 전부치유
+                        FOR LCOUNT2,2,6
+                            SIF ISBASUTE(TARGETV,LCOUNT2)
+                                CFLAG:TARGETV:상태이상 -= POWER(2,LCOUNT2)
+                        NEXT
+                    CASE 1;일반
+                        IF ISDYING(TARGETV)
+                            CFLAG:TARGETV:상태이상 -= 1
+                            BASE:TARGETV:희망 = 5
+                        ENDIF
+                    CASE 2 TO 5;일반상태이상
+                        SIF ISBASUTE(TARGETV,SKILL_DATA:(LCOUNT+1))
+                            CFLAG:TARGETV:상태이상 -= POWER(2,SKILL_DATA:(LCOUNT+1))
+                ENDSELECT
         ENDSELECT
     ENDIF
 NEXT

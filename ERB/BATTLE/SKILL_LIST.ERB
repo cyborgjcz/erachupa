@@ -441,7 +441,7 @@ SKILL_DATA:스킬_유형 = 1;회복
 SKILL_DATA:스킬_조건스탯 = 3;자비
 SKILL_DATA:스킬_스탯수치 = 20
 SKILL_DATA:스킬_베이스값 = 0
-SKILL_DATA:스킬_범위유형 = 4;자신
+SKILL_DATA:스킬_범위유형 = 4;아군전체
 SKILL_DATA:스킬_의존값 = 4
 SKILL_DATA:스킬_명중율 = 100
 SKILL_DATA:스킬_소모값 = 16
@@ -472,6 +472,107 @@ SKILL_DATA:스킬_방어값 = 1;방어력
 SKILL_DATA:스킬_명중율 = 94
 SKILL_DATA:스킬_소모값 = 30
 SKILL_DATA:스킬_소모BASE = 1
+
+@SKILL_DATA_20(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "１Ｋ나이프"
+SKILL_HELP '= "사방에서　급습하는　칼날"
+SKILL_TEXT '= "천 여 개의 나이프를 공중에 띄우고 날려보내 공격했다"
+SKILL_DESCRIPTION '= "이름대로 천 개의 날붙이를 날려 작은 대미지를 주고 높은 확률로 출혈 상태 이상을 부여한다."
+SKILL_DATA:스킬_유형 = 0;공격
+SKILL_DATA:스킬_조건스탯 = 2;예리
+SKILL_DATA:스킬_스탯수치 = 8
+SKILL_DATA:스킬_베이스값 = 46
+SKILL_DATA:스킬_범위유형 = 0;단일적
+SKILL_DATA:스킬_의존값 = 2;예리
+SKILL_DATA:스킬_방어값 = 1;방어력
+SKILL_DATA:스킬_명중율 = 97
+SKILL_DATA:스킬_소모값 = 3
+SKILL_DATA:스킬_소모BASE = 1
+SKILL_DATA:스킬_부가효과 = 3;출혈
+SKILL_DATA:스킬_부가효과값 = 72
+
+@SKILL_DATA_21(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "힐링아로마"
+SKILL_HELP '= "상태이상을　치유하는　향기"
+SKILL_TEXT '= "동료들의 상태이상을 치유하는 아로마를 피웠다"
+SKILL_DESCRIPTION '= "동료 모두의 약간의 HP를 회복하고 모든 종류의 상태이상을 회복한다."
+SKILL_DATA:스킬_유형 = 1;회복
+SKILL_DATA:스킬_조건스탯 = 3;자비
+SKILL_DATA:스킬_스탯수치 = 7
+SKILL_DATA:스킬_베이스값 = 5
+SKILL_DATA:스킬_범위유형 = 4;아군전체
+SKILL_DATA:스킬_의존값 = 3
+SKILL_DATA:스킬_명중율 = 100
+SKILL_DATA:스킬_소모값 = 3
+SKILL_DATA:스킬_소모BASE = 1;SP
+SKILL_DATA:스킬_부가효과 = 16;상태이상 치유
+SKILL_DATA:스킬_부가효과값 = 0;전종
+
+@SKILL_DATA_22(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "도발"
+SKILL_HELP '= "적　격앙　＆　공격력　상승"
+SKILL_TEXT '= "가슴을 쿵쿵 두드리며 무시하는 언어로 적을 도발했다"
+SKILL_DESCRIPTION '= "적을 높은 확률로 격앙 상태로 만들지만 공격력도 추가로 조금 상승시킨다. 격앙 상태이상 자체의 공격력 보정과 별도."
+SKILL_DATA:스킬_조건스탯 = 2;예리
+SKILL_DATA:스킬_스탯수치 = 10
+SKILL_DATA:스킬_베이스값 = 0
+SKILL_DATA:스킬_범위유형 = 0;단일적
+SKILL_DATA:스킬_의존값 = 4;고정값
+SKILL_DATA:스킬_방어값 = 0;방어무시
+SKILL_DATA:스킬_명중율 = 100
+SKILL_DATA:스킬_회피율역보정 = 100
+SKILL_DATA:스킬_소모값 = 4
+SKILL_DATA:스킬_소모BASE = 1
+SKILL_DATA:스킬_부가효과 = 5;격앙
+SKILL_DATA:스킬_부가효과값 = 100
+SKILL_DATA:스킬_부가효과2 = 7;공격력버프 소
+SKILL_DATA:스킬_부가효과값2 = 3
+
+@SKILL_DATA_23(SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,USERV)
+#DIMS REF SKILL_NAME
+#DIMS REF SKILL_HELP
+#DIMS REF SKILL_TEXT
+#DIMS REF SKILL_DESCRIPTION
+#DIM REF SKILL_DATA,0
+#DIM DYNAMIC USERV
+
+SKILL_NAME '= "１Ｍ나이프"
+SKILL_HELP '= "팔방에서　쏟아내리는　칼날"
+SKILL_TEXT '= "백만을 넘는 나이프를 공중에 띄워 벌집으로 만들 기세로 공격했다"
+SKILL_DESCRIPTION '= "셀 수 없는 수의 나이프를 날려 적 전체에게 중간 대미지를 주고 높은 확률로 출혈 상태 이상을 부여한다."
+SKILL_DATA:스킬_유형 = 0;공격
+SKILL_DATA:스킬_조건스탯 = 2;예리
+SKILL_DATA:스킬_스탯수치 = 16
+SKILL_DATA:스킬_베이스값 = 72
+SKILL_DATA:스킬_범위유형 = 3;적전체
+SKILL_DATA:스킬_의존값 = 2;예리
+SKILL_DATA:스킬_방어값 = 1;방어력
+SKILL_DATA:스킬_명중율 = 94
+SKILL_DATA:스킬_소모값 = 12
+SKILL_DATA:스킬_소모BASE = 1
+SKILL_DATA:스킬_부가효과 = 3;출혈
+SKILL_DATA:스킬_부가효과값 = 76
 
 [SKIPSTART]
 ;이하 수정 후 파기하는 예정의 데이터
