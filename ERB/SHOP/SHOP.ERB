@@ -150,6 +150,7 @@ SELECTCASE KEY
             CALL SHOP_EVENT_CHAPTER0(401)
         IF RESULT == 1
             ;통상 소라 이벤트
+            CALL GACHA_SCENE
         ENDIF
     CASE 500
         SIF FLAG:탐색대상던전 != 0

@@ -413,7 +413,7 @@ SKILL_DATA:스킬_부가효과값 = 15
 #DIM DYNAMIC USERV
 
 SKILL_NAME '= "웃음기차지"
-SKILL_HELP '= "사기를　높이는　한　발　물러남"
+SKILL_HELP '= "사기를　높이는　물러나기"
 SKILL_TEXT '= "뒤로 물러나 다음 공격의 위력을 상승시켰다"
 SKILL_DESCRIPTION '= "방어하는 자세를 취하며 힘을 모아 일시적으로 자신의 공격력을 중간 정도 상승시킨다"
 SKILL_DATA:스킬_유형 = 2;방어
@@ -435,12 +435,14 @@ SKILL_DATA:스킬_부가효과값 = 2
 
 SKILL_NAME '= "피날레"
 SKILL_HELP '= "아군　공격력　크게　상승"
-SKILL_TEXT '= "이 싸움을 마무리할 일격에 대비했다"
+SKILL_TEXT '= "이 싸움을 마무리할 일격을 준비했다"
 SKILL_DESCRIPTION '= "3턴 동안 아군 전체의 공격력을 크게 상승시킨다"
 SKILL_DATA:스킬_유형 = 1;회복
 SKILL_DATA:스킬_조건스탯 = 3;자비
 SKILL_DATA:스킬_스탯수치 = 20
+SKILL_DATA:스킬_베이스값 = 0
 SKILL_DATA:스킬_범위유형 = 4;자신
+SKILL_DATA:스킬_의존값 = 4
 SKILL_DATA:스킬_명중율 = 100
 SKILL_DATA:스킬_소모값 = 16
 SKILL_DATA:스킬_소모BASE = 1;SP
