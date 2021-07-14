@@ -152,6 +152,13 @@ SELECTCASE KEY
             ;통상 소라 이벤트
             CALL GACHA_SCENE
         ENDIF
+    CASE 402
+        SIF !FLAG:스토리1진행도
+            CALL SHOP_EVENT_CHAPTER0(402)
+        IF RESULT == 1
+            ;통상 화이트보드 이벤트
+            CALL WHITEBOARD_SCENE
+        ENDIF
     CASE 500
         SIF FLAG:탐색대상던전 != 0
             CALL SHOW_CHARA_INFO(FLAG:1)

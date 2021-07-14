@@ -1,0 +1,69 @@
+﻿@WHITEBOARD_DATA_1(MODEV,KEYV=0,KEYS="")
+#DIM DYNAMIC MODEV
+#DIM DYNAMIC KEYV
+#DIMS DYNAMIC KEYS
+;익스플로잇 1번가 (던전 1층) 에서 전투 3회로 해금되는 화이트보드 과제
+SELECTCASE MODEV
+    CASE WHITEBOARD_NAME
+        RESULTS = 하찌미~
+        RETURN 1
+    CASE WHITEBOARD_PRINT
+        REPEAT 20
+            SELECTCASE COUNT
+                CASE 8
+                    PRINT_SPACE 1200
+                    SETCOLORBYNAME Black
+                   PRINTFORML 목표 : %DUNGEONNAME:1%에서 전투 3회 ({WHITEBOARD_FLAG:1:1}회)        
+                CASE 10
+                    PRINT_SPACE 1900
+                    IF ISHERO([[안나]]) && ISHERO ([[유리코]])
+                        SETCOLOR CHARACOLOR([[미라이]])
+                        PRINTL ↑ 게임?
+                    ELSEIF ISHERO([[안나]])
+                        SETCOLOR CHARACOLOR([[유리코]])
+                        PRINTL ↑ 〓△〓;; 이쪽도 신작 게임 달리고 있구나
+                    ELSE
+                        SETCOLOR CHARACOLOR([[안나]])
+                        PRINTL ↑ 무슨 게임? 안나도 끼워줘! (o′▽｀o)
+                    ENDIF
+                    RESETCOLOR 
+                CASE 12
+                    PRINT_SPACE 1950
+                    SETCOLOR CHARACOLOR(FLAG:2)
+                    PRINTL 게임 얘기 아닌데..
+                    RESETCOLOR
+                CASE 14
+                    PRINT_SPACE 2000
+                    IF ISHERO([[안나]]) && ISHERO ([[유리코]])
+                        SETCOLOR CHARACOLOR([[미라이]])
+                    ELSEIF ISHERO([[안나]])
+                        SETCOLOR CHARACOLOR([[유리코]])
+                    ELSE
+                        SETCOLOR CHARACOLOR([[안나]])
+                    ENDIF
+                    PRINTL 응???
+                    RESETCOLOR 
+                CASEELSE
+                    PRINTL
+            ENDSELECT
+        REND
+    CASE WHITEBOARD_ENABLE
+        SIF WHITEBOARD_FLAG:1:0
+            RETURN 0
+        RETURN 1
+    CASE WHITEBOARD_CLEAR
+        IF WHITEBOARD_FLAG:1:1 >= 3
+            WHITEBOARD_FLAG:1:0 = 1
+            RETURN 1
+        ENDIF
+    CASE WHITEBOARD_INCREASE
+        SELECTCASE KEYS
+            CASE "던전에서전투"
+                SIF KEYV == 1
+                    WHITEBOARD_FLAG:1:1 += 1
+        ENDSELECT
+    CASE WHITEBOARD_REWARD
+        PRINTL 장비 아이템 한결같이 내일을 향해를 얻었다.
+        ITEM:[[한결같이내일을향해]] += 1
+        WAITANYKEY
+ENDSELECT
