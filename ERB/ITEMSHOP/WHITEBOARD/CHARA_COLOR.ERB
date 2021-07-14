@@ -1,0 +1,132 @@
+﻿@MIX_COLOR(COLOR0,COLOR1)
+#FUNCTION
+#DIM DYNAMIC COLOR0
+#DIM DYNAMIC COLOR1
+#DIM DYNAMIC CODEV
+#DIM DYNAMIC REDV,2
+#DIM DYNAMIC GREENV,2
+#DIM DYNAMIC BLUEV,2
+
+REPEAT 2
+	SELECTCASE COUNT
+		CASE 0
+			CODEV = COLOR0
+		CASE 1
+			CODEV = COLOR1
+	ENDSELECT
+	REDV:COUNT = CODEV / 0x010000
+	GREENV:COUNT = (CODEV % 0x010000) / 0x000100
+	BLUEV:COUNT = (CODEV % 0x010000) % 0x000100 
+REND 
+
+RETURNF (SUMARRAY(REDV)/2)*65536 + (SUMARRAY(GREENV)/2)*256 + (SUMARRAY(BLUEV)/2)
+
+@CHARACOLOR(KEYV)
+#FUNCTION
+#DIM DYNAMIC KEYV
+SELECTCASE KEYV
+    CASE [[하루카]]
+        RETURNF 0xE22B30
+    CASE [[치하야]]
+        RETURNF 0x2743D2
+    CASE [[미키]]
+        RETURNF 0xB4E04B
+    CASE [[유키호]]
+        RETURNF 0xD3DDE9
+    CASE [[야요이]]
+        RETURNF 0xF39939
+    CASE [[마코토]]
+        RETURNF 0x515558
+    CASE [[이오리]]
+        RETURNF 0xFD99E1
+    CASE [[타카네]]
+        RETURNF 0xA6126A
+    CASE [[리츠코]]
+        RETURNF 0x01A860
+    CASE [[아즈사]]
+        RETURNF 0x9238BE
+    CASE [[아미]],[[마미]]
+        RETURNF 0xFFE43F
+    CASE [[히비키]]
+        RETURNF 0x01ADB9
+    CASE [[미라이]]
+        RETURNF 0xEA5B76
+    CASE [[시즈카]]
+        RETURNF 0x6495CF
+    CASE [[츠바사]]
+        RETURNF 0xFED552
+    CASE [[코토하]]
+        RETURNF 0x92CFBB
+    CASE [[엘레나]]
+        RETURNF 0x9BCE92
+    CASE [[미나코]]
+        RETURNF 0x58A6DC
+    CASE [[메구미]]
+        RETURNF 0x454341
+    CASE [[마츠리]]
+        RETURNF 0x5ABFB7
+    CASE [[세리카]]
+        RETURNF 0xED90BA
+    CASE [[아카네]]
+        RETURNF 0xEB613F
+    CASE [[안나]]
+        RETURNF 0x7E6CA8
+    CASE [[로코]]
+        RETURNF 0xFFF03C
+    CASE [[유리코]]
+        RETURNF 0xC7B93C
+    CASE [[사요코]]
+        RETURNF 0x7F6575
+    CASE [[아리사]]
+        RETURNF 0xB54461
+    CASE [[우미]]
+        RETURNF 0xE9739B
+    CASE [[이쿠]]
+        RETURNF 0xF7E78E
+    CASE [[토모카]]
+        RETURNF 0xBEE3E3
+    CASE [[에밀리]]
+        RETURNF 0x554171
+    CASE [[시호]]
+        RETURNF 0xAFA690
+    CASE [[아유무]]
+        RETURNF 0xE25A9B
+    CASE [[히나타]]
+        RETURNF 0xD1342C
+    CASE [[카나]]
+        RETURNF 0xF5AD3B
+    CASE [[나오]]
+        RETURNF 0x788BC5
+    CASE [[치즈루]]
+        RETURNF 0xF19257
+    CASE [[코노미]]
+        RETURNF 0xF1BECB
+    CASE [[타마키]]
+        RETURNF 0xEE762E
+    CASE [[후우카]]
+        RETURNF 0x7278A8
+    CASE [[미야]]
+        RETURNF 0xD7A96B
+    CASE [[노리코]]
+        RETURNF 0xECEB70
+    CASE [[미즈키]]
+        RETURNF 0x99B7DC
+    CASE [[카렌]]
+        RETURNF 0xB63B40
+    CASE [[리오]]
+        RETURNF 0xF19591
+    CASE [[스바루]]
+        RETURNF 0xAEB49C
+    CASE [[레이카]]
+        RETURNF 0x6BB6B0
+    CASE [[모모코]]
+        RETURNF 0xEFB864
+    CASE [[줄리아]]
+        RETURNF 0xD7385F
+    CASE [[츠무기]]
+        RETURNF 0xB5B1E1
+    CASE [[카오리]]
+        RETURNF 0x18206B
+    CASEELSE
+        RETURNF 0x101010
+ENDSELECT
