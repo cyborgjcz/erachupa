@@ -1,0 +1,60 @@
+﻿@SHOW_SKILL_INFO(KEYV)
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC LCOUNT
+
+#DIMS DYNAMIC SKILL_NAME
+#DIMS DYNAMIC SKILL_HELP
+#DIMS DYNAMIC SKILL_TEXT
+#DIMS DYNAMIC SKILL_DESCRIPTION
+#DIM DYNAMIC SKILL_DATA,SKILL_DATA_LEN
+
+CALL EQ_APPLY_STAT(KEYV)
+FOR LCOUNT,0,8
+    VARSET SKILL_DATA
+    IF AVAILABLE_SKILL:KEYV:LCOUNT != 0
+        PRINT ＊
+        CALLFORM SKILL_DATA_{AVAILABLE_SKILL:KEYV:LCOUNT},SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,KEYV
+        SIF (SKILL_DATA:2 > BASE:KEYV:((SKILL_DATA:1)+1) && SKILL_DATA:3 == 0)
+            SETCOLORBYNAME DimGray
+        PRINTFORM %SKILL_NAME%
+        PRINT_SPACE 100 * (5 - STRLENSU(SKILL_NAME))
+        SELECTCASE SKILL_DATA:스킬_조건스탯
+            CASE 1
+                PRINTFORM  패기 LV{SKILL_DATA:스킬_스탯수치}
+            CASE 2
+                PRINTFORM  예리 LV{SKILL_DATA:스킬_스탯수치}
+            CASE 3
+                PRINTFORM  자비 LV{SKILL_DATA:스킬_스탯수치}
+        ENDSELECT
+        SELECTCASE SKILL_DATA:스킬_유형
+            CASE 0
+                PRINT  공격 스킬
+            CASE 1
+                PRINT  보조 스킬
+            CASE 2
+                PRINT  방어 스킬
+            CASE 3
+                PRINT  변신 스킬
+            CASE 4
+                PRINT  도주 스킬
+        ENDSELECT
+        SELECTCASE SKILL_DATA:스킬_범위유형
+            CASE 0
+                PRINT  단일 적
+            CASE 1
+                PRINT  자신
+            CASE 2
+                PRINT  단일 아군
+            CASE 3
+                PRINT  적 전체
+            CASE 4
+                PRINT  아군 전체
+        ENDSELECT
+        PRINTL  대상
+        PRINTSL SKILL_HELP
+        PRINTSL SKILL_DESCRIPTION
+        PRINTL
+        RESETCOLOR
+    ENDIF
+NEXT
+WAITANYKEY

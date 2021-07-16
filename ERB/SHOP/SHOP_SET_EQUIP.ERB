@@ -198,7 +198,8 @@ DO
     DRAWLINE
     IF SCENEV == 0
         PRINTL 변경할 장비를 선택하세요
-        PRINTBUTTON "[q] 스테이터스 표시","q" 
+        PRINTBUTTON "[q] 스테이터스 표시","q"
+        PRINTBUTTON "[e] 스킬 정보 표시","e" 
         PRINTBUTTON "[w] ↑ ","w"
         PRINTBUTTON "[s] ↓ ","s"
         PRINTBUTTON "[u] 결정","u"
@@ -231,6 +232,9 @@ DO
                 CASE "q"
                     LOOPSWITCH = 0
                     SSWITCH = 1
+                CASE "e"
+                    LOOPSWITCH = 2
+                    CALL SHOW_SKILL_INFO(KEYV)
             ENDSELECT
         CASE 1
             SELECTCASE RESULTS
@@ -262,9 +266,14 @@ DO
                     ENDIF
                 CASE "u"
                     IF ITEMLISTA:CURSOR2 != 0
-                        ITEM:(EQUIP:KEYV:CURSOR1) += 1
-                        EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
-                        ITEM:(ITEMLISTA:CURSOR2) -= 1
+                        CALLFORM EQ_위치_{ITEMLISTA:CURSOR2}
+                        IF CHUPA_EQUIP_PLACE:(ITEMLISTA:CURSOR2) != 1
+                            ITEM:(EQUIP:KEYV:CURSOR1) += 1
+                            EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
+                            ITEM:(ITEMLISTA:CURSOR2) -= 1
+                        ELSE
+                            EQUIP:KEYV:CURSOR1 = ITEMLISTA:CURSOR2
+                        ENDIF
                         CALL EQ_APPLY_STAT(KEYV)
                         SCENEV = 0
                         PAGEV = 0
@@ -281,8 +290,8 @@ DO
             CLEARLINE 1
         REUSELASTLINE
     ENDIF
+    SIF LOOPSWITCH != 0 && LOOPSWITCH != 1
+        LOOPSWITCH = 1
 LOOP LOOPSWITCH
-IF SSWITCH != 0
-    INFO_TO_EQUIP = 0
+SIF SSWITCH == 1
     CALL SHOW_CHARA_INFO(KEYV)
-ENDIF

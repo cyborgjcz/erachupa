@@ -1,0 +1,209 @@
+﻿[SKIPSTART]
+테스트용 서브이벤트
+@SUB_EVENT1(TARGETV)
+#DIM DYNAMIC TARGETV
+SELECTCASE TARGETV
+    CASE 서브_플레이
+        PRINTL 하찌미, 하찌미 하찌미~ 하찌미를 핥으면
+        PRINTL 다리가 다리가 다리가~ 빨라진다네~
+        WAITANYKEY
+        서브_실행플래그:1 = 2
+    CASE 서브_이름
+        RESULTS = 테스트 서브 이벤트
+        RETURN 1
+    CASE 서브_등장인물        
+        RESULTS = %CALLNAME:(FLAG:1)%, %CALLNAME:(FLAG:2)%
+        RETURN 1
+    CASE 서브_조건
+        RETURN 1
+    CASE 서브_장소
+        RETURN 서브_극장조사
+ENDSELECT
+[SKIPEND]
+
+@SUB_EVENT1(TARGETV)
+#DIM DYNAMIC TARGETV
+#DIMS DYNAMIC LTEXT,3
+SELECTCASE TARGETV
+    CASE 서브_플레이
+        PRINTL 언제나처럼 시끌벅적한 극장 내부.
+        WAITANYKEY
+        PRINTL 보컬 레슨이 끝난 아이돌들이
+        PRINTL 대기실에 오손도손 모여 간식을 먹을 참이었다.
+        WAITANYKEY
+        LTEXT = 휴우~ 다들 수고했어!
+        CALL TALK_WITH_IMG(FACE([[아카네]],2),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        LTEXT = 제가 마실 걸 준비해올게요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_1_K{FLAG:2}")
+        LTEXT = 츠무기쨩, 나는 콜드브루 커피가 좋아!
+        CALL TALK_WITH_IMG(FACE([[레이카]],5),CALLNAME:[[레이카]],LTEXT)
+        WAITANYKEY
+        LTEXT = ...지금부터 내리면 내일에야 드실 수 있어서 안 돼요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_2_K{FLAG:2}")
+        PRINTL 그때, 아카네가 외마디 비명을 질렀다.
+        WAITANYKEY
+        LTEXT = 또야~??!
+        CALL TALK_WITH_IMG(FACE([[아카네]],5),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        LTEXT = 무슨 일이죠, 노노하라 씨?
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_3_K{FLAG:2}")
+        LTEXT = 아카네쨩의 푸딩이 또 없어졌다구!
+        CALL TALK_WITH_IMG(FACE([[아카네]],4),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        LTEXT = 분명 냉장고 안 잘 보이는 곳에 놔뒀는데...
+        CALL TALK_WITH_IMG(FACE([[아카네]],5),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        LTEXT = 앗! 아카네쨩이랑 나눠먹으려고 했는데!
+        CALL TALK_WITH_IMG(FACE([[레이카]],4),CALLNAME:[[레이카]],LTEXT)
+        WAITANYKEY
+        LTEXT = 아카네쨩 혼자 먹을 예정이었다니까?!
+        CALL TALK_WITH_IMG(FACE([[아카네]],3),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_4_K{FLAG:2}")
+        LTEXT = 네? 네.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_5_K{FLAG:2}")
+        LTEXT = 으으응, 어쩔 수 없지!
+        CALL TALK_WITH_IMG(FACE([[아카네]],5),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        PRINTL
+        CALL GLOW_TEXT_CHUP("아카네쨩의 푸딩을 슬쩍한 범인을 찾아라!",2,0)
+        WAITANYKEY
+        PRINTL
+        LTEXT = 탐정에게 수사의뢰를 할거야!
+        CALL TALK_WITH_IMG(FACE([[아카네]],2),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_6_K{FLAG:2}")
+        LTEXT = 저요, 저요! 탐정 역 입후보합니다~
+        CALL TALK_WITH_IMG(FACE([[레이카]],2),CALLNAME:[[레이카]],LTEXT)
+        WAITANYKEY
+        LTEXT = 레이카쨩은 용의선상에 올라있으니까 안돼!
+        CALL TALK_WITH_IMG(FACE([[아카네]],4),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_7_K{FLAG:2}")
+        LTEXT = 그렇다면, 이 자리에 없었던 분에게 판단을 부탁드리는 게 어떨까요?
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        LTEXT = 오, 역시 똑똑한데 츠무링~
+        LTEXT:1 = 탐정 역할은 츠무링으로 낙점이야!
+        CALL TALK_WITH_IMG(FACE([[아카네]],1),CALLNAME:[[아카네]],LTEXT,LTEXT:1)
+        WAITANYKEY
+        LTEXT = 뭐꼬?!
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        PRINTL ......
+        WAITANYKEY
+        PRINTL ...
+        WAITANYKEY
+        PRINTL 그렇게 사설탐정 시라이시 츠무기의 수사가 시작되었다.
+        WAITANYKEY
+        PRINTFORML %조사처리(CALLNAME:(FLAG:2),"는")% 츠무기에게 대기실 출입 이력 조사를 부탁받았다.
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_8_K{FLAG:2}")
+        LTEXT = 예, 일리 있는 말씀이세요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_9_K{FLAG:2}")
+        LTEXT = ......
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_10_K{FLAG:2}")
+        LTEXT = 사실은, 누가 범인인지 이미 파악이 끝났어요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_11_K{FLAG:2}")
+        LTEXT = 범인은 바로......
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        LTEXT = 저예요!
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_12_K{FLAG:2}")
+        LTEXT = 뭔가요, 그 아무래도 믿기지가 않는다는 표정은!
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_13_K{FLAG:2}")
+        LTEXT = ......자초지종은 이래요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        PRINTL
+        PRINTL 츠무기의 설명에 따르면,
+        WAITANYKEY
+        PRINTL 안미츠(팥빙수와 비슷한 화과자의 일종)를 담은 그릇을 냉장고에 넣어두려다가
+        PRINTL 공간이 부족해서 잘 안 보이는 곳에 푸딩을 치워놓았다는 것이다.
+        WAITANYKEY
+        PRINTL
+        PRINTL 츠무기가 푸딩이 담긴 상자를 꺼내보였다.
+        WAITANYKEY
+        LTEXT = 이렇게 푸딩은 무사해요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_14_K{FLAG:2}")
+        LTEXT = 아니오.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        LTEXT = 아무래도, 이 사실을 밝히기가 조금......
+        LTEXT:1 = 노노하라 씨는 저를 믿고 탐정 일을 맡겼는데
+        LTEXT:2 = 정작 제가 범인이라면 실망하시지 않을까요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT,LTEXT:1,LTEXT:2)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_15_K{FLAG:2}")
+        LTEXT = 예?
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        PRINTL ......
+        WAITANYKEY
+        PRINTL ...
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_16_K{FLAG:2}")
+        LTEXT = 정말이야?
+        CALL TALK_WITH_IMG(FACE([[아카네]],3),CALLNAME:[[아카네]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_17_K{FLAG:2}")
+        LTEXT = 그런데 범인은 누구였어요?
+        CALL TALK_WITH_IMG(FACE([[레이카]],1),CALLNAME:[[레이카]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT1_18_K{FLAG:2}")
+        LTEXT = 에이, 아쉽다.
+        CALL TALK_WITH_IMG(FACE([[레이카]],4),CALLNAME:[[레이카]],LTEXT)
+        WAITANYKEY
+        LTEXT = 괜찮아! 어차피 같은 극장 친구였을텐데.
+        LTEXT:1 = 그럼 다 같이 간식 먹자!
+        CALL TALK_WITH_IMG(FACE([[아카네]],2),CALLNAME:[[아카네]],LTEXT,LTEXT:1)
+        WAITANYKEY
+        LTEXT = 여러분, 많이 기다리셨죠. 간식 시간이에요.
+        CALL TALK_WITH_IMG(FACE([[츠무기]],1),CALLNAME:[[츠무기]],LTEXT)
+        WAITANYKEY
+        LTEXT = 와아!
+        CALL TALK_WITH_IMG(FACE([[레이카]],2),CALLNAME:[[레이카]],LTEXT)
+        WAITANYKEY
+        PRINTL 달콤한 향기와 소녀들의 웃음소리가 어우러져 대기실을 밝게 채워갔다.
+        WAITANYKEY
+        PRINTL ......
+        WAITANYKEY
+        PRINTL ...
+        WAITANYKEY
+        서브_실행플래그:1 = 2
+    CASE 서브_이름
+        RESULTS = 푸딩 도난 사건의 범인은 누구?!
+        RETURN 1
+    CASE 서브_등장인물        
+        RESULTS = 　　　등장인물 : %CALLNAME:[[아카네]]%, %CALLNAME:[[레이카]]%, %CALLNAME:[[츠무기]]%, %CALLNAME:(FLAG:2)%
+        RETURN 1
+    CASE 서브_조건
+        IF !ISHERO([[아카네]]) && !ISHERO([[레이카]]) && !ISHERO([[츠무기]]) && FLAG:스토리0진행도 >= 5
+            RETURN 1
+        ELSE
+            RETURN 0
+        ENDIF
+    CASE 서브_장소
+        RETURN 서브_극장조사
+ENDSELECT

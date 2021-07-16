@@ -3,6 +3,11 @@
 ;BEGIN SHOP, LOADDATA 등 통칭 메인 화면 표시 함수
 ;-----------------------------------------------------------
 @SHOW_SHOP
+REPEAT 2
+    BASE:(FLAG:(COUNT+1)):희망 = MAXBASE:(FLAG:(COUNT+1)):희망
+    BASE:(FLAG:(COUNT+1)):영혼 = MAXBASE:(FLAG:(COUNT+1)):영혼
+REND
+
 CALL REAL_DAILY
 SELECTCASE BGM_BEFORE_BATTLE
     CASE "s1.mp3"
@@ -65,6 +70,12 @@ RESETCOLOR
 RESETCOLOR
 PRINTLC [400] 미사키를 찾아간다
 PRINTLC [401] 소라를 찾아간다
+IF FLAG:탐색대상던전 == 0
+    SETCOLORBYNAME DimGray
+    PRINTLC [???] ???
+ELSEIF FLAG:탐색대상던전 != 0
+    PRINTLC [402] 화이트보드를 본다
+ENDIF
 PRINTL
 IF FLAG:탐색대상던전 == 0
     SETCOLORBYNAME DimGray
@@ -107,14 +118,18 @@ SELECTCASE KEY
     CASE 200
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(200)
+        RESULT = 1
         IF RESULT == 1
             ;통상 극장 살펴보기 이벤트
+            CALL SUB_EVENT_SCENE(서브_극장조사)
         ENDIF
     CASE 201
         SIF !FLAG:스토리1진행도
             CALL SHOP_EVENT_CHAPTER0(201)
+        RESULT = 1
         IF RESULT == 1
             ;통상 거리 살펴보기 이벤트
+            CALL SUB_EVENT_SCENE(서브_거리조사)
         ENDIF
     CASE 202
         SIF !FLAG:스토리1진행도
@@ -132,6 +147,7 @@ SELECTCASE KEY
             CALL SHOP_EVENT_CHAPTER0(400)
         ENDIF
         IF RESULT == 1
+            CALL DRESSMAKING_SCENE
             ;통상 미사키 이벤트
         ENDIF
     CASE 401
@@ -139,19 +155,40 @@ SELECTCASE KEY
             CALL SHOP_EVENT_CHAPTER0(401)
         IF RESULT == 1
             ;통상 소라 이벤트
+            CALL GACHA_SCENE
+        ENDIF
+    CASE 402
+        SIF !FLAG:스토리1진행도
+            CALL SHOP_EVENT_CHAPTER0(402)
+        IF RESULT == 1
+            ;통상 화이트보드 이벤트
+            CALL WHITEBOARD_SCENE
         ENDIF
     CASE 500
         SIF FLAG:탐색대상던전 != 0
             CALL SHOW_CHARA_INFO(FLAG:1)
     CASE 501
-        PRINTL 누구의 장비를 설정합니까?
-        PRINTBUTTON @"[1] %CALLNAME:(FLAG:1)%",1
-        PRINTBUTTON @"[2] %CALLNAME:(FLAG:2)%",2
-        INPUT
-        SELECTCASE RESULT
-            CASE 1 TO 2
-                CALL SHOW_SET_EQUIP(FLAG:RESULT)
-        ENDSELECT
+        IF FLAG:탐색대상던전 != 0
+            PRINTL 누구의 장비를 설정합니까?
+            PRINTBUTTON @"[1] %CALLNAME:(FLAG:1)%",1
+            PRINTBUTTON @"[2] %CALLNAME:(FLAG:2)%",2
+            INPUT
+            SELECTCASE RESULT
+                CASE 1 TO 2
+                    CALL SHOW_SET_EQUIP(FLAG:RESULT)
+            ENDSELECT
+        ENDIF
+    CASE 502
+        IF FLAG:탐색대상던전 != 0
+            PRINTL 누구의 스킬 정보를 봅니까?
+            PRINTBUTTON @"[1] %CALLNAME:(FLAG:1)%",1
+            PRINTBUTTON @"[2] %CALLNAME:(FLAG:2)%",2
+            INPUT
+            SELECTCASE RESULT
+                CASE 1 TO 2
+                    CALL SHOW_SKILL_INFO(FLAG:RESULT)
+            ENDSELECT
+        ENDIF
     CASE 600
         SAVEGAME
     CASE 700

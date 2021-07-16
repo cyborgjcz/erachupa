@@ -1,0 +1,20 @@
+﻿@GACHA_DATA_1(GACHA_OPEN,GACHA_NAME,GACHA_HELP,GACHA_LEN,GACHA_ITEMA,GACHA_PRICE)
+#DIM REF GACHA_OPEN
+#DIMS REF GACHA_NAME
+#DIMS REF GACHA_HELP
+#DIM REF GACHA_LEN,0
+#DIM REF GACHA_ITEMA,0,0
+#DIM REF GACHA_PRICE
+
+;초기 가챠이므로 무조건 열려 있음
+GACHA_OPEN = 1
+
+GACHA_NAME '= "엔트리 기프트 가챠"
+GACHA_HELP '= "강적과의 싸움에서 도움이 되는 서포트 스킬 만전의 레어 카드가 봉입!" 
+
+GACHA_LEN:0 = 1,3,3
+GACHA_ITEMA:0:0 = [[SSR어서와우리극장에!아마미하루카]]
+GACHA_ITEMA:1:0 = [[R메르헨메이드키사라기치하야]],[[감응형스마트섬유]],[[스파크드링크30]]
+GACHA_ITEMA:2:0 = [[롤케이크]],[[목캔디]],[[스파크드링크20]]
+
+GACHA_PRICE = 500

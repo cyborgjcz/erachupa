@@ -1,0 +1,132 @@
+﻿@SUB_EVENT_SCENE(WHERV)
+#DIM DYNAMIC WHERV;서브_극장조사 또는 서브_거리조사
+#DIM DYNAMIC LCOUNT;FOR반복문 카운터
+#DIM DYNAMIC EVENTLISTA,서브_이벤트_최대;참조하는 생성된 조건에 일치하는 이벤트 리스트
+#DIM DYNAMIC EVENTNUM;현재 생성된 리스트의 길이
+#DIM DYNAMIC CURSORV;이벤트를 선택하는 커서
+#DIM DYNAMIC PAGEV;현재 넘긴 페이지 수
+#DIM DYNAMIC PAGEMAX;페이지 수의 최대치
+#DIM DYNAMIC PAGELEN = 10
+#DIM DYNAMIC LOOPSWITCH
+#DIM DYNAMIC TOERASE
+#DIM DYNAMIC ALARMV
+
+LOOPSWITCH = 1
+DO
+    TOERASE = 32
+    ALARMV = 0
+    EVENTNUM = 0
+    VARSET EVENTLISTA,0
+    FOR LCOUNT,0,서브_이벤트_최대
+        CALL SUB_EVENT(LCOUNT,서브_장소)
+        SIF RESULT != WHERV
+            CONTINUE
+        CALL SUB_EVENT(LCOUNT,서브_조건)
+        SIF !RESULT
+            CONTINUE
+        SELECTCASE 서브_실행플래그:LCOUNT
+            CASE 0
+                ALARMV += 1
+                서브_실행플래그:LCOUNT = 1
+            CASE 2
+                CONTINUE
+        ENDSELECT
+        EVENTLISTA:EVENTNUM = LCOUNT
+        EVENTNUM ++
+    NEXT
+    SIF ALARMV != 0
+        CALL GLOW_TEXT_CHUP(@"새로 추가된 이벤트가 {ALARMV} 건 있습니다.",RAND:3)
+    IF !EVENTNUM
+        PRINTL ......
+        PRINTL ...
+        PRINTL 아직 특별한 일은 일어나지 않은 것 같다...
+        WAITANYKEY
+        BREAK
+    ENDIF
+    PAGEMAX = (EVENTNUM - 1) / PAGELEN
+    FOR LCOUNT,0,PAGELEN
+        IF !EVENTLISTA:LCOUNT && LCOUNT < PAGELEN
+            TOERASE -= 3
+            CONTINUE
+        ENDIF
+        IF CURSORV == (PAGEV * PAGELEN)+LCOUNT
+            SETCOLOR 0xfee12b
+            PRINTL ♪
+            RESETCOLOR
+        ELSE
+            PRINTL
+        ENDIF
+        CALL SUB_EVENT(EVENTLISTA:LCOUNT,서브_이름)
+        PRINTSL RESULTS
+        CALL SUB_EVENT(EVENTLISTA:LCOUNT,서브_등장인물)
+        PRINTSL RESULTS
+    NEXT
+    SIF PAGEV > 0
+        PRINTBUTTON "[a] ← 이전 페이지" ,"a"
+    PRINT |
+    SIF PAGEV < PAGEMAX && PAGEV != PAGEMAX
+        PRINTBUTTON "[d] → 다음 페이지","d"
+    PRINTL
+    PRINTBUTTON "[w] ↑ ","w"
+    PRINTBUTTON "[s] ↓ ","s"
+    PRINTBUTTON "[u] 결정","u"
+    PRINTBUTTON "[x] 돌아간다","x"
+    ONEINPUTS
+    SELECTCASE RESULTS
+        CASE "u"
+            CALL SUB_EVENT(EVENTLISTA:CURSORV,서브_플레이)
+            LOOPSWITCH = 0
+        CASE "x"
+            LOOPSWITCH = 0
+        CASE "a"
+            IF PAGEV > 0
+                PAGEV -= 1
+                CURSORV -= PAGELEN
+                SIF CURSORV < 0
+                    CURSORV = 0
+            ENDIF
+        CASE "d"
+            IF PAGEV < PAGEMAX
+                PAGEV += 1
+                CURSORV += PAGELEN
+                SIF CURSORV > (EVENTNUM - 1)
+                    CURSORV = (EVENTNUM - 1)
+            ENDIF
+        CASE "w"
+            IF CURSORV > 0
+                SIF CURSORV % PAGELEN == 0
+                    PAGEV -= 1
+                CURSORV -= 1
+            ENDIF
+        CASE "s"
+            IF CURSORV < EVENTNUM-1
+                SIF CURSORV % PAGELEN == (PAGELEN-1)
+                    PAGEV += 1
+                CURSORV += 1
+            ENDIF
+    ENDSELECT
+    IF LOOPSWITCH == 1
+        CLEARLINE TOERASE
+        SIF RESULTS != ""
+            CLEARLINE 1
+        REUSELASTLINE
+    ENDIF
+LOOP LOOPSWITCH
+
+@SUB_EVENT(KEYV,TARGETV)
+#DIM DYNAMIC KEYV
+#DIM DYNAMIC TARGETV
+VARSET RESULTS
+TRYCCALLFORM SUB_EVENT{KEYV}, TARGETV
+    SELECTCASE TARGETV
+        CASE 서브_플레이
+            RETURN 1
+        CASE 서브_이름,서브_등장인물
+            RESULTS = %RESULTS%
+            RETURN 1
+        CASE 서브_조건,서브_장소
+            RETURN RESULT
+    ENDSELECT
+CATCH
+    RETURN 0
+ENDCATCH
