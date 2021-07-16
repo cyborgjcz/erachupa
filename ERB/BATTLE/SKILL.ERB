@@ -119,6 +119,11 @@ ELSE
     ;페널티 부여
     SIF !WIDE
         CALL APPLY_SKILL_PENALTY(USERV,SKILL_DATA:스킬_페널티,SKILL_DATA:스킬_페널티베이스)
+
+    IF BASE:TARGETV:희망 <= 0 && (CFLAG:TARGETV:상태이상 & 1) != 1
+        CFLAG:TARGETV:상태이상 += 1
+        BASE:TARGETV:희망 = 0
+    ENDIF
 ENDIF
 
 ;적 전체 공격

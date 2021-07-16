@@ -3,6 +3,11 @@
 ;BEGIN SHOP, LOADDATA 등 통칭 메인 화면 표시 함수
 ;-----------------------------------------------------------
 @SHOW_SHOP
+REPEAT 2
+    BASE:(FLAG:(COUNT+1)):희망 = MAXBASE:(FLAG:(COUNT+1)):희망
+    BASE:(FLAG:(COUNT+1)):영혼 = MAXBASE:(FLAG:(COUNT+1)):영혼
+REND
+
 CALL REAL_DAILY
 SELECTCASE BGM_BEFORE_BATTLE
     CASE "s1.mp3"

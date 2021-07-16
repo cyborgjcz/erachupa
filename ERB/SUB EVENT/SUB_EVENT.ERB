@@ -21,6 +21,9 @@ DO
         CALL SUB_EVENT(LCOUNT,서브_장소)
         SIF RESULT != WHERV
             CONTINUE
+        CALL SUB_EVENT(LCOUNT,서브_조건)
+        SIF !RESULT
+            CONTINUE
         SELECTCASE 서브_실행플래그:LCOUNT
             CASE 0
                 ALARMV += 1
@@ -28,9 +31,6 @@ DO
             CASE 2
                 CONTINUE
         ENDSELECT
-        CALL SUB_EVENT(LCOUNT,서브_조건)
-        SIF !RESULT
-            CONTINUE
         EVENTLISTA:EVENTNUM = LCOUNT
         EVENTNUM ++
     NEXT

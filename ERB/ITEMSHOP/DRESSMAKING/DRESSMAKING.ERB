@@ -247,7 +247,7 @@ DO
                 CASE "x"
                     LOOPSWITCH = 0
                 CASE ""
-                    ERASEMORE = -1
+                    ERASEMORE = 0
                 CASEELSE
                     ERASEMORE = 1
             ENDSELECT
@@ -257,6 +257,7 @@ DO
     REUSELASTLINE
 LOOP LOOPSWITCH
 CBGCLEAR
+GDISPOSE 0
 SIF WILLRESTART
     RESTART
 

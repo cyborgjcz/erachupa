@@ -582,6 +582,7 @@ IF TFLAG:전투결과 == 1
                 WAITANYKEY
             ENDIF
             MONEYCOUNT += CFLAG:(TFLAG:LCOUNT2):제공머니
+            CALL WHITEBOARD_COUNTING_UP(TFLAG:LCOUNT2,"처치")
         ENDIF
     NEXT
     MONEY += MONEYCOUNT
