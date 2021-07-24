@@ -4,7 +4,7 @@
 #DEFINE OY_DURATION 2
 #DEFINE OY_DIRECTION 3
 #DEFINE OY_STATUS 4
-;0 = 정지 1 = 포물선 2 = 자유낙하 3= 스파이크?
+;0 = 정지 1 = 포물선 2 = 자유낙하 3= 스파이크? 4= 점프, 3비트 = 아이돌 좌우이동
 #DEFINE OY_TARGET 5
 #DEFINE OY_DIRECTION_NEXT 6
 #DEFINE OY_STATUS_NEXT 7
