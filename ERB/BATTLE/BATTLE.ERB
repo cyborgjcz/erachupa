@@ -1508,6 +1508,7 @@ IF (CFLAG:USERV:버프적용중 & BITV) != 0
         CFLAG:USERV:버프적용중 -= BITV
 ENDIF
 
+;대상 지정, 목표 지정 불가 판정
 @BATTLE_CANNOTTARGET(KEYV)
 #FUNCTION
 #DIM DYNAMIC KEYV
