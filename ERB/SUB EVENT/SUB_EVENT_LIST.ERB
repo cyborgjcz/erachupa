@@ -207,3 +207,112 @@ SELECTCASE TARGETV
     CASE 서브_장소
         RETURN 서브_극장조사
 ENDSELECT
+
+@SUB_EVENT2(TARGETV)
+#DIM DYNAMIC TARGETV
+#DIMS DYNAMIC LTEXT,3
+SELECTCASE TARGETV
+    CASE 서브_플레이
+        PRINTL
+        PRINTFORML %조사처리(CALLNAME:(FLAG:1),"와")% %조사처리(CALLNAME:(FLAG:2),"는")% 극장에서 가까운 공원을 돌아다니다가 멀리서 유리코를 발견했다.
+        WAITANYKEY
+        PRINTL 자세히 보면 나오와 에밀리도 같이 있다.
+        PRINTL
+        WAITANYKEY
+        LTEXT = Wow! 이것이 일본의 선진적인 놀이 문화군요!
+        CALL TALK_WITH_IMG(FACE([[에밀리]],1),CALLNAME:[[에밀리]],LTEXT)
+        WAITANYKEY
+        LTEXT = 아니, 에밀리쨩. 사방치기는 한국이나 다른 여러 나라에서도 많이 하는 놀이야.
+        CALL TALK_WITH_IMG(FACE([[유리코]],1),CALLNAME:[[유리코]],LTEXT)
+        WAITANYKEY
+        LTEXT = 듣자 하니 유리코는 잘 아는 것 같고 안 봐줘도 되겠꾸마.
+        CALL TALK_WITH_IMG(FACE([[나오]],1),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 엑.
+        CALL TALK_WITH_IMG(FACE([[유리코]],2),CALLNAME:[[유리코]],LTEXT)
+        WAITANYKEY
+        PRINTL 세 아이돌은 바닥에 금을 그어 단순한 도형을 그려놓고 플라스틱 제 공깃돌을 던져놓았다.
+        WAITANYKEY
+        LTEXT = 에밀리는 잘 모르면 내 먼저 시범을 보여줄게.
+        CALL TALK_WITH_IMG(FACE([[나오]],4),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 아래, 왼쪽부터 1부터 세어서 8까지 칸들에 이름을 붙여서, 우선 1에 공깃돌을 던지가!
+        CALL TALK_WITH_IMG(FACE([[나오]],5),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        PRINTL
+        PRINTL 나오가 능숙한 솜씨로 깡총깡총 빗금을 넘어 뛰어간다.
+        WAITANYKEY
+        PRINTL 우선 1번째 칸을 피해서 한쪽 발만으로 섰다가 양발로 섰다가 외발로 섰다가를 반복하여,
+        PRINTL 마지막 칸에서 제자리에서 빙글 돌아 1번 칸에 공깃돌을 주워 돌아왔다.
+        PRINTL
+        WAITANYKEY
+        LTEXT = 봤나. 이걸 8번씩 해가... 다 끝나면 등돌아 서가 뒤로 돌을 던진데이.
+        CALL TALK_WITH_IMG(FACE([[나오]],1),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 금에 닿았네.
+        CALL TALK_WITH_IMG(FACE([[나오]],4),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 금에 안 닿고 칸에 들어가면 완주한 아가 그 칸을 따묵고
+        LTEXT:1 = 다른 아들은 못 밟는다 이거다.
+        CALL TALK_WITH_IMG(FACE([[나오]],1),CALLNAME:[[나오]],LTEXT,LTEXT:1)
+        WAITANYKEY
+        LTEXT = 무척 흥미진진한 규칙의 놀이에요!
+        CALL TALK_WITH_IMG(FACE([[에밀리]],2),CALLNAME:[[에밀리]],LTEXT)
+        WAITANYKEY
+        LTEXT = 하지만 치마를 입고서는 조금...
+        CALL TALK_WITH_IMG(FACE([[에밀리]],3),CALLNAME:[[에밀리]],LTEXT)
+        WAITANYKEY
+        LTEXT = 누가 본다고.
+        CALL TALK_WITH_IMG(FACE([[나오]],4),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 일단은 아이돌인데...
+        CALL TALK_WITH_IMG(FACE([[유리코]],3),CALLNAME:[[유리코]],LTEXT)
+        WAITANYKEY
+        LTEXT = 유리코부터 해 봐라.
+        CALL TALK_WITH_IMG(FACE([[나오]],2),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 엑.
+        CALL TALK_WITH_IMG(FACE([[유리코]],2),CALLNAME:[[유리코]],LTEXT)
+        WAITANYKEY
+        PRINTL
+        PRINTL 아이돌들이 작은 빗금을 건너 뛰어다니며 놀고 웃는다
+        PRINTL
+        WAITANYKEY
+        LTEXT = 유리코 씨, 금 밟았어요.
+        CALL TALK_WITH_IMG(FACE([[에밀리]],5),CALLNAME:[[에밀리]],LTEXT)
+        WAITANYKEY
+        LTEXT = 한번만, 한번만 봐줘요!
+        CALL TALK_WITH_IMG(FACE([[유리코]],4),CALLNAME:[[유리코]],LTEXT)
+        WAITANYKEY
+        LTEXT = 유리코가 제일 못하니까 그 정도는 봐줄라꼬.
+        CALL TALK_WITH_IMG(FACE([[나오]],2),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 분하다...!
+        CALL TALK_WITH_IMG(FACE([[유리코]],3),CALLNAME:[[유리코]],LTEXT)
+        WAITANYKEY
+        LTEXT = 그건 그래도 에밀리가 의외로 이런 데 재능이 있단 말이지?
+        CALL TALK_WITH_IMG(FACE([[나오]],3),CALLNAME:[[나오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 과찬이세요.
+        CALL TALK_WITH_IMG(FACE([[에밀리]],2),CALLNAME:[[에밀리]],LTEXT)
+        WAITANYKEY
+        PRINTL
+        PRINTL 그대로 이들을 지켜보는 것도 재밌을 것 같았지만,
+        PRINTFORML %조사처리(CALLNAME:(FLAG:1),"와")% %조사처리(CALLNAME:(FLAG:2),"는")% 이만 극장으로 돌아가기로 했다.
+        서브_실행플래그:2 = 2
+        WAITANYKEY
+    CASE 서브_이름
+        RESULTS = 사방치기
+        RETURN 1
+    CASE 서브_등장인물        
+        RESULTS = %CALLNAME:[[유리코]]%, %CALLNAME:[[에밀리]]%, %CALLNAME:[[나오]]%
+        RETURN 1
+    CASE 서브_조건
+        IF !ISHERO([[유리코]]) && !ISHERO([[에밀리]]) && !ISHERO([[나오]]) && FLAG:스토리0진행도 >= 5
+            RETURN 1
+        ELSE
+            RETURN 0
+        ENDIF
+    CASE 서브_장소
+        RETURN 서브_거리조사
+ENDSELECT
