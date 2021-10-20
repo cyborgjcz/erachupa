@@ -432,10 +432,14 @@ SELECTCASE TARGETV
         RESULTS = 노 커리 노 라이프
         RETURN 1
     CASE 서브_등장인물        
-        RESULTS = 안나, 카나, 리오, %CALLNAME:(FLAG:1)%
+        RESULTS = %CALLNAME:[[안나]]%, %CALLNAME:[[카나]]%, %CALLNAME:[[리오]]%, %CALLNAME:(FLAG:1)%
         RETURN 1
     CASE 서브_조건
-        RETURN 1
+        IF !ISHERO([[안나]]) && !ISHERO([[카나]]) && !ISHERO([[리오]]) && FLAG:스토리0진행도 >= 5
+            RETURN 1
+        ELSE
+            RETURN 0
+        ENDIF
     CASE 서브_장소
         RETURN 서브_거리조사
 ENDSELECT
