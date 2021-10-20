@@ -316,3 +316,126 @@ SELECTCASE TARGETV
     CASE 서브_장소
         RETURN 서브_거리조사
 ENDSELECT
+
+@SUB_EVENT3(TARGETV)
+#DIM DYNAMIC TARGETV
+#DIMS DYNAMIC LTEXT,3
+SELECTCASE TARGETV
+    CASE 서브_플레이
+        PRINTL 시즈카와 안나, 카나, 리오는 식당가의 커리집에 식사하러 왔다.
+        PRINTL
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_1_K{FLAG:1}")
+        LTEXT = 걱정할 거 없어. 여기 커리는 맛있거든.
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 대표 메뉴는 카레~ 주방장은 요리를 잘해~♪
+        CALL TALK_WITH_IMG(FACE([[카나]],2),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 나중에 카레 CM 송을 부르고 싶어요!
+        CALL TALK_WITH_IMG(FACE([[카나]],5),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_2_K{FLAG:1}")
+        LTEXT = ...카나, 좀 조용히......
+        CALL TALK_WITH_IMG(FACE([[안나]],5),CALLNAME:[[안나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 먹고 나서 다 같이 부르자.
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 와!
+        CALL TALK_WITH_IMG(FACE([[카나]],2),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 그런 것보다, 커리랑 카레는 사실 다른 거야.
+        CALL TALK_WITH_IMG(FACE([[리오]],4),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_3_K{FLAG:1}")
+        LTEXT = 그래요? 어떻게 다른데요?
+        CALL TALK_WITH_IMG(FACE([[카나]],1),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 그건......
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 뭐라고 설명해야 하지.
+        CALL TALK_WITH_IMG(FACE([[리오]],3),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 카레는...... 밀가루를 볶은 루를 써서...... 걸쭉한...... 식감이고,
+        LTEXT:1 = ...커리는 다양한...... 향신료로 만든 마살라......를 중심으로 만들어......
+        CALL TALK_WITH_IMG(FACE([[안나]],2),CALLNAME:[[안나]],LTEXT,LTEXT:1)
+        WAITANYKEY
+        LTEXT = 쌀밥과...... 함께 먹는 카레와 달리...... 커리는 주로 난을 함께 먹어...
+        CALL TALK_WITH_IMG(FACE([[안나]],1),CALLNAME:[[안나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 우와, 안나쨩 박식하다!
+        CALL TALK_WITH_IMG(FACE([[카나]],1),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 대단한데.
+        CALL TALK_WITH_IMG(FACE([[리오]],2),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 그만해요......
+        CALL TALK_WITH_IMG(FACE([[안나]],3),CALLNAME:[[안나]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_4_K{FLAG:1}")
+        LTEXT = ......게임에서.
+        CALL TALK_WITH_IMG(FACE([[안나]],3),CALLNAME:[[안나]],LTEXT)
+        WAITANYKEY
+        PRINTL
+        PRINTL 그때 종업원이 찾아왔다.
+        WAITANYKEY
+        PRINTL
+        LTEXT = 치킨 티카 마살라, 에그 빈달루, 버터 치킨 마크니, 팔락 파니르 하나씩 주세요.
+        LTEXT:1 = 사람 수 만큼 접시도.
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT,LTEXT:1)
+        WAITANYKEY
+        PRINTL
+        PRINTL 종업원은 주문을 메모한 뒤 인사하고는 주방으로 돌아갔다.
+        WAITANYKEY
+        PRINTL
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_5_K{FLAG:1}")
+        LTEXT = 여러 종류를 다 같이 나눠먹을까 해서.
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 어차피 내가 사는 건데 불만 있니? 후후.
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 없습니다!
+        CALL TALK_WITH_IMG(FACE([[카나]],2),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 없어요.
+        CALL TALK_WITH_IMG(FACE([[안나]],2),CALLNAME:[[안나]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_6_K{FLAG:1}")
+        LTEXT = 리오 씨는 여기 자주 오세요?
+        CALL TALK_WITH_IMG(FACE([[카나]],1),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 그런 셈? 예전부터 찾아오고 했으니까.
+        CALL TALK_WITH_IMG(FACE([[리오]],5),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        LTEXT = 그렇구나!
+        CALL TALK_WITH_IMG(FACE([[카나]],2),CALLNAME:[[카나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 안나......배고파.
+        CALL TALK_WITH_IMG(FACE([[안나]],3),CALLNAME:[[안나]],LTEXT)
+        WAITANYKEY
+        LTEXT = 시즈카쨩도 많이 먹어둬.
+        CALL TALK_WITH_IMG(FACE([[리오]],2),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_7_K{FLAG:1}")
+        LTEXT = 할 일이 있잖아?
+        CALL TALK_WITH_IMG(FACE([[리오]],1),CALLNAME:[[리오]],LTEXT)
+        WAITANYKEY
+        CALL KOJO_CATCH(@"KOJO_SUB_EVENT3_8_K{FLAG:1}")
+        PRINTL
+        PRINTL 아이돌 일행은 즐거운 식사 시간을 보냈다.
+        서브_실행플래그:3 = 2
+        WAITANYKEY
+        PRINTL
+    CASE 서브_이름
+        RESULTS = 노 커리 노 라이프
+        RETURN 1
+    CASE 서브_등장인물        
+        RESULTS = 안나, 카나, 리오, %CALLNAME:(FLAG:1)%
+        RETURN 1
+    CASE 서브_조건
+        RETURN 1
+    CASE 서브_장소
+        RETURN 서브_거리조사
+ENDSELECT
