@@ -54,8 +54,12 @@ DO
     CBGCLEAR
     GCREATE 0,620,400
     GSETBRUSH 0, 0xFFFFFFFF
-    GFILLRECTANGLE 0, 0, 0, 620, GETCONFIG("一行の高さ")*20
-    CBGSETG 0, 0, GETCONFIG("一行の高さ")*3, 1
+    GFILLRECTANGLE 0, 0, 0, 620-20, GETCONFIG("一行の高さ")*20-20
+    GCREATE 1,620,400
+    GSETBRUSH 1, 0xFF454552
+    GFILLRECTANGLE 1, 0, 0, 620, GETCONFIG("一行の高さ")*20
+    CBGSETG 1, 0, GETCONFIG("一行の高さ")*3, 1
+    CBGSETG 0, 10, GETCONFIG("一行の高さ")*3+10, 1
 
     ;화이트보드 내부 문자열 출력
     TRYCCALLFORM WHITEBOARD_DATA_{WBLISTA:CURSORV},WHITEBOARD_PRINT
@@ -101,6 +105,7 @@ DO
         CASE "x"
             CBGCLEAR
             GDISPOSE 0
+            GDISPOSE 1
             LOOPSWITCH = 0
         CASE ""
             TOERASE -= 1
