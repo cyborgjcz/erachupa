@@ -76,6 +76,8 @@ IF !JUDGEBYCOVER
                 ENDIF
             CASE 8;출구;테스트
                 RESULTVALUE:LCOUNT = 0
+            CASE 9
+                RESULTVALUE:LCOUNT = 2
             CASEELSE
                 RESULTVALUE:LCOUNT = 0
         ENDSELECT
@@ -115,8 +117,10 @@ ELSEIF JUDGEBYCOVER
                 ENDIF
             CASE "暗"
                 RESULTVALUE:LCOUNT = 2
-            CASE "□","보","덫","승","강","↑", "→", "↓", "←","Ｔ","ｔ","Ｅ","ｍ","宝","罠","降","昇"
+            CASE "□","보","덫","승","강","Ｔ","ｔ","Ｅ","ｍ","宝","罠","降","昇"
                 RESULTVALUE:LCOUNT = 0
+            CASE "↑", "→", "↓", "←"
+                RESULTVALUE:LCOUNT = 2
             CASE "Ｘ"
                 RESULTVALUE:LCOUNT = 0
             CASE "！"
@@ -386,6 +390,18 @@ SELECTCASE D3D_CURRENT_MAPDATA:XCOORD:YCOORD % 10
         SETCOLOR D3D_STAIR_COLOR
     CASE 8
         RESULTS '= "출"
+        SETCOLOR D3D_EXIT_COLOR
+    CASE 9
+        SELECTCASE D3D_CURRENT_MAPDATA:XCOORD:YCOORD
+            CASE 9
+                RESULTS '= "↑"
+            CASE 19
+                RESULTS '= "→"
+            CASE 29
+                RESULTS '= "↓"
+            CASE 39
+                RESULTS '= "←"
+        ENDSELECT
         SETCOLOR D3D_EXIT_COLOR
 ENDSELECT
 RETURN 1

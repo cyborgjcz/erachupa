@@ -59,6 +59,9 @@ SELECTCASE COMV
         ELSEIF FLAG:스토리0진행도 == 4
             CALL EVENT_COMMON_CHAPTER0_202_4
             RETURN RESULT
+        ELSEIF FLAG:스토리0진행도 == 9
+            CALL EVENT_COMMON_CHAPTER0_202_9
+            RETURN RESULT
         ENDIF
     CASE 300
         IF FLAG:스토리0진행도 == 4
@@ -69,7 +72,7 @@ SELECTCASE COMV
             ELSE
                 RETURN 1
             ENDIF
-        ELSEIF FLAG:스토리0진행도 == 5
+        ELSEIF FLAG:스토리0진행도 >= 5
             RETURN 1
         ELSE
             RETURN 0
