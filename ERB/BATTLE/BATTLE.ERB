@@ -375,7 +375,7 @@ DO
         ;게스트 ATB 처리
         IF 게스트 > 0
             SIF CFLAG:게스트:ATB카운터 < MAX_ATB
-                CFLAG:게스트:ATB카운터 += (BASE:게스트:행동력 + CFLAG:게스트:ATB가속 - CFLAG:게스트:ATB감속)
+                CFLAG:게스트:ATB카운터 += (BASE:게스트:행동력 + CFLAG:게스트:ATB가속 - CFLAG:게스트:ATB감속)/2
             IF CFLAG:게스트:ATB카운터 >= MAX_ATB
                 CFLAG:게스트:ATB카운터 = MAX_ATB
                 게스트행동 = 1
