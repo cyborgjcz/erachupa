@@ -1,6 +1,204 @@
-@BATTLE_GUEST_AI_COMMAND
+﻿@BATTLE_GUEST_AI_COMMAND
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TYPEV
 #DIM DYNAMIC TARGETV
+#DIM DYNAMIC SKILLV
 
-TARGETV = 2
+;REF 참조를 위한 변수
+#DIMS DYNAMIC SKILL_NAME
+#DIMS DYNAMIC SKILL_HELP
+#DIMS DYNAMIC SKILL_TEXT
+#DIMS DYNAMIC SKILL_DESCRIPTION
+#DIM DYNAMIC SKILL_DATA,SKILL_DATA_LEN
 
-RETURN 0,TARGETV,0
+#DIM DYNAMIC SKILLNUM,5 ;이하의 5종류의 스킬 등록 갯수 저장
+#DIM DYNAMIC DEALSKILL,8;공격
+#DIM DYNAMIC HEALSKILL,8;회복
+#DIM DYNAMIC BUFFSKILL,8;버프
+#DIM DYNAMIC CURESKILL,8;치유
+#DIM DYNAMIC SPHEALSKILL,8;SP회복
+
+#DIM DYNAMIC WHATEFFECT,5
+
+#DIM DYNAMIC SORTARRAY,3
+#DIM DYNAMIC CHOICEARRAY,3 = 0,1,2
+#DIM DYNAMIC TARGETDOMAINV
+
+REPEAT 8
+    SIF !AVAILABLE_SKILL:게스트:COUNT
+        CONTINUE
+    {
+        CALLFORM SKILL_DATA_{AVAILABLE_SKILL:게스트:COUNT},
+        SKILL_NAME,SKILL_HELP,SKILL_TEXT,SKILL_DESCRIPTION,SKILL_DATA,게스트
+    }
+
+    SIF SKILL_DATA:스킬_스탯수치 > BASE:게스트:((SKILL_DATA:스킬_조건스탯)+1) && SKILL_DATA:스킬_약화사용 == 0
+        CONTINUE
+
+    SELECTCASE SKILL_DATA:스킬_유형
+        CASE 0
+            ;공격
+            DEALSKILL:(SKILLNUM:0) = AVAILABLE_SKILL:게스트:COUNT
+            SKILLNUM:0 ++
+
+        CASE 1
+            ;회복버프
+            FOR LCOUNT,0,2
+                SELECTCASE LCOUNT
+                    CASE 0
+                        WHATEFFECT = 스킬_부가효과
+                    CASE 1
+                        WHATEFFECT = 스킬_부가효과2
+                ENDSELECT
+                SELECTCASE SKILL_DATA:WHATEFFECT
+                    CASE 7 TO 12
+                        ;버프
+                        ;중복 확인용 WAHTEFFECT 변수로 같은 종류 스킬 복수 등록을 방지한다
+                        IF !WHATEFFECT:2
+                            BUFFSKILL:(SKILLNUM:2) = AVAILABLE_SKILL:게스트:COUNT
+                            SKILLNUM:2 ++
+                            WHATEFFECT:2 ++
+                        ENDIF
+                    CASE 14
+                        ;SP 회복
+                        IF !WHATEFFECT:4
+                            SPHEALSKILL:(SKILLNUM:4) = AVAILABLE_SKILL:게스트:COUNT
+                            SKILLNUM:4 ++
+                            WHATEFFECT:4 ++
+                        ENDIF
+                    CASE 15
+                        ;상태이상 치유
+                        IF !WHATEFFECT:3
+                            CURESKILL:(SKILLNUM:3) = AVAILABLE_SKILL:게스트:COUNT
+                            SKILLNUM:3 ++
+                            WHATEFFECT:3 ++
+                        ENDIF
+                    CASEELSE
+                        ;그외(순수 회복)
+                        IF !WHATEFFECT:1
+                            HEALSKILL:(SKILLNUM:1) = AVAILABLE_SKILL:게스트:COUNT
+                            SKILLNUM:1 ++
+                            WHATEFFECT:1 ++
+                        ENDIF
+                ENDSELECT
+            NEXT
+    ENDSELECT
+REND
+
+;초회 행동 버프 우선
+IF !TFLAG:게스트첫행동 && SKILLNUM:2
+    SKILLV = BUFFSKILL:(RAND:(SKILLNUM:2))
+    TYPEV = 1
+    TARGETV = 1
+ELSE
+    ;불리전투회화스위치 체크
+    REPEAT 15
+        SIF !COUNT
+            CONTINUE
+        GETBIT TFLAG:불리전투회화스위치,COUNT
+        IF RESULT
+            SELECTCASE COUNT
+                CASE 1,2
+                    ;HP부족
+                    SKILLV = HEALSKILL:(RAND:(SKILLNUM:1))
+                    TYPEV = 1
+                    SELECTCASE COUNT
+                        CASE 1
+                            TARGETV = 1
+                        CASE 2
+                            TARGETV = 2
+                    ENDSELECT
+                    GOTO ENDOFFUNC
+                CASE 3,5,7,9
+                    ;동료1 상태이상
+                    SKILLV = CURESKILL:(RAND:(SKILLNUM:3))
+                    TYPEV = 1
+                    TARGETV = 1
+                    GOTO ENDOFFUNC
+                CASE 4,6,8,10
+                    ;동료2 상태이상
+                    SKILLV = CURESKILL:(RAND:(SKILLNUM:3))
+                    TYPEV = 1
+                    TARGETV = 2
+                    GOTO ENDOFFUNC
+                CASE 13,14
+                    ;SP 부족
+                    SKILLV = SPHEALSKILL:(RAND:(SKILLNUM:4))
+                    TYPEV = 1
+                    SELECTCASE COUNT
+                        CASE 13
+                            TARGETV = 1
+                        CASE 14
+                            TARGETV = 2
+                    ENDSELECT
+                    GOTO ENDOFFUNC
+            ENDSELECT
+        ENDIF
+    REND
+    ;불리전투회화스위치 체크 완료
+    ;빈도 체크
+    SORTARRAY:0 = SKILLNUM:0,SKILLNUM:1,SKILLNUM:2
+    ARRAYMSORT SORTARRAY,CHOICEARRAY
+
+    SELECTCASE RAND:6
+        CASE 4 TO 5
+            TARGETDOMAINV = -1
+        CASE 2 TO 3
+            IF SKILLNUM:(CHOICEARRAY:2)
+                TARGETDOMAINV = CHOICEARRAY:2
+            ELSE
+                TARGETDOMAINV = -1
+            ENDIF
+        CASE 1
+            IF SKILLNUM:(CHOICEARRAY:1)
+                TARGETDOMAINV = CHOICEARRAY:1
+            ELSE
+                TARGETDOMAINV = -1
+            ENDIF
+        CASE 0
+            IF SKILLNUM:(CHOICEARRAY:0)
+                TARGETDOMAINV = CHOICEARRAY:0
+            ELSE
+                TARGETDOMAINV = -1
+            ENDIF
+    ENDSELECT
+    SELECTCASE TARGETDOMAINV
+        CASE -1
+            DEBUGPRINTFORML SKILLNUM = {SKILLNUM:0} {SKILLNUM:1} {SKILLNUM:2}
+            SKILLV = 0
+            TYPEV = 0
+            TARGETV = BATTLE_GUEST_AI_ENEMY_LOCK()
+        CASE 0
+            SKILLV = DEALSKILL:(RAND:(SKILLNUM:0))
+            TYPEV = 1
+            TARGETV = BATTLE_GUEST_AI_ENEMY_LOCK()
+        CASE 1
+            SKILLV = HEALSKILL:(RAND:(SKILLNUM:1))
+            TYPEV = 1
+            TARGETV = (RAND:2)+1
+        CASE 2
+            SKILLV = BUFFSKILL:(RAND:(SKILLNUM:2))
+            TYPEV = 1
+            TARGETV = (RAND:2)+1
+    ENDSELECT
+ENDIF
+$ENDOFFUNC
+SIF !TFLAG:게스트첫행동
+    TFLAG:게스트첫행동 ++
+RETURN TYPEV,TARGETV,SKILLV
+
+@BATTLE_GUEST_AI_ENEMY_LOCK
+#FUNCTION
+#DIM DYNAMIC ENEMYA,6
+#DIM DYNAMIC ENEMYNUM
+
+REPEAT 7
+    SIF !COUNT
+        CONTINUE
+    IF !BATTLE_CANNOTTARGET(TFLAG:COUNT)
+        ENEMYA:ENEMYNUM = COUNT
+        ENEMYNUM ++
+    ENDIF
+REND
+
+RETURNF ENEMYA:(RAND:ENEMYNUM)
