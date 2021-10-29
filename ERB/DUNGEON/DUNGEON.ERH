@@ -1,8 +1,13 @@
 ﻿#DIM CONST DUNGEONFLOORNUM = 3
 #DIMS CONST DUNGEONNAME,DUNGEONFLOORNUM = "","익스플로잇 시티 1번가","익스플로잇 시티 2번가"
-
+;던전 내부에 있음
 #DIM INDUNGEON
-
+;던전 랜덤 인카운터
 #DIM ENCOUNTER_TURN
-
+;던전 인카운터 가산치
 #DIM ENCOUNTER_MODIFIER
+;평소에는 빈 칸이지만 설정될 수 있는 던전 표시 텍스트
+#DIMS SAVEDATA DUNGEON_EXTRA_TEXT
+;던전 내 이동 시마다 증가하는 타이머
+#DIM DUNGEON_TIMER_ACTIVATE
+#DIM DUNGEON_TIMER

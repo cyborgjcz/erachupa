@@ -333,7 +333,7 @@ RESETDATA
 BEGIN TITLE
 
 ;좌표가 던전 내 2차원 평면 범위 내에 있는지 판정하는 함수
-@DUNGEON_IN_FIELD(XL,XR,YH,YL,XCOORD=-1,YCOORD=-1)
+@DUNGEON_IN_FIELD(XL,XR=-1,YH,YL=-1,XCOORD=-1,YCOORD=-1)
 #FUNCTION
 #DIM DYNAMIC XL
 #DIM DYNAMIC XR
@@ -342,6 +342,12 @@ BEGIN TITLE
 #DIM DYNAMIC XCOORD
 #DIM DYNAMIC YCOORD
 
+;X와 Y의 각 두번째 인자는 생략할 경우 한 점의 영역을 가리키도록 초기화
+SIF XR == -1
+    XR = XL
+SIF YL == -1
+    YL = YH
+;5,6번은 전달받지 않으면 자동으로 플레이어 좌표로
 SIF XCOORD == -1
     XCOORD = D3D_PLAYER_XCOORD
 SIF YCOORD == -1

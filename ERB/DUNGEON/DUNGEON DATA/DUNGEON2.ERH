@@ -1,0 +1,15 @@
+﻿#DIM SAVEDATA DUNGEON2_FLAG,9
+;0=첫입장 판정 플래그
+;1~5 오토이벤트 플래그
+;6 첫번째 퍼즐 시도 횟수
+;7 12,2 인터액션 이벤트 재생 횟수
+;8 두번째 퍼즐 시도 횟수
+
+#DIM SAVEDATA DUNGEON2_SWITCH,4
+;0=첫입장 1= 첫번째 퍼즐 클리어 2= 3,5 문잠금 
+;3= 4,1 인터액션 이벤트 재생 여부 4= 15,6 인터액션 이벤트 재생여부
+
+#DIM DUNGEON2_PUZZLE1_SCORE
+#DIM DUNGEON2_PUZZLE1_COUNTER1
+#DIM DUNGEON2_PUZZLE1_COUNTER2
+#DIM DUNGEON2_PUZZLE1_COUNTER3

@@ -758,6 +758,10 @@ FOR LCOUNT,0,24
                 PRINT_SPACE 200
                 PRINTFORM 탐색중 : %DUNGEONNAME:(FLAG:탐색대상던전)%
             ENDIF
+        ELSEIF LCOUNT == 3
+            SIF DUNGEON_TIMER_ACTIVATE
+                PRINTV DUNGEON_TIMER
+            PRINTS DUNGEON_EXTRA_TEXT
         ELSEIF LCOUNT == 4
             ;발 밑의 오브젝트 여부 출력
             CALL D3D_SHOW_UNDER_YOU
