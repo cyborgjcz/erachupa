@@ -546,6 +546,7 @@ CALL D3D_MAKE_MINIMAP
 ;보다 아래에 있는 코드에서 표시하는 HTML_PRINT 그래픽들과 겹치는 위치에 작성된다
 ;또한 반복문을 거듭할 때마다 나침반, 미니맵 등을 그리는 함수를 호출한다
 FOR LCOUNT,0,24
+    PRINT_SPACE D3D_LEFT_SPACE
     SELECTCASE LCOUNT
         CASE 11
             PRINT_SPACE 100
@@ -751,6 +752,7 @@ FOR LCOUNT,0,24
         ;거대보스전의 경우 별도의 UI 표기
         CALL PRINT_3D_EXTRA(LCOUNT,1)
     ELSE
+        PRINT_SPACE 500
         IF LCOUNT < 3
             ;나침반 출력
             CALL D3D_SHOW_COMPASS(LCOUNT)
@@ -773,9 +775,9 @@ FOR LCOUNT,0,24
                 PRINTFORM %D3D_MINIMAPS:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1))),1,LEFT%
                 SELECTCASE D3D_MINIMAPS:LCOUNT2:(LCOUNT-(24-((D3D_MINIMAP_RADIUS*2)+1)))
                     CASE "⏶","⏵","⏷","⏴"
-                        PRINT_SPACE 21
-                    CASE "□","■"
-                        PRINT_SPACE 10
+                        PRINT_SPACE 22
+                    ;CASE "□","■"
+                    ;    PRINT_SPACE 10
                 ENDSELECT
             NEXT
         ENDIF
@@ -917,7 +919,7 @@ HTML_PRINT @"%HTMLTEXT%"
 #DIM DYNAMIC LXPOS
 #DIMS DYNAMIC SRCNAME
 
-RETURNF @"<nonbutton title='...' pos='{LXPOS * 50}'><img src='" + SRCNAME + @"' height='{LHEIGHT * 50}' width='{LWIDTH * 50}' ypos='{LYPOS * 50}'></nonbutton>"
+RETURNF @"<nonbutton title='...' pos='{D3D_LEFT_SPACE + LXPOS * 50}'><img src='" + SRCNAME + @"' height='{LHEIGHT * 50}' width='{LWIDTH * 50}' ypos='{LYPOS * 50}'></nonbutton>"
 
 ;나침반 표시
 @D3D_SHOW_COMPASS(LINENUM)

@@ -136,7 +136,7 @@ ELSE
                     DEBUGPRINTFORML DUNGEON{FLAG:탐색대상던전}_EVENT({RESULT:0},{RESULT:1}) 호출 실패
                 ENDCATCH
                 SIF RESULT:2 == 1
-                    CALL DUNGEON_TRANSFER(RESULT:0,RESULT:1,RESULT:2)
+                    CALL DUNGEON_TRANSFER(RESULT:0,RESULT:1,RESULT:3)
         ENDSELECT
     ENDIF
 ENDIF
